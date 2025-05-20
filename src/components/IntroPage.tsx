@@ -201,12 +201,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                   </Step>
                 </StepList>
                 
-                <HelpNote>
-                  <HelpCircle size={24} className="mr-4 text-mahogany flex-shrink-0" />
-                  <div>
-                    Need more help? A detailed guided tour is available by clicking the help button in the bottom-right corner of the map interface.
-                  </div>
-                </HelpNote>
+
               </GuideCard>
               
               {/* Video Tutorial */}

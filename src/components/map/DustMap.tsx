@@ -4,6 +4,7 @@ import Map, { ViewStateChangeEvent, MapLayerMouseEvent } from 'react-map-gl';
 import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { usePM10Data } from '../../utils/dataUtils';
+import { HelpCircle } from 'lucide-react';
 
 import { MapContainer } from '../MapStyled';
 import { MAPBOX_TOKEN, MAPBOX_CONFIG, AVAILABLE_LAKE_LEVELS, getPM10Color } from './constants';
@@ -13,13 +14,39 @@ import MapControlsComponent from './MapControls';
 import { MapLayersComponent } from './MapLayers';
 import { MapPopupComponent } from './MapPopup';
 import { TimeSliderComponent } from './TimeSlider';
+import styled from 'styled-components';
 
 interface DustMapProps {
   onElevationChange?: (elevation: number) => void;
   onTimestampChange?: (timestamp: string) => void;
+  onBackToIntro?: () => void;
 }
 
-function DustMap({ onElevationChange, onTimestampChange }: DustMapProps) {
+const HelpButton = styled.button`
+  position: absolute;
+  bottom: 160px;
+  right: 10px;
+  z-index: 10;
+  background-color: ${({ theme }) => theme.colors.moabMahogany};
+  color: ${({ theme }) => theme.colors.snowbirdWhite};
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(117, 29, 12, 0.8);
+    transform: scale(1.05);
+  }
+`;
+
+function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState<MapViewState>({
     longitude: -112.3297,
@@ -258,6 +285,15 @@ function DustMap({ onElevationChange, onTimestampChange }: DustMapProps) {
 
   return (
     <MapContainer>
+      {onBackToIntro && (
+        <HelpButton 
+          onClick={onBackToIntro}
+          title="Help & Information"
+        >
+          <HelpCircle size={36} />
+        </HelpButton>
+      )}
+      
       <MapSidebarComponent 
         selectedLakeLevel={selectedLakeLevel}
         handleElevationChange={handleElevationChange}

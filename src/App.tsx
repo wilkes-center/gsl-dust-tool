@@ -36,6 +36,10 @@ function App() {
     setShowIntro(false);
   };
   
+  const handleBackToIntro = () => {
+    setShowIntro(true);
+  };
+  
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles theme={theme} />
@@ -47,6 +51,7 @@ function App() {
           <DustMap 
             onElevationChange={handleElevationChange}
             onTimestampChange={handleTimestampChange}
+            onBackToIntro={handleBackToIntro}
           />
         </AppContainer>
       )}
