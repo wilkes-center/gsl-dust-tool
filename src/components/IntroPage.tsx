@@ -180,7 +180,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                     <StepNumber>3</StepNumber>
                     <StepContent>
                       <StepTitle>Use timeline controls</StepTitle>
-                      <StepDescription>Play through the forecast timeline or choose a specific date/time.</StepDescription>
+                      <StepDescription>Play through the timeline or choose a specific date/time.</StepDescription>
                     </StepContent>
                   </Step>
                   
