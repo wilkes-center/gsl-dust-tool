@@ -36,12 +36,12 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
             <LogoContainer>
               <img 
                 src="/gsl-dust-tool/logo192.png" 
-                alt="GSL Dust Tool Logo" 
+                alt="Great Salt Lake Dust Exposure Modeling Tool Logo" 
                 className="w-full h-full object-contain rounded-md" 
               />
             </LogoContainer>
             <Title>
-              <TitleAccent>GSL</TitleAccent> Dust Forecast Tool
+              <TitleAccent>Great Salt Lake</TitleAccent> Dust Exposure Modeling Tool
             </Title>
           </LogoTitle>
           
@@ -231,7 +231,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                 
                 <VideoInfo>
                   <div>
-                    <VideoTitle>Introduction to GSL Dust Tool</VideoTitle>
+                    <VideoTitle>Introduction to Great Salt Lake Dust Exposure Modeling Tool</VideoTitle>
                     <VideoDuration>Duration: 4:30</VideoDuration>
                   </div>
                 </VideoInfo>

@@ -6,7 +6,7 @@
   "author": "Wilkes Center for Climate Science & Policy",
   "license": "MIT",
   "type": "module",
-  "homepage": "https://praveenaak.github.io/GSL_dust",
+  "homepage": "https://wilkes-center.github.io/gsl-dust-tool",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -42,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/praveenaak/GSL_dust.git"
+    "url": "https://github.com/wilkes-center/gsl-dust-tool.git"
   },
   "keywords": [
     "gsl",
