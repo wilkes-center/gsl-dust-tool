@@ -1,0 +1,56 @@
+{
+  "name": "gsl-dust-tool",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A map-based application for monitoring dust in the Great Salt Lake area",
+  "author": "Wilkes Center for Climate Science & Policy",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://praveenaak.github.io/GSL_dust",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "@types/geojson": "^7946.0.16",
+    "@types/mapbox-gl": "^3.4.1",
+    "@types/react-map-gl": "^6.1.7",
+    "@types/styled-components": "^5.1.34",
+    "mapbox-gl": "^3.11.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-map-gl": "^7.1.6",
+    "styled-components": "^6.1.17"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "gh-pages": "^6.3.0",
+    "globals": "^16.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/praveenaak/GSL_dust.git"
+  },
+  "keywords": [
+    "gsl",
+    "great-salt-lake",
+    "dust",
+    "air-quality",
+    "mapbox",
+    "react",
+    "typescript"
+  ]
+}
