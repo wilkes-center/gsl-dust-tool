@@ -1,4 +1,4 @@
-# GSL Dust Monitoring Tool
+# Great Salt Lake Dust Exposure Modeling Tool
 
 
 ## Technical Stack
