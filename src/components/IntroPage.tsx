@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { MapPin, Info, HelpCircle, MessageSquare, Github, Play, ChevronRight } from 'lucide-react';
+import { MapPin, Info, HelpCircle, MessageSquare, Github, Play } from 'lucide-react';
 
 interface IntroPageProps {
   onComplete: () => void;
@@ -35,7 +35,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
           <LogoTitle>
             <LogoContainer>
               <img 
-                src="/GSL_dust/logo192.png" 
+                src="/gsl-dust-tool/logo192.png" 
                 alt="GSL Dust Tool Logo" 
                 className="w-full h-full object-contain rounded-md" 
               />
