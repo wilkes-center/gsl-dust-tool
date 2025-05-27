@@ -3,7 +3,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Map, { ViewStateChangeEvent, MapLayerMouseEvent } from 'react-map-gl';
 import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { usePM10Data } from '../../utils/dataUtils';
+import { usePM10Data, aggregatePM10Data, getAggregatedPM10Color } from '../../utils/dataUtils';
 import { HelpCircle } from 'lucide-react';
 
 import { MapContainer } from '../MapStyled';
@@ -71,38 +71,27 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   // Use the selected lake level for the elevation highlight too
   const [selectedElevation, setSelectedElevation] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
   
-  // State for PM10 data timestamp selection
-  const [selectedTimestampIndex, setSelectedTimestampIndex] = useState<number>(0);
-  
   // Load PM10 data based on selected lake level
   const { centroidLocations, pm10Data, loading } = usePM10Data(selectedLakeLevel);
   
-  // Store the latest successfully loaded PM10 data to prevent UI flicker during loading
-  const [cachedPM10Data, setCachedPM10Data] = useState<any[]>([]);
+  // Store averaged PM10 data (time-independent)
+  const [averagedPM10Data, setAveragedPM10Data] = useState<Record<string, number>>({});
 
-  // Update cached data whenever new data is successfully loaded
+  // Update averaged data whenever new data is successfully loaded
   useEffect(() => {
     if (pm10Data && pm10Data.length > 0 && !loading) {
-      setCachedPM10Data(pm10Data);
-      
-      // If the selected index is now out of bounds with the new data, reset it
-      if (selectedTimestampIndex >= pm10Data.length) {
-        setSelectedTimestampIndex(0);
-      }
+      // Calculate averaged data across all timestamps
+      const averaged = aggregatePM10Data(pm10Data);
+      setAveragedPM10Data(averaged);
     }
   }, [pm10Data, loading]);
-  
-  // Use cached data for UI rendering to prevent disappearing components
-  const timestampsForUI: string[] = cachedPM10Data.length > 0 
-    ? cachedPM10Data.map(data => data.timestamp)
-    : [];
-  
-  // Call parent component when timestamp changes
+
+  // Call parent component when data changes (use first timestamp as representative)
   useEffect(() => {
-    if (timestampsForUI.length > 0 && onTimestampChange) {
-      onTimestampChange(timestampsForUI[selectedTimestampIndex]);
+    if (pm10Data && pm10Data.length > 0 && onTimestampChange) {
+      onTimestampChange(pm10Data[0].timestamp);
     }
-  }, [selectedTimestampIndex, timestampsForUI, onTimestampChange]);
+  }, [pm10Data, onTimestampChange]);
   
   // State for popup information
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
@@ -163,26 +152,24 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     });
   }, [layers]);
   
-  // Get PM10 data for rendering
+  // Get PM10 data for rendering (now using averaged data)
   const getPM10Points = useCallback((): PM10Point[] => {
-    if (!pm10Data || pm10Data.length === 0 || !centroidLocations || selectedTimestampIndex >= pm10Data.length) {
+    if (!centroidLocations || Object.keys(averagedPM10Data).length === 0) {
       return [];
     }
-
-    const currentTimestampData = pm10Data[selectedTimestampIndex];
     
     return centroidLocations.map(centroid => {
-      const pm10Value = currentTimestampData[centroid.centroid_name] as number;
+      const pm10Value = averagedPM10Data[centroid.centroid_name] || 0;
       return {
         centroid_name: centroid.centroid_name,
         longitude: centroid.lon,
         latitude: centroid.lat,
         geoid: centroid.geoid,
         pm10: pm10Value,
-        color: getPM10Color(pm10Value)
+        color: getAggregatedPM10Color(pm10Value)
       };
     });
-  }, [pm10Data, centroidLocations, selectedTimestampIndex]);
+  }, [centroidLocations, averagedPM10Data]);
   
   // Handle map click for all features
   const onClick = useCallback((event: MapLayerMouseEvent) => {
@@ -242,7 +229,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     } else {
       setPopupInfo(null);
     }
-  }, [layers, centroidLocations]);
+  }, [layers, centroidLocations, averagedPM10Data]);
   
   // Find the nearest available lake level for a given elevation
   const findNearestLakeLevel = (value: number): number => {
@@ -305,14 +292,8 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
         toggleLayer={toggleLayer}
       />
       
-      {/* Time slider for census tract layer */}
-      {layers.censusTracts && timestampsForUI.length > 0 && (
-        <TimeSliderComponent
-          timestamps={timestampsForUI}
-          selectedIndex={Math.min(selectedTimestampIndex, timestampsForUI.length - 1)}
-          onChange={setSelectedTimestampIndex}
-        />
-      )}
+      {/* Time slider for census tract layer - HIDDEN FOR TIME-INDEPENDENT VIEW */}
+      {/* TimeSlider component completely removed for averaged data display */}
       
       <Map
         {...viewState}
@@ -363,8 +344,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           <MapLayersComponent
             layers={layers}
             selectedElevation={selectedElevation}
-            selectedTimestampIndex={selectedTimestampIndex}
-            pm10Data={pm10Data}
+            averagedPM10Data={averagedPM10Data}
             centroidLocations={centroidLocations}
             getPM10Points={getPM10Points}
             loading={loading}
@@ -374,8 +354,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
         <MapPopupComponent
           popupInfo={popupInfo}
           onClose={() => setPopupInfo(null)}
-          pm10Data={pm10Data}
-          selectedTimestampIndex={selectedTimestampIndex}
+          averagedPM10Data={averagedPM10Data}
           centroidLocations={centroidLocations}
         />
       </Map>

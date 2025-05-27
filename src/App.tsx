@@ -47,7 +47,7 @@ function App() {
         <IntroPage onComplete={handleIntroComplete} />
       ) : (
         <AppContainer>
-          <Header elevation={selectedElevation} timestamp={currentTimestamp} />
+          <Header elevation={selectedElevation} />
           <DustMap 
             onElevationChange={handleElevationChange}
             onTimestampChange={handleTimestampChange}

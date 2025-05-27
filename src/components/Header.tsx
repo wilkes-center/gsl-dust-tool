@@ -1,6 +1,6 @@
 // Header.tsx
 import styled from 'styled-components';
-import { formatTimestamp, getFormattedElevation } from '../utils/formatUtils';
+import { getFormattedElevation } from '../utils/formatUtils';
 
 const HeaderContainer = styled.header`
   position: absolute;
@@ -50,10 +50,9 @@ const InfoValue = styled.span`
 
 interface HeaderProps {
   elevation: number;
-  timestamp: string;
 }
 
-function Header({ elevation, timestamp }: HeaderProps) {
+function Header({ elevation }: HeaderProps) {
   return (
     <HeaderContainer>
       <Title>GREAT SALT LAKE DUST EXPOSURE MODELING TOOL</Title>
@@ -61,10 +60,6 @@ function Header({ elevation, timestamp }: HeaderProps) {
         <InfoItem>
           <InfoLabel>Lake Level</InfoLabel>
           <InfoValue>{getFormattedElevation(elevation)}</InfoValue>
-        </InfoItem>
-        <InfoItem>
-          <InfoLabel>Date & Time</InfoLabel>
-          <InfoValue>{formatTimestamp(timestamp)}</InfoValue>
         </InfoItem>
       </InfoContainer>
     </HeaderContainer>

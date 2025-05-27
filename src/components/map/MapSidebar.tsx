@@ -4,6 +4,89 @@ import { AVAILABLE_LAKE_LEVELS } from './constants';
 import { metersToFeet } from '../../utils/dataUtils';
 import { LakeLevelSliderContainer } from '../MapStyled';
 
+/**
+ * MapSidebar Component with Lake Health Level Indicators
+ * 
+ * This component displays a lake level slider with integrated health level indicators
+ * that show users the environmental impact of different lake elevations:
+ * 
+ * - Serious adverse effects (1275.0-1276.5m): Dark red - Critical impacts on ecosystem
+ * - Adverse effects impacting (1276.5-1278.0m): Indian red - Significant negative effects  
+ * - Transitionary zone (1278.0-1279.5m): Sandy brown - Some adverse effects
+ * - Healthy lake level range (1279.5-1281.0m): Light green - Beneficial for most uses
+ * - Adverse effects due to high levels (1281.0-1282.0m): Light pink - High level impacts
+ * 
+ * The health level indicator updates dynamically as users adjust the lake level,
+ * providing immediate feedback on the environmental implications of their selection.
+ */
+
+// Lake health level definitions based on the provided image
+interface HealthLevel {
+  name: string;
+  description: string;
+  color: string;
+  minLevel: number;
+  maxLevel: number;
+}
+
+const LAKE_HEALTH_LEVELS: HealthLevel[] = [
+  {
+    name: "Serious adverse effects",
+    description: "on brine shrimp viability, air quality.",
+    color: "#8B0000", // Dark red
+    minLevel: 1275.0,
+    maxLevel: 1276.5
+  },
+  {
+    name: "Adverse effects impacting",
+    description: "ecosystem health.",
+    color: "#CD5C5C", // Indian red
+    minLevel: 1276.5,
+    maxLevel: 1278.0
+  },
+  {
+    name: "Transitionary zone",
+    description: "with some adverse effects.",
+    color: "#F4A460", // Sandy brown
+    minLevel: 1278.0,
+    maxLevel: 1279.5
+  },
+  {
+    name: "Healthy lake level range",
+    description: "deemed beneficial for most uses.",
+    color: "#90EE90", // Light green
+    minLevel: 1279.5,
+    maxLevel: 1281.5
+  },
+  {
+    name: "Adverse effects",
+    description: "due to high levels.",
+    color: "#FFB6C1", // Light pink
+    minLevel: 1281.5,
+    maxLevel: 1282.0
+  }
+];
+
+// Function to get health level for a given lake elevation
+const getHealthLevel = (elevation: number): HealthLevel | null => {
+  // Find the health level that contains this elevation
+  for (let i = 0; i < LAKE_HEALTH_LEVELS.length; i++) {
+    const level = LAKE_HEALTH_LEVELS[i];
+    // For the last (highest) level, include the upper boundary
+    if (i === LAKE_HEALTH_LEVELS.length - 1) {
+      if (elevation >= level.minLevel && elevation <= level.maxLevel) {
+        return level;
+      }
+    } else {
+      // For all other levels, exclude the upper boundary
+      if (elevation >= level.minLevel && elevation < level.maxLevel) {
+        return level;
+      }
+    }
+  }
+  return null;
+};
+
 // Styled components
 // LakeLevelSliderContainer is now imported from MapStyled
 
@@ -111,7 +194,7 @@ interface LakeLevelSliderProps {
 }
 
 const LakeLevelSlider = styled.div<LakeLevelSliderProps>`
-  height: 160px;
+  height: 220px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -124,7 +207,7 @@ const LakeLevelSlider = styled.div<LakeLevelSliderProps>`
   &:before {
     content: '';
     position: absolute;
-    height: 140px;
+    height: 200px;
     width: 8px;
     background: linear-gradient(to bottom,
       rgba(224, 224, 224, 0.8),
@@ -150,7 +233,7 @@ const LakeLevelSlider = styled.div<LakeLevelSliderProps>`
     left: 50%;
     transform: translateX(-50%);
     bottom: 10px;  /* Fixed position at bottom */
-    height: ${props => ((props.$value - props.$min) / (props.$max - props.$min)) * 140}px;
+    height: ${props => ((props.$value - props.$min) / (props.$max - props.$min)) * 200}px;
     transition: all 0.2s ease;
     z-index: 2;
     box-shadow: 0 1px 3px rgba(74, 144, 226, 0.3);
@@ -167,7 +250,7 @@ const LakeLevelSlider = styled.div<LakeLevelSliderProps>`
     appearance: none;
     background: transparent;
     width: 32px;
-    height: 140px;
+    height: 200px;
     padding: 0;
 
     &::-webkit-slider-runnable-track {
@@ -262,6 +345,40 @@ const LakeLevelSlider = styled.div<LakeLevelSliderProps>`
   }
 `;
 
+// Health level zone backgrounds for the slider
+const HealthLevelZones = styled.div<LakeLevelSliderProps>`
+  position: absolute;
+  width: 20px;
+  height: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10px;
+  z-index: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top,
+      #8B0000 0%,
+      #8B0000 ${props => ((1276.5 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #CD5C5C ${props => ((1276.5 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #CD5C5C ${props => ((1278.0 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #F4A460 ${props => ((1278.0 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #F4A460 ${props => ((1279.5 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #90EE90 ${props => ((1279.5 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #90EE90 ${props => ((1281.5 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #FFB6C1 ${props => ((1281.5 - props.$min) / (props.$max - props.$min)) * 100}%,
+      #FFB6C1 100%
+    );
+    opacity: 0.3;
+    border-radius: 4px;
+  }
+`;
+
 const LakeLevelTicks = styled.div`
   position: absolute;
   width: 100%;
@@ -334,6 +451,39 @@ const SliderContainer = styled.div`
   padding: 0px 0;
 `;
 
+// Health level indicator components
+const HealthLevelIndicator = styled.div<{ $color: string }>`
+  width: 100%;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 8px;
+  background-color: ${props => props.$color};
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+`;
+
+const HealthLevelTitle = styled.div<{ $color: string }>`
+  font-size: 13px;
+  font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+  color: ${props => props.$color === '#8B0000' ? '#FFFFFF' : props.theme.colors.olympicParkObsidian};
+  margin-bottom: 2px;
+  text-shadow: ${props => props.$color === '#8B0000' ? '0 1px 2px rgba(0, 0, 0, 0.8)' : '0 1px 2px rgba(255, 255, 255, 0.8)'};
+`;
+
+const HealthLevelDescription = styled.div<{ $color: string }>`
+  font-size: 11px;
+  color: ${props => props.$color === '#8B0000' ? '#FFFFFF' : props.theme.colors.olympicParkObsidian};
+  opacity: 0.9;
+  line-height: 1.3;
+  text-shadow: ${props => props.$color === '#8B0000' ? '0 1px 2px rgba(0, 0, 0, 0.6)' : '0 1px 2px rgba(255, 255, 255, 0.6)'};
+`;
+
+const HealthLevelContainer = styled.div`
+  width: 100%;
+  margin-top: 8px;
+`;
+
 interface MapSidebarProps {
   selectedLakeLevel: number;
   handleElevationChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -354,6 +504,9 @@ export function MapSidebarComponent({
   
   // Ref for measuring container height
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Get current health level
+  const currentHealthLevel = getHealthLevel(selectedLakeLevel);
   
   // Update the current level index when selectedLakeLevel changes
   useEffect(() => {
@@ -406,6 +559,17 @@ export function MapSidebarComponent({
         </div>
       </TimeSliderHeader>
       <Divider />
+      
+      {/* Health Level Indicator */}
+      {currentHealthLevel && (
+        <HealthLevelContainer>
+          <HealthLevelIndicator $color={currentHealthLevel.color}>
+            <HealthLevelTitle $color={currentHealthLevel.color}>{currentHealthLevel.name}</HealthLevelTitle>
+            <HealthLevelDescription $color={currentHealthLevel.color}>{currentHealthLevel.description}</HealthLevelDescription>
+          </HealthLevelIndicator>
+        </HealthLevelContainer>
+      )}
+      
       <SliderContainer>
         {/* Top button only */}
         <LevelControls>
@@ -423,6 +587,13 @@ export function MapSidebarComponent({
           $min={MIN_LAKE_LEVEL}
           $max={MAX_LAKE_LEVEL}
         >
+          {/* Health level zone backgrounds */}
+          <HealthLevelZones
+            $value={selectedLakeLevel}
+            $min={MIN_LAKE_LEVEL}
+            $max={MAX_LAKE_LEVEL}
+          />
+          
           <input
             type="range"
             min={MIN_LAKE_LEVEL}

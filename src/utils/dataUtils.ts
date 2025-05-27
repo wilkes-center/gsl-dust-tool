@@ -234,6 +234,18 @@ export function getPM10Color(value: number): string {
 }
 
 /**
+ * Get color for averaged PM10 values (averaged across all timestamps)
+ * Uses thresholds appropriate for averaged data
+ */
+export function getAggregatedPM10Color(value: number): string {
+  if (value < 5) return '#7cbf6f';      // Muted green (low averaged PM10)
+  if (value < 10) return '#e8db5b';     // Muted yellow (moderate averaged PM10)
+  if (value < 15) return '#e8a64d';     // Muted orange (high averaged PM10)
+  if (value < 20) return '#d46457';     // Muted red (very high averaged PM10)
+  return '#a63c3c';                     // Deeper red (extremely high averaged PM10)
+}
+
+/**
  * Generate a color based on a string hash (for census tracts)
  * This ensures each tract gets a unique but consistent color
  */
@@ -332,4 +344,77 @@ export function generateShoreline(bathymetryData: BathymetryPoint[], elevation: 
       coordinates: [coordinates]
     }
   };
+}
+
+/**
+ * Calculate average PM10 data across all timestamps for each centroid
+ * Returns a single data point with averaged values for each centroid
+ */
+export function averagePM10Data(pm10Data: PM10Data[]): Record<string, number> {
+  if (!pm10Data || pm10Data.length === 0) {
+    return {};
+  }
+
+  const aggregatedData: Record<string, number> = {};
+  
+  // Get all centroid names from the first data point (excluding timestamp)
+  const firstDataPoint = pm10Data[0];
+  const centroidNames = Object.keys(firstDataPoint).filter(key => key !== 'timestamp');
+  
+  // Initialize aggregated values to 0
+  centroidNames.forEach(centroidName => {
+    aggregatedData[centroidName] = 0;
+  });
+  
+  // Sum values across all timestamps
+  pm10Data.forEach(dataPoint => {
+    centroidNames.forEach(centroidName => {
+      const value = dataPoint[centroidName];
+      if (typeof value === 'number' && !isNaN(value)) {
+        aggregatedData[centroidName] += value;
+      }
+    });
+  });
+  
+  // Calculate averages by dividing by the number of timestamps
+  const numTimestamps = pm10Data.length;
+  centroidNames.forEach(centroidName => {
+    aggregatedData[centroidName] = aggregatedData[centroidName] / numTimestamps;
+  });
+  
+  return aggregatedData;
+}
+
+// Keep the old function name for backward compatibility
+export const aggregatePM10Data = averagePM10Data;
+
+/**
+ * Load PM10 data for all lake levels for a specific centroid
+ * Returns an array of {lakeLevel, pm10Value} objects
+ */
+export async function getPM10DataForAllLakeLevels(centroidName: string): Promise<{lakeLevel: number, pm10Value: number}[]> {
+  const results: {lakeLevel: number, pm10Value: number}[] = [];
+  
+  for (const lakeLevel of AVAILABLE_LAKE_LEVELS) {
+    try {
+      const pm10Data = await getPM10Data(lakeLevel);
+      if (pm10Data && pm10Data.length > 0) {
+        // Calculate average PM10 for this centroid across all timestamps
+        const aggregated = averagePM10Data(pm10Data);
+        const pm10Value = aggregated[centroidName];
+        
+        if (typeof pm10Value === 'number' && !isNaN(pm10Value)) {
+          results.push({
+            lakeLevel,
+            pm10Value
+          });
+        }
+      }
+    } catch (error) {
+      console.warn(`Failed to load PM10 data for lake level ${lakeLevel}:`, error);
+      // Continue with other lake levels even if one fails
+    }
+  }
+  
+  return results.sort((a, b) => a.lakeLevel - b.lakeLevel);
 }

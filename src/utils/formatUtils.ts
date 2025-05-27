@@ -51,5 +51,5 @@ export function formatTimestamp(timestamp: string): string {
 }
 
 export function getFormattedElevation(elevation: number): string {
-  return `${metersToFeet(elevation).toFixed(0)} ft`;
+  return `${metersToFeet(elevation).toFixed(1)} ft`;
 } 

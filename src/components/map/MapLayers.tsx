@@ -1,12 +1,11 @@
 import { Source, Layer } from 'react-map-gl';
 import { MapLayers, PM10Point } from './types';
-import { getPM10Color } from './constants';
+import { getAggregatedPM10Color } from '../../utils/dataUtils';
 
 interface MapLayersProps {
   layers: MapLayers;
   selectedElevation: number;
-  selectedTimestampIndex: number;
-  pm10Data: any[];
+  averagedPM10Data: Record<string, number>;
   centroidLocations: any[];
   getPM10Points: () => PM10Point[];
   loading: boolean;
@@ -15,8 +14,7 @@ interface MapLayersProps {
 export function MapLayersComponent({
   layers,
   selectedElevation,
-  selectedTimestampIndex,
-  pm10Data,
+  averagedPM10Data,
   centroidLocations,
   getPM10Points,
   loading
@@ -45,14 +43,13 @@ export function MapLayersComponent({
                   const geoidColorMap: Record<string, string> = {};
                   
                   // Populate the map with the latest color for each GEOID if PM10 data is available
-                  if (!loading && pm10Data && pm10Data.length > 0 && selectedTimestampIndex < pm10Data.length) {
+                  if (!loading && averagedPM10Data && Object.keys(averagedPM10Data).length > 0) {
                     centroidLocations
                       .filter(c => c.geoid)
                       .forEach(centroid => {
                         if (centroid.geoid) {
-                          const currentTimestampData = pm10Data[selectedTimestampIndex];
-                          const pm10Value = currentTimestampData[centroid.centroid_name] as number;
-                          const color = getPM10Color(pm10Value);
+                          const pm10Value = averagedPM10Data[centroid.centroid_name] || 0;
+                          const color = getAggregatedPM10Color(pm10Value);
                           geoidColorMap[centroid.geoid] = color;
                         }
                       });
