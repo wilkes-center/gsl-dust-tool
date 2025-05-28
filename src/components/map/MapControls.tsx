@@ -229,29 +229,58 @@ export function MapControlsComponent({
       
       {/* Display legends if their layers are selected */}
       <InfoBox style={{ marginTop: '4px', paddingTop: '4px' }}>
-        {/* PM10 legend */}
-        {(layers.pm10Data || layers.censusTracts) && (
+        {/* Census Tracts Brown legend */}
+        {layers.censusTracts && (
           <Legend>
-            <h4>PM10 SCALE</h4>
+            <h4>CENSUS TRACTS (PM10)</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#7cbf6f'}} />
+                <ColorBox style={{backgroundColor: '#f7f2e9'}} />
                 <span>&lt; 5 µg/m³</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#e8db5b'}} />
+                <ColorBox style={{backgroundColor: '#e8dcc6'}} />
                 <span>5-10 µg/m³</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#e8a64d'}} />
+                <ColorBox style={{backgroundColor: '#d6c5a2'}} />
                 <span>10-15 µg/m³</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#d46457'}} />
+                <ColorBox style={{backgroundColor: '#c4a373'}} />
                 <span>15-20 µg/m³</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#a63c3c'}} />
+                <ColorBox style={{backgroundColor: '#a0784a'}} />
+                <span>&gt; 20 µg/m³</span>
+              </LegendItem>
+            </div>
+          </Legend>
+        )}
+
+        {/* PM10 legend for point data */}
+        {layers.pm10Data && (
+          <Legend>
+            <h4>PM10 POINTS</h4>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <LegendItem>
+                <ColorBox style={{backgroundColor: '#f7f2e9'}} />
+                <span>&lt; 5 µg/m³</span>
+              </LegendItem>
+              <LegendItem>
+                <ColorBox style={{backgroundColor: '#e8dcc6'}} />
+                <span>5-10 µg/m³</span>
+              </LegendItem>
+              <LegendItem>
+                <ColorBox style={{backgroundColor: '#d6c5a2'}} />
+                <span>10-15 µg/m³</span>
+              </LegendItem>
+              <LegendItem>
+                <ColorBox style={{backgroundColor: '#c4a373'}} />
+                <span>15-20 µg/m³</span>
+              </LegendItem>
+              <LegendItem>
+                <ColorBox style={{backgroundColor: '#a0784a'}} />
                 <span>&gt; 20 µg/m³</span>
               </LegendItem>
             </div>
@@ -264,19 +293,19 @@ export function MapControlsComponent({
             <h4>SOIL ERODIBILITY</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#feb24c'}} />
+                <ColorBox style={{backgroundColor: '#a0856b'}} />
                 <span>0.2 - 0.3</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#fc4e2a'}} />
+                <ColorBox style={{backgroundColor: '#7d6a52'}} />
                 <span>0.3 - 0.6</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#bd0026'}} />
+                <ColorBox style={{backgroundColor: '#5c4e3a'}} />
                 <span>0.6 - 0.94</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#800026'}} />
+                <ColorBox style={{backgroundColor: '#3d3025'}} />
                 <span>≥ 0.94</span>
               </LegendItem>
             </div>

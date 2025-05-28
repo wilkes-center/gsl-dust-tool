@@ -245,8 +245,8 @@ export function MapLayersComponent({
             filter={['>', ['get', 'erodibility'], 0.2]}
             paint={{
               'fill-color': '#000000',
-              'fill-opacity': 0.2,
-              'fill-translate': [3, 3],
+              'fill-opacity': 0.1,
+              'fill-translate': [2, 2],
               'fill-translate-anchor': 'viewport'
             }}
           />
@@ -260,14 +260,14 @@ export function MapLayersComponent({
                 'interpolate',
                 ['linear'],
                 ['get', 'erodibility'],
-                0, '#ffffd4',
-                0.1, '#ffeda0',
-                0.3, '#feb24c',
-                0.6, '#fc4e2a',
-                0.94, '#bd0026',
-                1.0, '#800026'
+                0, '#c4b09a',
+                0.1, '#b29b82',
+                0.3, '#a0856b',
+                0.6, '#7d6a52',
+                0.94, '#5c4e3a',
+                1.0, '#3d3025'
               ],
-              'fill-opacity': 0.3,
+              'fill-opacity': 0.2,
               'fill-translate': [0, 0],
               'fill-translate-anchor': 'viewport'
             }}
@@ -282,15 +282,15 @@ export function MapLayersComponent({
                 'interpolate',
                 ['linear'],
                 ['get', 'erodibility'],
-                0, '#ffffd4',
-                0.1, '#ffeda0',
-                0.3, '#feb24c',
-                0.6, '#fc4e2a',
-                0.94, '#bd0026',
-                1.0, '#800026'
+                0, '#c4b09a',
+                0.1, '#b29b82',
+                0.3, '#a0856b',
+                0.6, '#7d6a52',
+                0.94, '#5c4e3a',
+                1.0, '#3d3025'
               ],
-              'fill-opacity': 0.7,
-              'fill-translate': [1, 1],
+              'fill-opacity': 0.5,
+              'fill-translate': [0.5, 0.5],
               'fill-translate-anchor': 'viewport',
               'fill-antialias': true
             }}
@@ -302,9 +302,9 @@ export function MapLayersComponent({
             filter={['>', ['get', 'erodibility'], 0.2]}
             paint={{
               'line-color': '#000000',
-              'line-width': 0.5,
-              'line-opacity': 0.5,
-              'line-blur': 0.5
+              'line-width': 0.2,
+              'line-opacity': 0.3,
+              'line-blur': 1.0
             }}
           />
         </Source>

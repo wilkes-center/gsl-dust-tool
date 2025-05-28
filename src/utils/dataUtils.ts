@@ -226,11 +226,11 @@ export const AVAILABLE_LAKE_LEVELS = [1275.0, 1276.0, 1277.0, 1278.0, 1279.0, 12
  * Get PM10 color based on value
  */
 export function getPM10Color(value: number): string {
-  if (value < 5) return '#7cbf6f';      // Muted green (low PM10)
-  if (value < 10) return '#e8db5b';     // Muted yellow (moderate PM10)
-  if (value < 15) return '#e8a64d';     // Muted orange (high PM10)
-  if (value < 20) return '#d46457';     // Muted red (very high PM10)
-  return '#a63c3c';                     // Deeper red (extremely high PM10)
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low PM10)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate PM10)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high PM10)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high PM10)
+  return '#a0784a';                     // Dark coffee (extremely high PM10)
 }
 
 /**
@@ -238,11 +238,11 @@ export function getPM10Color(value: number): string {
  * Uses thresholds appropriate for averaged data
  */
 export function getAggregatedPM10Color(value: number): string {
-  if (value < 5) return '#7cbf6f';      // Muted green (low averaged PM10)
-  if (value < 10) return '#e8db5b';     // Muted yellow (moderate averaged PM10)
-  if (value < 15) return '#e8a64d';     // Muted orange (high averaged PM10)
-  if (value < 20) return '#d46457';     // Muted red (very high averaged PM10)
-  return '#a63c3c';                     // Deeper red (extremely high averaged PM10)
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM10)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate averaged PM10)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM10)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM10)
+  return '#a0784a';                     // Dark coffee (extremely high averaged PM10)
 }
 
 /**

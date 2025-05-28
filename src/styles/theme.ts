@@ -36,11 +36,11 @@ const theme = {
     
     // PM10 concentration scale
     pm10Scale: [
-      '#7cbf6f', // Green (low PM10)
-      '#e8db5b', // Yellow (moderate PM10)
-      '#e8a64d', // Orange (high PM10)
-      '#d46457', // Red (very high PM10)
-      '#a63c3c'  // Dark red (extremely high PM10)
+      '#f7f2e9', // Warm off-white (low PM10)
+      '#e8dcc6', // Light coffee with cream (moderate PM10)
+      '#d6c5a2', // Café au lait (high PM10)
+      '#c4a373', // Medium coffee (very high PM10)
+      '#a0784a'  // Dark coffee (extremely high PM10)
     ]
   },
   
