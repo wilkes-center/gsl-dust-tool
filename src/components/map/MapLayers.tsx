@@ -301,10 +301,10 @@ export function MapLayersComponent({
             source-layer="GSL_erodibility_fraction-5bzz8s"
             filter={['>', ['get', 'erodibility'], 0.2]}
             paint={{
-              'line-color': '#000000',
-              'line-width': 0.2,
-              'line-opacity': 0.3,
-              'line-blur': 1.0
+              'line-color': '#751d0c', // moabMahogany - main accent color for borders
+              'line-width': 1.0,
+              'line-opacity': 0.8,
+              'line-blur': 0.2
             }}
           />
         </Source>

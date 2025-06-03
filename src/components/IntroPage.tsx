@@ -4,6 +4,7 @@ import { MapPin, Info, HelpCircle, MessageSquare, Github, Play } from 'lucide-re
 
 interface IntroPageProps {
   onComplete: () => void;
+  onViewDemo?: () => void;
 }
 
 interface TabButtonProps {
@@ -17,7 +18,7 @@ interface ContentCardProps {
 /**
  * Introduction page component shown to users on first visit
  */
-const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
+const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo }) => {
   const [activeSection, setActiveSection] = useState('about');
 
   return (
@@ -45,8 +46,14 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
             </Title>
           </LogoTitle>
           
-          {/* Enter Map Button */}
+          {/* Action Buttons */}
           <EnterButtonContainer>
+            {onViewDemo && (
+              <DemoButton onClick={onViewDemo}>
+                <Play size={20} className="mr-2" />
+                Interactive Demo
+              </DemoButton>
+            )}
             <EnterButton onClick={onComplete}>
               <MapPin size={20} className="mr-2" />
               Enter Map
@@ -377,6 +384,28 @@ const EnterButton = styled.button`
   
   &:hover {
     background-color: #8b2113;
+    transform: scale(1.05);
+  }
+`;
+
+const DemoButton = styled.button`
+  background-color: #2d5954;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  padding: 0.75rem 2.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-right: 1rem;
+  
+  &:hover {
+    background-color: #3a6b65;
     transform: scale(1.05);
   }
 `;
