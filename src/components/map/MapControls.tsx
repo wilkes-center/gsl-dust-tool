@@ -209,11 +209,11 @@ export function MapControlsComponent({
         <LayerToggle>
           <input
             type="checkbox"
-            checked={layers.pm10Data}
-            onChange={() => toggleLayer('pm10Data')}
-            id="pm10-layer"
+            checked={layers.pm25Data}
+            onChange={() => toggleLayer('pm25Data')}
+            id="pm25-layer"
           />
-          <label htmlFor="pm10-layer">PM10 Concentrations</label>
+          <label htmlFor="pm25-layer">PM2.5 Concentrations</label>
         </LayerToggle>
         
         <LayerToggle>
@@ -232,7 +232,7 @@ export function MapControlsComponent({
         {/* Census Tracts Brown legend */}
         {layers.censusTracts && (
           <Legend>
-            <h4>CENSUS TRACTS (PM10)</h4>
+            <h4>CENSUS TRACTS (PM2.5)</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
                 <ColorBox style={{backgroundColor: '#f7f2e9'}} />
@@ -258,10 +258,10 @@ export function MapControlsComponent({
           </Legend>
         )}
 
-        {/* PM10 legend for point data */}
-        {layers.pm10Data && (
+        {/* PM2.5 legend for point data */}
+        {layers.pm25Data && (
           <Legend>
-            <h4>PM10 POINTS</h4>
+            <h4>PM2.5 POINTS</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
                 <ColorBox style={{backgroundColor: '#f7f2e9'}} />

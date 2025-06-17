@@ -12,10 +12,25 @@ export interface PM10Data {
   [key: string]: number | string; // For each centroid
 }
 
+export interface PM25Data {
+  timestamp: string;
+  [key: string]: number | string; // For each centroid
+}
+
 export interface BathymetryPoint {
   longitude: number;
   latitude: number;
   elevation: number;
+}
+
+export interface DustContribution {
+  centroid: string;
+  centroid_name: string;
+  GSL: number;
+  Misc: number;
+  SevierLake: number;
+  TooleLake: number;
+  WestDesert: number;
 }
 
 /**
@@ -136,6 +151,65 @@ export async function getPM10Data(lakeLevel: number): Promise<PM10Data[]> {
 }
 
 /**
+ * Load PM2.5 data for a specific lake level
+ */
+export async function getPM25Data(lakeLevel: number): Promise<PM25Data[]> {
+  try {
+    // Use BASE_URL to ensure paths work correctly in production
+    const filepath = `${import.meta.env.BASE_URL}src/assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
+    console.log(`Attempting to load PM2.5 data from: ${filepath}`);
+    
+    const response = await fetch(filepath);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch PM2.5 data: ${response.status} ${response.statusText}`);
+    }
+    
+    const text = await response.text();
+    
+    // Check if we have valid data
+    if (!text || text.trim().length === 0) {
+      console.error(`Empty or invalid PM2.5 data file for lake level ${lakeLevel}`);
+      return [];
+    }
+    
+    // Parse CSV
+    const lines = text.split('\n');
+    
+    if (lines.length <= 1) {
+      console.error(`PM2.5 data file for lake level ${lakeLevel} has insufficient data`);
+      return [];
+    }
+    
+    const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+    
+    const pm25Data: PM25Data[] = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      
+      const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+      const dataPoint: PM25Data = {
+        timestamp: values[0],
+      };
+      
+      // Add all centroid values
+      for (let j = 1; j < headers.length; j++) {
+        dataPoint[headers[j]] = parseFloat(values[j]);
+      }
+      
+      pm25Data.push(dataPoint);
+    }
+    
+    console.log(`Successfully loaded ${pm25Data.length} PM2.5 data points for lake level ${lakeLevel}`);
+    return pm25Data;
+  } catch (error) {
+    console.error(`Error loading PM2.5 data for lake level ${lakeLevel}:`, error);
+    return [];
+  }
+}
+
+/**
  * Custom hook to get PM10 data for a specific lake level
  */
 export function usePM10Data(lakeLevel: number) {
@@ -211,6 +285,81 @@ export function usePM10Data(lakeLevel: number) {
 }
 
 /**
+ * Custom hook to get PM2.5 data for a specific lake level
+ */
+export function usePM25Data(lakeLevel: number) {
+  const [centroidLocations, setCentroidLocations] = useState<CentroidLocation[]>([]);
+  const [pm25Data, setPM25Data] = useState<PM25Data[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  
+  useEffect(() => {
+    let isMounted = true;
+    const maxRetries = 2;
+    
+    async function loadData() {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Load centroid locations first
+        const locations = await getCentroidLocations();
+        
+        if (!isMounted) return;
+        
+        // Check if we have valid centroid locations
+        if (locations.length === 0) {
+          throw new Error('Failed to load centroid locations');
+        }
+        
+        setCentroidLocations(locations);
+        
+        // Then load PM2.5 data for the selected lake level
+        const data = await getPM25Data(lakeLevel);
+        
+        if (!isMounted) return;
+        
+        if (data.length === 0) {
+          throw new Error(`No PM2.5 data available for lake level ${lakeLevel}`);
+        }
+        
+        setPM25Data(data);
+        setLoading(false);
+        setRetryCount(0); // Reset retry count on success
+      } catch (err) {
+        if (!isMounted) return;
+        
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load PM2.5 data';
+        console.error(errorMessage);
+        
+        // Only retry a limited number of times
+        if (retryCount < maxRetries) {
+          console.log(`Retrying PM2.5 data load (attempt ${retryCount + 1}/${maxRetries})`);
+          setRetryCount(prev => prev + 1);
+          
+          // Wait briefly before retrying
+          setTimeout(() => {
+            if (isMounted) loadData();
+          }, 1000);
+        } else {
+          setError(errorMessage);
+          setLoading(false);
+        }
+      }
+    }
+    
+    loadData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [lakeLevel, retryCount]);
+  
+  return { centroidLocations, pm25Data, loading, error };
+}
+
+/**
  * Convert meters to feet
  */
 export function metersToFeet(meters: number): number {
@@ -234,8 +383,19 @@ export function getPM10Color(value: number): string {
 }
 
 /**
+ * Get PM2.5 color based on value
+ */
+export function getPM25Color(value: number): string {
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low PM2.5)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate PM2.5)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high PM2.5)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high PM2.5)
+  return '#a0784a';                     // Dark coffee (extremely high PM2.5)
+}
+
+/**
  * Get color for averaged PM10 values (averaged across all timestamps)
- * Uses thresholds appropriate for averaged data
+ * Uses the same color scale as individual PM10 values
  */
 export function getAggregatedPM10Color(value: number): string {
   if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM10)
@@ -243,6 +403,18 @@ export function getAggregatedPM10Color(value: number): string {
   if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM10)
   if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM10)
   return '#a0784a';                     // Dark coffee (extremely high averaged PM10)
+}
+
+/**
+ * Get color for averaged PM2.5 values (averaged across all timestamps)
+ * Uses the same color scale as individual PM2.5 values
+ */
+export function getAggregatedPM25Color(value: number): string {
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM2.5)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate averaged PM2.5)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM2.5)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM2.5)
+  return '#a0784a';                     // Dark coffee (extremely high averaged PM2.5)
 }
 
 /**
@@ -351,41 +523,31 @@ export function generateShoreline(bathymetryData: BathymetryPoint[], elevation: 
  * Returns a single data point with averaged values for each centroid
  */
 export function averagePM10Data(pm10Data: PM10Data[]): Record<string, number> {
-  if (!pm10Data || pm10Data.length === 0) {
-    return {};
-  }
-
-  const aggregatedData: Record<string, number> = {};
+  const aggregated: Record<string, { sum: number; count: number }> = {};
   
-  // Get all centroid names from the first data point (excluding timestamp)
-  const firstDataPoint = pm10Data[0];
-  const centroidNames = Object.keys(firstDataPoint).filter(key => key !== 'timestamp');
-  
-  // Initialize aggregated values to 0
-  centroidNames.forEach(centroidName => {
-    aggregatedData[centroidName] = 0;
-  });
-  
-  // Sum values across all timestamps
   pm10Data.forEach(dataPoint => {
-    centroidNames.forEach(centroidName => {
-      const value = dataPoint[centroidName];
-      if (typeof value === 'number' && !isNaN(value)) {
-        aggregatedData[centroidName] += value;
+    Object.keys(dataPoint).forEach(key => {
+      if (key !== 'timestamp') {
+        const value = dataPoint[key];
+        if (typeof value === 'number' && !isNaN(value)) {
+          if (!aggregated[key]) {
+            aggregated[key] = { sum: 0, count: 0 };
+          }
+          aggregated[key].sum += value;
+          aggregated[key].count += 1;
+        }
       }
     });
   });
   
-  // Calculate averages by dividing by the number of timestamps
-  const numTimestamps = pm10Data.length;
-  centroidNames.forEach(centroidName => {
-    aggregatedData[centroidName] = aggregatedData[centroidName] / numTimestamps;
+  const averages: Record<string, number> = {};
+  Object.keys(aggregated).forEach(key => {
+    averages[key] = aggregated[key].sum / aggregated[key].count;
   });
   
-  return aggregatedData;
+  return averages;
 }
 
-// Keep the old function name for backward compatibility
 export const aggregatePM10Data = averagePM10Data;
 
 /**
@@ -417,4 +579,99 @@ export async function getPM10DataForAllLakeLevels(centroidName: string): Promise
   }
   
   return results.sort((a, b) => a.lakeLevel - b.lakeLevel);
+}
+
+export function averagePM25Data(pm25Data: PM25Data[]): Record<string, number> {
+  const aggregated: Record<string, { sum: number; count: number }> = {};
+  
+  pm25Data.forEach(dataPoint => {
+    Object.keys(dataPoint).forEach(key => {
+      if (key !== 'timestamp') {
+        const value = dataPoint[key];
+        if (typeof value === 'number' && !isNaN(value)) {
+          if (!aggregated[key]) {
+            aggregated[key] = { sum: 0, count: 0 };
+          }
+          aggregated[key].sum += value;
+          aggregated[key].count += 1;
+        }
+      }
+    });
+  });
+  
+  const averages: Record<string, number> = {};
+  Object.keys(aggregated).forEach(key => {
+    averages[key] = aggregated[key].sum / aggregated[key].count;
+  });
+  
+  return averages;
+}
+
+export const aggregatePM25Data = averagePM25Data;
+
+export async function getPM25DataForAllLakeLevels(centroidName: string): Promise<{lakeLevel: number, pm25Value: number}[]> {
+  const results: {lakeLevel: number, pm25Value: number}[] = [];
+  
+  for (const lakeLevel of AVAILABLE_LAKE_LEVELS) {
+    try {
+      const pm25Data = await getPM25Data(lakeLevel);
+      if (pm25Data && pm25Data.length > 0) {
+        // Calculate average PM2.5 for this centroid across all timestamps
+        const aggregated = averagePM25Data(pm25Data);
+        const pm25Value = aggregated[centroidName];
+        
+        if (typeof pm25Value === 'number' && !isNaN(pm25Value)) {
+          results.push({
+            lakeLevel,
+            pm25Value
+          });
+        }
+      }
+    } catch (error) {
+      console.warn(`Failed to load PM2.5 data for lake level ${lakeLevel}:`, error);
+      // Continue with other lake levels even if one fails
+    }
+  }
+  
+  return results.sort((a, b) => a.lakeLevel - b.lakeLevel);
+}
+
+export async function loadDustContributions(): Promise<Record<string, DustContribution>> {
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}src/assets/Dust_Contribution_1275.csv`);
+    const csvText = await response.text();
+    
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',');
+    console.log('CSV Headers:', headers); // Debug log
+    const contributions: Record<string, DustContribution> = {};
+    
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      
+      const values = line.split(',');
+      if (values.length < 8) continue; // Need at least 8 columns (index, centroid, centroid_name, GSL, Misc, SevierLake, TuleDryLake, WestDesert)
+      
+      const centroidName = values[2]; // centroid_name column (3rd column, index 2)
+      const contribution: DustContribution = {
+        centroid: values[1], // centroid column (2nd column, index 1)
+        centroid_name: centroidName,
+        GSL: parseFloat(values[3]), // GSL column (4th column, index 3)
+        Misc: parseFloat(values[4]), // Misc column (5th column, index 4)
+        SevierLake: parseFloat(values[5]), // SevierLake column (6th column, index 5)
+        TooleLake: parseFloat(values[6]), // TuleDryLake column (7th column, index 6)
+        WestDesert: parseFloat(values[7]) // WestDesert column (8th column, index 7)
+      };
+      
+      contributions[centroidName] = contribution;
+    }
+    
+    console.log(`Loaded ${Object.keys(contributions).length} dust contribution records`);
+    console.log('Sample contribution:', Object.values(contributions)[0]); // Debug log
+    return contributions;
+  } catch (error) {
+    console.error('Error loading dust contributions:', error);
+    return {};
+  }
 }

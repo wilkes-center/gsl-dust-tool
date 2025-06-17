@@ -106,18 +106,17 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo }) => {
               
               {/* PM2.5 Information */}
               <ContentCard>
-                <SectionTitle>Understanding PM10</SectionTitle>
+                <SectionTitle>Understanding PM2.5</SectionTitle>
                 <Divider />
                 
                 <Paragraph>
-                  PM10 refers to coarse particulate matter with a diameter of 10 micrometers or smaller.
-                  These particles can settle in the bronchi and lungs, potentially causing health problems
-                  particularly for people with respiratory conditions.
+                  PM2.5 refers to fine particulate matter with a diameter of 2.5 micrometers or smaller.
+                  These particles are so small they can penetrate deep into your lungs and even enter your bloodstream.
                 </Paragraph>
                 
-                {/* PM10 Levels visualization */}
+                {/* PM2.5 Levels visualization */}
                 <div>
-                  <SectionSubtitle>PM10 Levels</SectionSubtitle>
+                  <SectionSubtitle>PM2.5 Levels</SectionSubtitle>
                   
                   <ColorBarContainer>
                     <ColorBar />
@@ -195,7 +194,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo }) => {
                     <StepNumber>4</StepNumber>
                     <StepContent>
                       <StepTitle>View emissions levels</StepTitle>
-                      <StepDescription>Mouse over colored areas to see specific PM10 concentration values.</StepDescription>
+                      <StepDescription>Mouse over colored areas to see specific PM2.5 concentration values.</StepDescription>
                     </StepContent>
                   </Step>
                   

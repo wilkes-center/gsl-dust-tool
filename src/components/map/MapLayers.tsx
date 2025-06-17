@@ -1,23 +1,25 @@
 import { Source, Layer } from 'react-map-gl';
-import { MapLayers, PM10Point } from './types';
-import { getAggregatedPM10Color } from '../../utils/dataUtils';
+import type { MapLayers as MapLayersType, PM25Point } from './types';
+import { getAggregatedPM25Color } from '../../utils/dataUtils';
 
 interface MapLayersProps {
-  layers: MapLayers;
+  layers: MapLayersType;
   selectedElevation: number;
-  averagedPM10Data: Record<string, number>;
   centroidLocations: any[];
-  getPM10Points: () => PM10Point[];
   loading: boolean;
+  averagedPM25Data: Record<string, number>;
+  onErodibilityToggle?: () => void;
+  getPM25Points: () => PM25Point[];
 }
 
-export function MapLayersComponent({
+export function MapLayers({
   layers,
   selectedElevation,
-  averagedPM10Data,
   centroidLocations,
-  getPM10Points,
-  loading
+  loading,
+  averagedPM25Data,
+  onErodibilityToggle,
+  getPM25Points,
 }: MapLayersProps) {
   return (
     <>
@@ -28,7 +30,7 @@ export function MapLayersComponent({
           type="vector"
           url="mapbox://pkulandh.7y35kkod"
         >
-          {/* PM10 colored census tracts */}
+          {/* PM2.5 colored census tracts */}
           <Layer
             id="census-tracts-all-fill"
             type="fill"
@@ -37,19 +39,19 @@ export function MapLayersComponent({
               'fill-color': [
                 'match',
                 ['get', 'GEOID20'],
-                // Create a match for each GEOID to its corresponding PM10 color
+                // Create a match for each GEOID to its corresponding PM2.5 color
                 ...((() => {
                   // Create an object to store unique GEOID -> color mappings
                   const geoidColorMap: Record<string, string> = {};
                   
-                  // Populate the map with the latest color for each GEOID if PM10 data is available
-                  if (!loading && averagedPM10Data && Object.keys(averagedPM10Data).length > 0) {
+                  // Populate the map with the latest color for each GEOID if PM2.5 data is available
+                  if (!loading && averagedPM25Data && Object.keys(averagedPM25Data).length > 0) {
                     centroidLocations
                       .filter(c => c.geoid)
                       .forEach(centroid => {
                         if (centroid.geoid) {
-                          const pm10Value = averagedPM10Data[centroid.centroid_name] || 0;
-                          const color = getAggregatedPM10Color(pm10Value);
+                          const pm25Value = averagedPM25Data[centroid.centroid_name] || 0;
+                          const color = getAggregatedPM25Color(pm25Value);
                           geoidColorMap[centroid.geoid] = color;
                         }
                       });
@@ -60,7 +62,7 @@ export function MapLayersComponent({
                     [geoid, color]
                   );
                 })()),
-                'rgba(200,200,200,0.3)' // Light gray for tracts without PM10 data
+                'rgba(200,200,200,0.3)' // Light gray for tracts without PM2.5 data
               ],
               'fill-opacity': 0.7
             }}
@@ -170,18 +172,18 @@ export function MapLayersComponent({
         </Source>
       )}
       
-      {/* PM10 Data Points */}
-      {layers.pm10Data && !loading && (
+      {/* PM2.5 Data Points */}
+      {layers.pm25Data && !loading && (
         <Source
-          id="pm10-data-source"
+          id="pm25-data-source"
           type="geojson"
           data={{
             type: 'FeatureCollection',
-            features: getPM10Points().map(point => ({
+            features: getPM25Points().map(point => ({
               type: 'Feature',
               properties: {
                 centroid_name: point.centroid_name,
-                pm10: point.pm10,
+                pm25: point.pm25,
                 geoid: point.geoid
               },
               geometry: {
@@ -192,7 +194,7 @@ export function MapLayersComponent({
           }}
         >
           <Layer
-            id="pm10-point-layer"
+            id="pm25-point-layer"
             type="circle"
             paint={{
               'circle-radius': [
@@ -208,7 +210,7 @@ export function MapLayersComponent({
                 // Create a match for each centroid to its color
                 ...((() => {
                   // Get uniquely identified centroids
-                  const points = getPM10Points();
+                  const points = getPM25Points();
                   const centroidColorMap: Record<string, string> = {};
                   
                   // Store unique centroid -> color mappings

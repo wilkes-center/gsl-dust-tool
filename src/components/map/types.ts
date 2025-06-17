@@ -3,8 +3,8 @@ import { LayerProps } from 'react-map-gl';
 // Popup info type definitions
 export type PopupInfo =
   | { longitude: number; latitude: number; type: 'bathymetry'; depth: number; }
-  | { longitude: number; latitude: number; type: 'censusTract'; INTPTLAT20: string; INTPTLON20: string; GEOID20: string; hasPM10Data: boolean; }
-  | { longitude: number; latitude: number; type: 'pm10'; centroidName: string; pm10Value: number; geoid?: string; }
+  | { longitude: number; latitude: number; type: 'censusTract'; INTPTLAT20: string; INTPTLON20: string; GEOID20: string; hasPM25Data: boolean; }
+  | { longitude: number; latitude: number; type: 'pm25'; centroidName: string; pm25Value: number; geoid?: string; }
   | { longitude: number; latitude: number; type: 'erodibility'; erodibilityValue: number; };
 
 // Map view state
@@ -19,7 +19,7 @@ export interface MapLayers {
   satellite: boolean;
   bathymetry: boolean;
   censusTracts: boolean;
-  pm10Data: boolean;
+  pm25Data: boolean;
   erodibility: boolean;
 }
 
@@ -29,13 +29,13 @@ export interface BathymetryLayerProps {
   getBathymetryLayer: () => LayerProps;
 }
 
-// PM10 point for rendering
-export interface PM10Point {
+// PM2.5 point for rendering
+export interface PM25Point {
   centroid_name: string;
   longitude: number;
   latitude: number;
   geoid?: string;
-  pm10: number;
+  pm25: number;
   color: string;
 }
 
@@ -48,7 +48,7 @@ export interface MapComponentProps {
   selectedTimestampIndex: number;
   setSelectedTimestampIndex: (index: number) => void;
   centroidLocations: any[];
-  pm10Data: any[];
+  pm25Data: any[];
   loading: boolean;
   error: any;
 } 

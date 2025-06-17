@@ -3,8 +3,8 @@ export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 export const MAPBOX_CONFIG = { styleUrl: 'mapbox://styles/pkulandh/cm9iyi6qq00jo01rce7xjcfay' };
 
 // Import available lake levels from dataUtils
-import { AVAILABLE_LAKE_LEVELS, getPM10Color, metersToFeet } from '../../utils/dataUtils';
-export { AVAILABLE_LAKE_LEVELS, getPM10Color, metersToFeet };
+import { AVAILABLE_LAKE_LEVELS, getPM25Color, metersToFeet } from '../../utils/dataUtils';
+export { AVAILABLE_LAKE_LEVELS, getPM25Color, metersToFeet };
 
 // Bathymetry color scale for different elevations
 export const BATHYMETRY_COLORS: Record<number, string> = {

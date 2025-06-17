@@ -194,7 +194,7 @@ const MapLayers: React.FC<MapLayersProps> = ({
             <InfoText>
               When these areas are exposed due to low lake levels:
               <br />• <strong>Dust storms</strong> carry toxic particles containing arsenic
-              <br />• <strong>PM10 particles</strong> reach cities in under 1 hour
+              <br />• <strong>PM2.5 particles</strong> reach cities in under 1 hour
               <br />• <strong>2.66 million people</strong> are at health risk
               <br />• <strong>Air quality</strong> deteriorates across the Wasatch Front
             </InfoText>

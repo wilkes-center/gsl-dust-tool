@@ -1,18 +1,18 @@
 // src/components/map/DustMap.tsx
 import { useState, useRef, useCallback, useEffect } from 'react';
-import Map, { ViewStateChangeEvent, MapLayerMouseEvent } from 'react-map-gl';
+import Map, { ViewStateChangeEvent, MapLayerMouseEvent, NavigationControl } from 'react-map-gl';
 import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { usePM10Data, aggregatePM10Data, getAggregatedPM10Color } from '../../utils/dataUtils';
+import { usePM25Data, aggregatePM25Data, getAggregatedPM25Color, loadDustContributions, DustContribution } from '../../utils/dataUtils';
 import { HelpCircle } from 'lucide-react';
 
 import { MapContainer } from '../MapStyled';
-import { MAPBOX_TOKEN, MAPBOX_CONFIG, AVAILABLE_LAKE_LEVELS, getPM10Color } from './constants';
-import { MapViewState, PopupInfo, PM10Point, MapLayers } from './types';
+import { MAPBOX_TOKEN, MAPBOX_CONFIG, AVAILABLE_LAKE_LEVELS, getPM25Color } from './constants';
+import { MapViewState, PopupInfo, PM25Point, MapLayers as MapLayersType } from './types';
 import { MapSidebarComponent } from './MapSidebar';
 import MapControlsComponent from './MapControls';
-import { MapLayersComponent } from './MapLayers';
-import { MapPopupComponent } from './MapPopup';
+import { MapLayers } from './MapLayers';
+import { MapPopup } from './MapPopup';
 import { TimeSliderComponent } from './TimeSlider';
 import styled from 'styled-components';
 
@@ -57,41 +57,54 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   // Add state to track when map style has loaded
   const [mapStyleLoaded, setMapStyleLoaded] = useState(false);
   
-  const [layers, setLayers] = useState<MapLayers>({
-    satellite: false,
-    bathymetry: true,
+  // Initialize layers state with PM2.5 data disabled by default
+  const [layers, setLayers] = useState<MapLayersType>({
+    satellite: true,
+    bathymetry: false,
     censusTracts: true,
-    pm10Data: false,
-    erodibility: true
+    pm25Data: false,
+    erodibility: false,
   });
   
-  // State for lake level selection (for both slider and PM10 data)
+  // State for lake level selection (for both slider and PM2.5 data)
   const [selectedLakeLevel, setSelectedLakeLevel] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
   
-  // Use the selected lake level for the elevation highlight too
+  // State for bathymetry elevation selection
   const [selectedElevation, setSelectedElevation] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
   
-  // Load PM10 data based on selected lake level
-  const { centroidLocations, pm10Data, loading } = usePM10Data(selectedLakeLevel);
+  // Load PM2.5 data based on selected lake level
+  const { centroidLocations, pm25Data, loading } = usePM25Data(selectedLakeLevel);
   
-  // Store averaged PM10 data (time-independent)
-  const [averagedPM10Data, setAveragedPM10Data] = useState<Record<string, number>>({});
+  // Store averaged PM2.5 data (time-independent)
+  const [averagedPM25Data, setAveragedPM25Data] = useState<Record<string, number>>({});
 
-  // Update averaged data whenever new data is successfully loaded
-  useEffect(() => {
-    if (pm10Data && pm10Data.length > 0 && !loading) {
-      // Calculate averaged data across all timestamps
-      const averaged = aggregatePM10Data(pm10Data);
-      setAveragedPM10Data(averaged);
-    }
-  }, [pm10Data, loading]);
+  // Store dust contribution data
+  const [dustContributions, setDustContributions] = useState<Record<string, DustContribution>>({});
 
-  // Call parent component when data changes (use first timestamp as representative)
+  // Load dust contributions on component mount
   useEffect(() => {
-    if (pm10Data && pm10Data.length > 0 && onTimestampChange) {
-      onTimestampChange(pm10Data[0].timestamp);
+    const loadContributions = async () => {
+      const contributions = await loadDustContributions();
+      setDustContributions(contributions);
+    };
+    loadContributions();
+  }, []);
+
+  // Calculate averaged PM2.5 data when pm25Data changes
+  useEffect(() => {
+    if (pm25Data && pm25Data.length > 0 && !loading) {
+      // Calculate average PM2.5 across all timestamps
+      const averaged = aggregatePM25Data(pm25Data);
+      setAveragedPM25Data(averaged);
     }
-  }, [pm10Data, onTimestampChange]);
+  }, [pm25Data, loading]);
+
+  // Update timestamp when PM2.5 data loads (for external components)
+  useEffect(() => {
+    if (pm25Data && pm25Data.length > 0 && onTimestampChange) {
+      onTimestampChange(pm25Data[0].timestamp);
+    }
+  }, [pm25Data, onTimestampChange]);
   
   // State for popup information
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
@@ -144,7 +157,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   }, [createWaterNoisePattern]);
   
   // Toggle layer visibility
-  const toggleLayer = useCallback((layerName: keyof MapLayers) => {
+  const toggleLayer = useCallback((layerName: keyof MapLayersType) => {
     const newValue = !layers[layerName];
     setLayers({
       ...layers,
@@ -152,73 +165,62 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     });
   }, [layers]);
   
-  // Get PM10 data for rendering (now using averaged data)
-  const getPM10Points = useCallback((): PM10Point[] => {
-    if (!centroidLocations || Object.keys(averagedPM10Data).length === 0) {
+  // Get PM2.5 data for rendering (now using averaged data)
+  const getPM25Points = useCallback((): PM25Point[] => {
+    if (!centroidLocations || Object.keys(averagedPM25Data).length === 0) {
       return [];
     }
-    
+
     return centroidLocations.map(centroid => {
-      const pm10Value = averagedPM10Data[centroid.centroid_name] || 0;
+      const pm25Value = averagedPM25Data[centroid.centroid_name] || 0;
+      
       return {
         centroid_name: centroid.centroid_name,
         longitude: centroid.lon,
         latitude: centroid.lat,
         geoid: centroid.geoid,
-        pm10: pm10Value,
-        color: getAggregatedPM10Color(pm10Value)
+        pm25: pm25Value,
+        color: getAggregatedPM25Color(pm25Value)
       };
     });
-  }, [centroidLocations, averagedPM10Data]);
+  }, [centroidLocations, averagedPM25Data]);
   
-  // Handle map click for all features
-  const onClick = useCallback((event: MapLayerMouseEvent) => {
-    // Only query for layers that are currently enabled
-    const enabledLayers = [
-      layers.censusTracts ? 'census-tracts-all-fill' : null,
-      layers.bathymetry ? 'bathymetry-point-layer' : null,
-      layers.pm10Data ? 'pm10-point-layer' : null,
-      layers.erodibility ? 'erodibility-fill' : null
-    ].filter(Boolean) as string[];
-
-    const features = mapRef.current?.queryRenderedFeatures(event.point, {
-      layers: enabledLayers
-    });
+  // Handle map clicks
+  const handleMapClick = useCallback((event: any) => {
+    const features = event.features;
 
     if (features && features.length > 0) {
       const feature = features[0];
-      const layerId = feature.layer?.id ?? '';
+      const layerId = feature.layer?.id;
 
-      if (layerId === 'bathymetry-point-layer') {
+      if (layerId === 'census-tracts-all-fill' || layerId === 'census-tracts-outline') {
+        const centroid = centroidLocations.find(c => c.geoid === feature.properties?.GEOID20);
+        setPopupInfo({
+          longitude: event.lngLat.lng,
+          latitude: event.lngLat.lat,
+          type: 'censusTract',
+          INTPTLAT20: feature.properties?.INTPTLAT20 || '',
+          INTPTLON20: feature.properties?.INTPTLON20 || '',
+          GEOID20: feature.properties?.GEOID20 || '',
+          hasPM25Data: !!centroid
+        });
+      } else if (layerId === 'pm25-point-layer') {
+        setPopupInfo({
+          longitude: event.lngLat.lng,
+          latitude: event.lngLat.lat,
+          type: 'pm25',
+          centroidName: feature.properties?.centroid_name || '',
+          pm25Value: feature.properties?.pm25 || 0,
+          geoid: feature.properties?.geoid
+        });
+      } else if (layerId === 'bathymetry-point-layer') {
         setPopupInfo({
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
           type: 'bathymetry',
           depth: feature.properties?.bathymetry || 0
         });
-      } else if (layerId === 'census-tracts-all-fill') {
-        const geoid = feature.properties?.GEOID20;
-        const centroid = centroidLocations.find(c => c.geoid === geoid);
-        
-        setPopupInfo({
-          longitude: event.lngLat.lng,
-          latitude: event.lngLat.lat,
-          type: 'censusTract',
-          INTPTLAT20: feature.properties?.INTPTLAT20,
-          INTPTLON20: feature.properties?.INTPTLON20,
-          GEOID20: geoid,
-          hasPM10Data: !!centroid
-        });
-      } else if (layerId === 'pm10-point-layer') {
-        setPopupInfo({
-          longitude: event.lngLat.lng,
-          latitude: event.lngLat.lat,
-          type: 'pm10',
-          centroidName: feature.properties?.centroid_name,
-          pm10Value: feature.properties?.pm10 || 0,
-          geoid: feature.properties?.geoid
-        });
-      } else if (layerId === 'erodibility-fill') {
+      } else if (layerId === 'erodibility-fill' || layerId === 'erodibility-shadow' || layerId === 'erodibility-feather' || layerId === 'erodibility-outline') {
         setPopupInfo({
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
@@ -229,7 +231,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     } else {
       setPopupInfo(null);
     }
-  }, [layers, centroidLocations, averagedPM10Data]);
+  }, [layers, centroidLocations, averagedPM25Data]);
   
   // Find the nearest available lake level for a given elevation
   const findNearestLakeLevel = (value: number): number => {
@@ -306,14 +308,20 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
         }
         mapboxAccessToken={MAPBOX_TOKEN}
         onLoad={onMapLoad}
-        onClick={onClick}
+        onClick={handleMapClick}
         interactiveLayerIds={[
-          layers.censusTracts ? 'census-tracts-all-fill' : null,
+          layers.pm25Data ? 'pm25-point-layer' : null,
           layers.bathymetry ? 'bathymetry-point-layer' : null,
-          layers.pm10Data ? 'pm10-point-layer' : null,
-          layers.erodibility ? 'erodibility-fill' : null
+          layers.censusTracts ? 'census-tracts-all-fill' : null,
+          layers.censusTracts ? 'census-tracts-outline' : null,
+          layers.erodibility ? 'erodibility-fill' : null,
+          layers.erodibility ? 'erodibility-shadow' : null,
+          layers.erodibility ? 'erodibility-feather' : null,
+          layers.erodibility ? 'erodibility-outline' : null,
         ].filter(Boolean) as string[]}
       >
+        <NavigationControl position="top-right" />
+        
         <div className="mapboxgl-ctrl-group mapboxgl-ctrl map-controls-container" 
           style={{ position: 'absolute', bottom: '30px', right: '10px' }}>
           <button 
@@ -341,21 +349,23 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
         
         {/* Only render sources and layers when map style has fully loaded */}
         {mapStyleLoaded && (
-          <MapLayersComponent
+          <MapLayers
             layers={layers}
             selectedElevation={selectedElevation}
-            averagedPM10Data={averagedPM10Data}
+            averagedPM25Data={averagedPM25Data}
             centroidLocations={centroidLocations}
-            getPM10Points={getPM10Points}
             loading={loading}
+            getPM25Points={getPM25Points}
           />
         )}
         
-        <MapPopupComponent
+        <MapPopup
           popupInfo={popupInfo}
           onClose={() => setPopupInfo(null)}
-          averagedPM10Data={averagedPM10Data}
           centroidLocations={centroidLocations}
+          averagedPM25Data={averagedPM25Data}
+          dustContributions={dustContributions}
+          mapRef={mapRef}
         />
       </Map>
     </MapContainer>

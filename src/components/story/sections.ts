@@ -111,7 +111,7 @@ Key factors: 2°F temperature increase since 1983, 18% groundwater decline, and 
     content: {
       text: `Over 2.66 million residents live downwind of the exposed lakebed, facing health risks from dust containing carcinogenic elements like arsenic.
 
-Major hotspots: Farmington Bay and Bear River Bay. PM10 particles reach cities in under 1 hour, while PM2.5 particles remain airborne for up to 2 weeks.`,
+Major hotspots: Farmington Bay and Bear River Bay. PM2.5 particles reach cities in under 1 hour, while PM2.5 particles remain airborne for up to 2 weeks.`,
       mapConfig: {
         viewState: {
           longitude: -112.1,
@@ -124,7 +124,7 @@ Major hotspots: Farmington Bay and Bear River Bay. PM10 particles reach cities i
       },
       statistics: [
         { value: '2.66M', label: 'People downwind' },
-        { value: '<1 hr', label: 'PM10 travel time to cities' },
+        { value: '<1 hr', label: 'PM2.5 travel time to cities' },
         { value: '2 weeks', label: 'PM2.5 airborne duration' }
       ]
     }
