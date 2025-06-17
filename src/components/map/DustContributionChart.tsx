@@ -67,12 +67,14 @@ const renderCustomizedLabel = (entry: any) => {
     <text 
       x={x} 
       y={y} 
-      fill="white" 
+      fill="#1a1a1a" 
       textAnchor={x > cx ? 'start' : 'end'} 
       dominantBaseline="central"
       fontSize="12"
       fontWeight="bold"
-      style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
+      style={{ 
+        textShadow: '1px 1px 2px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.8)' 
+      }}
     >
       {`${(percent * 100).toFixed(1)}%`}
     </text>

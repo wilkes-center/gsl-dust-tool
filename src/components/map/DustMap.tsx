@@ -57,13 +57,13 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   // Add state to track when map style has loaded
   const [mapStyleLoaded, setMapStyleLoaded] = useState(false);
   
-  // Initialize layers state with PM2.5 data disabled by default
+  // Initialize layers state with the desired default configuration
   const [layers, setLayers] = useState<MapLayersType>({
-    satellite: true,
-    bathymetry: false,
-    censusTracts: true,
-    pm25Data: false,
-    erodibility: false,
+    satellite: false,        // Satellite imagery turned off by default
+    bathymetry: true,        // Lake Bathymetry enabled (middle layer)
+    censusTracts: true,      // Census Tracts enabled (bottom layer)
+    pm25Data: false,         // PM2.5 data disabled by default
+    erodibility: true,       // Soil Erodibility enabled (top layer)
   });
   
   // State for lake level selection (for both slider and PM2.5 data)

@@ -176,14 +176,15 @@ export function MapControlsComponent({
       
       <ControlGroup>
         <h3>DATA LAYERS</h3>
+        
         <LayerToggle>
-          <input 
-            type="checkbox" 
-            checked={layers.satellite} 
-            onChange={() => toggleLayer('satellite')} 
-            id="satellite-layer"
+          <input
+            type="checkbox"
+            checked={layers.censusTracts}
+            onChange={() => toggleLayer('censusTracts')}
+            id="census-tracts-layer"
           />
-          <label htmlFor="satellite-layer">Satellite Imagery</label>
+          <label htmlFor="census-tracts-layer">Census Tracts</label>
         </LayerToggle>
         
         <LayerToggle>
@@ -199,11 +200,11 @@ export function MapControlsComponent({
         <LayerToggle>
           <input
             type="checkbox"
-            checked={layers.censusTracts}
-            onChange={() => toggleLayer('censusTracts')}
-            id="census-tracts-layer"
+            checked={layers.erodibility}
+            onChange={() => toggleLayer('erodibility')}
+            id="erodibility-layer"
           />
-          <label htmlFor="census-tracts-layer">Census Tracts</label>
+          <label htmlFor="erodibility-layer">Soil Erodibility</label>
         </LayerToggle>
         
         <LayerToggle>
@@ -217,13 +218,13 @@ export function MapControlsComponent({
         </LayerToggle>
         
         <LayerToggle>
-          <input
-            type="checkbox"
-            checked={layers.erodibility}
-            onChange={() => toggleLayer('erodibility')}
-            id="erodibility-layer"
+          <input 
+            type="checkbox" 
+            checked={layers.satellite} 
+            onChange={() => toggleLayer('satellite')} 
+            id="satellite-layer"
           />
-          <label htmlFor="erodibility-layer">Soil Erodibility</label>
+          <label htmlFor="satellite-layer">Satellite Imagery</label>
         </LayerToggle>
       </ControlGroup>
       
