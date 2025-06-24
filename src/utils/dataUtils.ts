@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 
 export interface CentroidLocation {
   centroid_name: string;
@@ -636,42 +637,92 @@ export async function getPM25DataForAllLakeLevels(centroidName: string): Promise
   return results.sort((a, b) => a.lakeLevel - b.lakeLevel);
 }
 
-export async function loadDustContributions(): Promise<Record<string, DustContribution>> {
+export async function loadDustContributions(lakeLevel: number = 1275): Promise<Record<string, DustContribution>> {
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}src/assets/Dust_Contribution_1275.csv`);
-    const csvText = await response.text();
+    console.log(`Loading dust contributions for lake level ${lakeLevel}...`);
+    const response = await fetch(`/gsl-dust-tool/assets/Dust_Contribution_${lakeLevel}.csv?t=${Date.now()}`);
     
-    const lines = csvText.split('\n');
-    const headers = lines[0].split(',');
-    console.log('CSV Headers:', headers); // Debug log
-    const contributions: Record<string, DustContribution> = {};
-    
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-      
-      const values = line.split(',');
-      if (values.length < 8) continue; // Need at least 8 columns (index, centroid, centroid_name, GSL, Misc, SevierLake, TuleDryLake, WestDesert)
-      
-      const centroidName = values[2]; // centroid_name column (3rd column, index 2)
-      const contribution: DustContribution = {
-        centroid: values[1], // centroid column (2nd column, index 1)
-        centroid_name: centroidName,
-        GSL: parseFloat(values[3]), // GSL column (4th column, index 3)
-        Misc: parseFloat(values[4]), // Misc column (5th column, index 4)
-        SevierLake: parseFloat(values[5]), // SevierLake column (6th column, index 5)
-        TooleLake: parseFloat(values[6]), // TuleDryLake column (7th column, index 6)
-        WestDesert: parseFloat(values[7]) // WestDesert column (8th column, index 7)
-      };
-      
-      contributions[centroidName] = contribution;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch dust contributions: ${response.statusText}`);
     }
     
-    console.log(`Loaded ${Object.keys(contributions).length} dust contribution records`);
-    console.log('Sample contribution:', Object.values(contributions)[0]); // Debug log
+    const csvText = await response.text();
+    console.log(`Raw CSV data length: ${csvText.length}`);
+    
+    const results = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+    });
+
+    console.log(`Parsed ${results.data.length} rows`);
+    console.log('First few rows:', results.data.slice(0, 3));
+    
+    if (results.errors.length > 0) {
+      console.error('CSV parsing errors:', results.errors);
+    }
+
+    const contributions: Record<string, DustContribution> = {};
+    
+    results.data.forEach((row: any, index: number) => {
+      try {
+        // Handle both formats: with and without index column
+        let centroid, centroid_name, GSL, Misc, SevierLake, TooleLake, WestDesert;
+        
+        // Check if the first column is numeric (index column)
+        const firstKey = Object.keys(row)[0];
+        const hasIndexColumn = !isNaN(Number(row[firstKey])) && firstKey !== 'centroid';
+        
+        if (hasIndexColumn) {
+          // Format with index column: ,centroid,centroid_name,GSL,Misc,SevierLake,TooleLake,WestDesert
+          centroid = row.centroid;
+          centroid_name = row.centroid_name;
+          GSL = row.GSL;
+          Misc = row.Misc;
+          SevierLake = row.SevierLake;
+          TooleLake = row.TooleLake;
+          WestDesert = row.WestDesert;
+        } else {
+          // Format without index column: centroid,centroid_name,GSL,Misc,SevierLake,TooleLake,WestDesert
+          centroid = row.centroid;
+          centroid_name = row.centroid_name;
+          GSL = row.GSL;
+          Misc = row.Misc;
+          SevierLake = row.SevierLake;
+          TooleLake = row.TooleLake;
+          WestDesert = row.WestDesert;
+        }
+
+        if (!centroid || !centroid_name || 
+            GSL === undefined || Misc === undefined || 
+            SevierLake === undefined || TooleLake === undefined || 
+            WestDesert === undefined) {
+          console.warn(`Skipping row ${index} due to missing data:`, row);
+          return;
+        }
+
+        const contribution: DustContribution = {
+          centroid: String(centroid),
+          centroid_name: String(centroid_name),
+          GSL: Number(GSL),
+          Misc: Number(Misc),
+          SevierLake: Number(SevierLake),
+          TooleLake: Number(TooleLake),
+          WestDesert: Number(WestDesert),
+        };
+
+        // Store using centroid_name as the key (this is what MapPopup expects)
+        contributions[contribution.centroid_name] = contribution;
+      } catch (error) {
+        console.error(`Error processing row ${index}:`, error, row);
+      }
+    });
+
+    console.log(`Successfully loaded ${Object.keys(contributions).length} dust contributions for lake level ${lakeLevel}`);
+    console.log('Sample contribution keys:', Object.keys(contributions).slice(0, 5));
     return contributions;
   } catch (error) {
-    console.error('Error loading dust contributions:', error);
+    console.error(`Error loading dust contributions for lake level ${lakeLevel}:`, error);
     return {};
   }
 }

@@ -14,6 +14,7 @@ interface MapPopupProps {
   averagedPM25Data: Record<string, number>;
   dustContributions: Record<string, DustContribution>;
   mapRef?: React.RefObject<any>;
+  lakeLevel?: number;
 }
 
 export function MapPopup({
@@ -23,6 +24,7 @@ export function MapPopup({
   averagedPM25Data,
   dustContributions,
   mapRef,
+  lakeLevel,
 }: MapPopupProps) {
   if (!popupInfo) return null;
 
@@ -115,7 +117,7 @@ export function MapPopup({
                       }</span></p>
                       <ColorBar backgroundColor={getAggregatedPM25Color(pm25Value)} />
                       <PM25Chart centroidName={centroid.centroid_name} />
-                      {dustContribution && <DustContributionChart contribution={dustContribution} />}
+                      {dustContribution && <DustContributionChart contribution={dustContribution} lakeLevel={lakeLevel} />}
                     </>
                   );
                 })()}

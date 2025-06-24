@@ -18,14 +18,16 @@
   "dependencies": {
     "@types/geojson": "^7946.0.16",
     "@types/mapbox-gl": "^3.4.1",
+    "@types/papaparse": "^5.3.16",
     "@types/react-map-gl": "^6.1.7",
     "@types/react-router-dom": "^5.3.3",
     "mapbox-gl": "^3.11.1",
+    "papaparse": "^5.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-map-gl": "^7.1.6",
     "react-router-dom": "^7.6.1",
-    "recharts": "^2.15.3",
+    "recharts": "^2.15.4",
     "styled-components": "^6.1.17"
   },
   "devDependencies": {

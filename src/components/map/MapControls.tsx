@@ -294,19 +294,19 @@ export function MapControlsComponent({
             <h4>SOIL ERODIBILITY</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#a0856b'}} />
+                <ColorBox style={{backgroundColor: '#ff6666'}} />
                 <span>0.2 - 0.3</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#7d6a52'}} />
+                <ColorBox style={{backgroundColor: '#ff3333'}} />
                 <span>0.3 - 0.6</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#5c4e3a'}} />
+                <ColorBox style={{backgroundColor: '#cc0000'}} />
                 <span>0.6 - 0.94</span>
               </LegendItem>
               <LegendItem>
-                <ColorBox style={{backgroundColor: '#3d3025'}} />
+                <ColorBox style={{backgroundColor: '#800000'}} />
                 <span>≥ 0.94</span>
               </LegendItem>
             </div>

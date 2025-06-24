@@ -262,12 +262,12 @@ export function MapLayers({
                 'interpolate',
                 ['linear'],
                 ['get', 'erodibility'],
-                0, '#c4b09a',
-                0.1, '#b29b82',
-                0.3, '#a0856b',
-                0.6, '#7d6a52',
-                0.94, '#5c4e3a',
-                1.0, '#3d3025'
+                0, '#ffcccb',
+                0.1, '#ff9999',
+                0.3, '#ff6666',
+                0.6, '#ff3333',
+                0.94, '#cc0000',
+                1.0, '#800000'
               ],
               'fill-opacity': 0.2,
               'fill-translate': [0, 0],
@@ -284,29 +284,17 @@ export function MapLayers({
                 'interpolate',
                 ['linear'],
                 ['get', 'erodibility'],
-                0, '#c4b09a',
-                0.1, '#b29b82',
-                0.3, '#a0856b',
-                0.6, '#7d6a52',
-                0.94, '#5c4e3a',
-                1.0, '#3d3025'
+                0, '#ffcccb',
+                0.1, '#ff9999',
+                0.3, '#ff6666',
+                0.6, '#ff3333',
+                0.94, '#cc0000',
+                1.0, '#800000'
               ],
               'fill-opacity': 0.5,
               'fill-translate': [0.5, 0.5],
               'fill-translate-anchor': 'viewport',
               'fill-antialias': true
-            }}
-          />
-          <Layer
-            id="erodibility-outline"
-            type="line"
-            source-layer="GSL_erodibility_fraction-5bzz8s"
-            filter={['>', ['get', 'erodibility'], 0.2]}
-            paint={{
-              'line-color': '#751d0c', // moabMahogany - main accent color for borders
-              'line-width': 1.0,
-              'line-opacity': 0.8,
-              'line-blur': 0.2
             }}
           />
         </Source>

@@ -16,6 +16,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Font utility classes */
+.font-sora {
+  font-family: 'Sora', sans-serif;
+}
+
+.font-red-hat {
+  font-family: 'Red Hat Display', sans-serif;
+}
+
 a {
   font-weight: 500;
   color: #646cff;

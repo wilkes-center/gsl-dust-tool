@@ -175,17 +175,6 @@ const MapLayers: React.FC<MapLayersProps> = ({
                 'fill-antialias': true
               }}
             />
-            <Layer
-              id="erodibility-outline"
-              type="line"
-              source-layer="GSL_erodibility_fraction-5bzz8s"
-              filter={['>', ['get', 'erodibility'], 0.2]}
-              paint={{
-                'line-color': '#8B0000',  // Dark red outline
-                'line-width': 2.0,
-                'line-opacity': 0.9
-              }}
-            />
           </Source>
           
           {/* Information text overlay */}

@@ -24,8 +24,8 @@ export const BATHYMETRY_COLORS: Record<number, string> = {
 
 // Helper for erodibility color mapping
 export const getErodibilityColor = (value: number): string => {
-  if (value <= 0.3) return '#a0856b'; // Light espresso
-  if (value <= 0.6) return '#7d6a52'; // Medium espresso
-  if (value <= 0.94) return '#5c4e3a'; // Dark espresso
-  return '#3d3025'; // Very dark espresso
+  if (value <= 0.3) return '#ff6666'; // Light red
+  if (value <= 0.6) return '#ff3333'; // Medium red
+  if (value <= 0.94) return '#cc0000'; // Dark red
+  return '#800000'; // Very dark red (maroon)
 }; 

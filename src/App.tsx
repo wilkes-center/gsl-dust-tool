@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { AVAILABLE_LAKE_LEVELS } from './components/map/constants';
 import IntroPage from './components/IntroPage';
 import StoryMap from './components/StoryMap';
+import DustContributionAnalyzer from './components/DustContributionAnalyzer';
 
 const AppContainer = styled.div`
   height: 100%;
@@ -32,7 +33,11 @@ const IntroPageWrapper = () => {
     navigate('/story');
   };
   
-  return <IntroPage onComplete={handleEnterMap} onViewDemo={handleViewDemo} />;
+  const handleViewAnalysis = () => {
+    navigate('/analysis');
+  };
+  
+  return <IntroPage onComplete={handleEnterMap} onViewDemo={handleViewDemo} onViewAnalysis={handleViewAnalysis} />;
 };
 
 /**
@@ -46,6 +51,36 @@ const StoryMapWrapper = () => {
   };
   
   return <StoryMap onBack={handleBack} />;
+};
+
+/**
+ * Dust contribution analyzer wrapper component with navigation
+ */
+const AnalysisWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate('/');
+  };
+  
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold text-gray-800">GSL Dust Analysis Tool</h1>
+            <button
+              onClick={handleBack}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+      <DustContributionAnalyzer />
+    </div>
+  );
 };
 
 /**
@@ -92,6 +127,7 @@ function App() {
           <Route path="/" element={<IntroPageWrapper />} />
           <Route path="/story" element={<StoryMapWrapper />} />
           <Route path="/map" element={<MapWrapper />} />
+          <Route path="/analysis" element={<AnalysisWrapper />} />
         </Routes>
       </Router>
     </ThemeProvider>

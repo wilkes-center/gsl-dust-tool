@@ -50,6 +50,7 @@ const DUST_SOURCE_NAMES = {
 
 interface DustContributionChartProps {
   contribution: DustContribution;
+  lakeLevel?: number;
 }
 
 // Custom label function to render percentages on pie slices
@@ -81,7 +82,7 @@ const renderCustomizedLabel = (entry: any) => {
   );
 };
 
-export function DustContributionChart({ contribution }: DustContributionChartProps) {
+export function DustContributionChart({ contribution, lakeLevel }: DustContributionChartProps) {
   // Transform data for the pie chart
   const chartData = [
     { name: DUST_SOURCE_NAMES.GSL, value: contribution.GSL, color: DUST_COLORS.GSL },
@@ -116,7 +117,7 @@ export function DustContributionChart({ contribution }: DustContributionChartPro
 
   return (
     <ChartContainer>
-      <ChartTitle>Dust Source Contributions (Lake Level 1275m)</ChartTitle>
+      <ChartTitle>Dust Source Contributions (Lake Level {lakeLevel || 1275}m)</ChartTitle>
       <ResponsiveContainer width="100%" height="85%">
         <PieChart>
           <Pie

@@ -81,14 +81,14 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   // Store dust contribution data
   const [dustContributions, setDustContributions] = useState<Record<string, DustContribution>>({});
 
-  // Load dust contributions on component mount
+  // Load dust contributions based on selected lake level
   useEffect(() => {
     const loadContributions = async () => {
-      const contributions = await loadDustContributions();
+      const contributions = await loadDustContributions(selectedLakeLevel);
       setDustContributions(contributions);
     };
     loadContributions();
-  }, []);
+  }, [selectedLakeLevel]);
 
   // Calculate averaged PM2.5 data when pm25Data changes
   useEffect(() => {
@@ -220,7 +220,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           type: 'bathymetry',
           depth: feature.properties?.bathymetry || 0
         });
-      } else if (layerId === 'erodibility-fill' || layerId === 'erodibility-shadow' || layerId === 'erodibility-feather' || layerId === 'erodibility-outline') {
+      } else if (layerId === 'erodibility-fill' || layerId === 'erodibility-shadow' || layerId === 'erodibility-feather') {
         setPopupInfo({
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
@@ -317,7 +317,6 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           layers.erodibility ? 'erodibility-fill' : null,
           layers.erodibility ? 'erodibility-shadow' : null,
           layers.erodibility ? 'erodibility-feather' : null,
-          layers.erodibility ? 'erodibility-outline' : null,
         ].filter(Boolean) as string[]}
       >
         <NavigationControl position="top-right" />
@@ -366,6 +365,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           averagedPM25Data={averagedPM25Data}
           dustContributions={dustContributions}
           mapRef={mapRef}
+          lakeLevel={selectedLakeLevel}
         />
       </Map>
     </MapContainer>

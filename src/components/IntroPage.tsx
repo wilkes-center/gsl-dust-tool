@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { MapPin, Info, HelpCircle, MessageSquare, Github, Play } from 'lucide-react';
+import { MapPin, Info, HelpCircle, MessageSquare, Github, Play, BarChart3 } from 'lucide-react';
 
 interface IntroPageProps {
   onComplete: () => void;
   onViewDemo?: () => void;
+  onViewAnalysis?: () => void;
 }
 
 interface TabButtonProps {
@@ -18,7 +19,7 @@ interface ContentCardProps {
 /**
  * Introduction page component shown to users on first visit
  */
-const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo }) => {
+const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo, onViewAnalysis }) => {
   const [activeSection, setActiveSection] = useState('about');
 
   return (
@@ -48,6 +49,12 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo }) => {
           
           {/* Action Buttons */}
           <EnterButtonContainer>
+            {onViewAnalysis && (
+              <DemoButton onClick={onViewAnalysis}>
+                <BarChart3 size={20} className="mr-2" />
+                View Analysis
+              </DemoButton>
+            )}
             {onViewDemo && (
               <DemoButton onClick={onViewDemo}>
                 <Play size={20} className="mr-2" />
