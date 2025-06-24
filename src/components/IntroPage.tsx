@@ -9,7 +9,7 @@ interface IntroPageProps {
 }
 
 interface TabButtonProps {
-  active: boolean;
+  $active: boolean;
 }
 
 interface ContentCardProps {
@@ -71,7 +71,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo, onViewAna
           <TabContainer>
             <TabWrapper>
               <TabButton 
-                active={activeSection === 'about'}
+                $active={activeSection === 'about'}
                 onClick={() => setActiveSection('about')}
               >
                 <Info size={20} className="mr-3" />
@@ -80,7 +80,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo, onViewAna
               </TabButton>
               
               <TabButton 
-                active={activeSection === 'howto'}
+                $active={activeSection === 'howto'}
                 onClick={() => setActiveSection('howto')}
               >
                 <HelpCircle size={20} className="mr-3" />
@@ -89,7 +89,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo, onViewAna
               </TabButton>
               
               <TabButton 
-                active={activeSection === 'feedback'}
+                $active={activeSection === 'feedback'}
                 onClick={() => setActiveSection('feedback')}
               >
                 <MessageSquare size={20} className="mr-3" />
@@ -440,12 +440,12 @@ const TabButton = styled.button<TabButtonProps>`  padding: 0.75rem 2rem;
   border: none;
   cursor: pointer;
   position: relative;
-  background-color: ${props => props.active ? 'rgba(153, 170, 136, 0.3)' : 'transparent'};
-  color: ${props => props.active ? '#2d5954' : 'rgba(45, 89, 84, 0.7)'};
-  font-weight: ${props => props.active ? '600' : '400'};
+  background-color: ${props => props.$active ? 'rgba(153, 170, 136, 0.3)' : 'transparent'};
+  color: ${props => props.$active ? '#2d5954' : 'rgba(45, 89, 84, 0.7)'};
+  font-weight: ${props => props.$active ? '600' : '400'};
   
   &:hover {
-    background-color: ${props => props.active ? 'rgba(153, 170, 136, 0.3)' : 'rgba(45, 89, 84, 0.05)'};
+    background-color: ${props => props.$active ? 'rgba(153, 170, 136, 0.3)' : 'rgba(45, 89, 84, 0.05)'};
   }
 `;
 

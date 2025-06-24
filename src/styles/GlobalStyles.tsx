@@ -203,8 +203,8 @@ const GlobalStyles = createGlobalStyle<{ theme: ThemeType }>`
   
   /* Lake level slider */
   input[type="range"].vertical-slider {
-    -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
+    writing-mode: vertical-lr;
+    direction: rtl;
     width: 24px !important;
     height: 200px !important;
     padding: 0;

@@ -41,7 +41,7 @@ const TimeSlider: React.FC<TimeSliderProps> = ({ selectedYear, onYearChange }) =
               style={{ 
                 left: `${((year - 1986) / (2023 - 1986)) * 100}%` 
               }}
-              active={year === selectedYear}
+              $active={year === selectedYear}
             >
               {year}
             </YearMarker>
@@ -122,12 +122,12 @@ const YearMarkers = styled.div`
   margin-top: 10px;
 `;
 
-const YearMarker = styled.div<{ active: boolean }>`
+const YearMarker = styled.div<{ $active: boolean }>`
   position: absolute;
   transform: translateX(-50%);
   font-size: 10px;
-  color: ${props => props.active ? '#2c3e50' : '#7f8c8d'};
-  font-weight: ${props => props.active ? 'bold' : 'normal'};
+  color: ${props => props.$active ? '#2c3e50' : '#7f8c8d'};
+  font-weight: ${props => props.$active ? 'bold' : 'normal'};
   text-align: center;
   white-space: nowrap;
 
@@ -139,7 +139,7 @@ const YearMarker = styled.div<{ active: boolean }>`
     transform: translateX(-50%);
     width: 2px;
     height: 10px;
-    background: ${props => props.active ? '#2c3e50' : '#bdc3c7'};
+    background: ${props => props.$active ? '#2c3e50' : '#bdc3c7'};
   }
 `;
 

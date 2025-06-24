@@ -4,28 +4,37 @@ import Map, { ViewStateChangeEvent, MapLayerMouseEvent, NavigationControl } from
 import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { usePM25Data, aggregatePM25Data, getAggregatedPM25Color, loadDustContributions, DustContribution } from '../../utils/dataUtils';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Layers, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { MapContainer } from '../MapStyled';
 import { MAPBOX_TOKEN, MAPBOX_CONFIG, AVAILABLE_LAKE_LEVELS, getPM25Color } from './constants';
 import { MapViewState, PopupInfo, PM25Point, MapLayers as MapLayersType } from './types';
 import { MapSidebarComponent } from './MapSidebar';
-import MapControlsComponent from './MapControls';
 import { MapLayers } from './MapLayers';
-import { MapPopup } from './MapPopup';
-import { TimeSliderComponent } from './TimeSlider';
+import { InfoSidebar } from './InfoSidebar';
+import { LakeLevelControl } from './LakeLevelControl';
 import styled from 'styled-components';
 
-interface DustMapProps {
-  onElevationChange?: (elevation: number) => void;
-  onTimestampChange?: (timestamp: string) => void;
-  onBackToIntro?: () => void;
-}
+// Styled components
+const MapWrapper = styled.div`
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  background-color: ${({ theme }) => theme.colors.snowbirdWhite};
+  margin-top: 60px;
+`;
+
+const MapArea = styled.div<{ $sidebarOpen: boolean }>`
+  flex: 1;
+  position: relative;
+  transition: margin-right 0.3s ease;
+  margin-right: ${props => props.$sidebarOpen ? '400px' : '0'};
+`;
 
 const HelpButton = styled.button`
   position: absolute;
-  bottom: 160px;
-  right: 10px;
+  bottom: 20px;
+  right: 20px;
   z-index: 10;
   background-color: ${({ theme }) => theme.colors.moabMahogany};
   color: ${({ theme }) => theme.colors.snowbirdWhite};
@@ -46,6 +55,109 @@ const HelpButton = styled.button`
   }
 `;
 
+const MinimizedControls = styled.button<{ $expanded: boolean }>`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.md};
+  right: ${({ theme }) => theme.spacing.md};
+  z-index: ${({ theme }) => theme.zIndices.mapControls};
+  background: ${({ theme }) => theme.colors.snowbirdWhite};
+  border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: ${({ theme }) => theme.spacing.sm};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  font-size: 14px;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(117, 29, 12, 0.05);
+    transform: scale(1.02);
+  }
+  
+  svg {
+    transition: transform 0.2s ease;
+    transform: ${props => props.$expanded ? 'rotate(180deg)' : 'rotate(0)'};
+  }
+`;
+
+const ExpandedControls = styled.div`
+  position: absolute;
+  top: calc(${({ theme }) => theme.spacing.md} + 50px);
+  right: ${({ theme }) => theme.spacing.md};
+  z-index: ${({ theme }) => theme.zIndices.mapControls};
+  background: ${({ theme }) => theme.colors.snowbirdWhite};
+  padding: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  max-width: 250px;
+  max-height: 60vh;
+  overflow-y: auto;
+  border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: ${({ theme }) => theme.spacing.sm};
+    color: ${({ theme }) => theme.colors.moabMahogany};
+    font-size: 14px;
+    font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+    font-family: ${({ theme }) => theme.typography.displayFont};
+    letter-spacing: 0.5px;
+    padding-bottom: ${({ theme }) => theme.spacing.xs};
+    border-bottom: 1px solid rgba(117, 29, 12, 0.2);
+  }
+`;
+
+const LayerToggle = styled.label`
+  display: flex;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  cursor: pointer;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.olympicParkObsidian};
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  padding: 4px 0;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.moabMahogany};
+  }
+  
+  input {
+    margin-right: ${({ theme }) => theme.spacing.xs};
+    cursor: pointer;
+    accent-color: ${({ theme }) => theme.colors.moabMahogany};
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.xs};
+  right: ${({ theme }) => theme.spacing.xs};
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  padding: 4px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.moabMahogany};
+    transform: scale(1.1);
+  }
+`;
+
+interface DustMapProps {
+  onElevationChange?: (elevation: number) => void;
+  onTimestampChange?: (timestamp: string) => void;
+  onBackToIntro?: () => void;
+}
+
 function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState<MapViewState>({
@@ -54,34 +166,28 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     zoom: 8
   });
   
-  // Add state to track when map style has loaded
   const [mapStyleLoaded, setMapStyleLoaded] = useState(false);
+  const [controlsExpanded, setControlsExpanded] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarInfo, setSidebarInfo] = useState<PopupInfo | null>(null);
   
-  // Initialize layers state with the desired default configuration
   const [layers, setLayers] = useState<MapLayersType>({
-    satellite: false,        // Satellite imagery turned off by default
-    bathymetry: true,        // Lake Bathymetry enabled (middle layer)
-    censusTracts: true,      // Census Tracts enabled (bottom layer)
-    pm25Data: false,         // PM2.5 data disabled by default
-    erodibility: true,       // Soil Erodibility enabled (top layer)
+    satellite: false,
+    bathymetry: true,
+    censusTracts: true,
+    pm25Data: false,
+    erodibility: true,
   });
   
-  // State for lake level selection (for both slider and PM2.5 data)
   const [selectedLakeLevel, setSelectedLakeLevel] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
-  
-  // State for bathymetry elevation selection
   const [selectedElevation, setSelectedElevation] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
+  const [selectedTimestampIndex, setSelectedTimestampIndex] = useState<number>(0);
   
-  // Load PM2.5 data based on selected lake level
   const { centroidLocations, pm25Data, loading } = usePM25Data(selectedLakeLevel);
-  
-  // Store averaged PM2.5 data (time-independent)
   const [averagedPM25Data, setAveragedPM25Data] = useState<Record<string, number>>({});
-
-  // Store dust contribution data
   const [dustContributions, setDustContributions] = useState<Record<string, DustContribution>>({});
 
-  // Load dust contributions based on selected lake level
+  // Load dust contributions
   useEffect(() => {
     const loadContributions = async () => {
       const contributions = await loadDustContributions(selectedLakeLevel);
@@ -90,82 +196,37 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     loadContributions();
   }, [selectedLakeLevel]);
 
-  // Calculate averaged PM2.5 data when pm25Data changes
+  // Calculate averaged PM2.5 data
   useEffect(() => {
     if (pm25Data && pm25Data.length > 0 && !loading) {
-      // Calculate average PM2.5 across all timestamps
       const averaged = aggregatePM25Data(pm25Data);
       setAveragedPM25Data(averaged);
     }
   }, [pm25Data, loading]);
 
-  // Update timestamp when PM2.5 data loads (for external components)
+  // Update timestamp when PM2.5 data loads
   useEffect(() => {
     if (pm25Data && pm25Data.length > 0 && onTimestampChange) {
       onTimestampChange(pm25Data[0].timestamp);
     }
   }, [pm25Data, onTimestampChange]);
   
-  // State for popup information
-  const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
-  
-  // Function to create water noise pattern
-  const createWaterNoisePattern = useCallback(() => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const size = 128;
-    canvas.width = size;
-    canvas.height = size;
-
-    if (ctx) {
-      // Fill with transparent background
-      ctx.fillStyle = 'rgba(255, 255, 255, 0)';
-      ctx.fillRect(0, 0, size, size);
-
-      // Create noise pattern
-      for (let x = 0; x < size; x++) {
-        for (let y = 0; y < size; y++) {
-          const value = Math.random();
-          if (value > 0.995) { // Very sparse noise
-            const alpha = Math.random() * 0.04; // Very low opacity
-            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-            ctx.fillRect(x, y, 1, 1);
-          }
-        }
-      }
-
-      // Convert canvas to ImageData
-      return ctx.getImageData(0, 0, size, size);
-    }
-
-    return null;
-  }, []);
-
   // Handle map load
   const onMapLoad = useCallback(() => {
     if (mapRef.current) {
-      const map = mapRef.current.getMap();
-      
-      // Create and add the water noise pattern
-      const noisePattern = createWaterNoisePattern();
-      if (noisePattern) {
-        map.addImage('water-noise', noisePattern, { sdf: true });
-      }
-      
       setMapStyleLoaded(true);
     }
-  }, [createWaterNoisePattern]);
+  }, []);
   
   // Toggle layer visibility
   const toggleLayer = useCallback((layerName: keyof MapLayersType) => {
-    const newValue = !layers[layerName];
-    setLayers({
-      ...layers,
-      [layerName]: newValue
-    });
-  }, [layers]);
+    setLayers(prev => ({
+      ...prev,
+      [layerName]: !prev[layerName]
+    }));
+  }, []);
   
-  // Get PM2.5 data for rendering (now using averaged data)
+  // Get PM2.5 points
   const getPM25Points = useCallback((): PM25Point[] => {
     if (!centroidLocations || Object.keys(averagedPM25Data).length === 0) {
       return [];
@@ -192,10 +253,12 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
     if (features && features.length > 0) {
       const feature = features[0];
       const layerId = feature.layer?.id;
+      
+      let newSidebarInfo: PopupInfo | null = null;
 
       if (layerId === 'census-tracts-all-fill' || layerId === 'census-tracts-outline') {
         const centroid = centroidLocations.find(c => c.geoid === feature.properties?.GEOID20);
-        setPopupInfo({
+        newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
           type: 'censusTract',
@@ -203,172 +266,198 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           INTPTLON20: feature.properties?.INTPTLON20 || '',
           GEOID20: feature.properties?.GEOID20 || '',
           hasPM25Data: !!centroid
-        });
+        };
       } else if (layerId === 'pm25-point-layer') {
-        setPopupInfo({
+        newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
           type: 'pm25',
           centroidName: feature.properties?.centroid_name || '',
           pm25Value: feature.properties?.pm25 || 0,
           geoid: feature.properties?.geoid
-        });
+        };
       } else if (layerId === 'bathymetry-point-layer') {
-        setPopupInfo({
+        newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
           type: 'bathymetry',
           depth: feature.properties?.bathymetry || 0
-        });
+        };
       } else if (layerId === 'erodibility-fill' || layerId === 'erodibility-shadow' || layerId === 'erodibility-feather') {
-        setPopupInfo({
+        newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
           type: 'erodibility',
           erodibilityValue: feature.properties?.erodibility || 0
-        });
+        };
       }
-    } else {
-      setPopupInfo(null);
+      
+      if (newSidebarInfo) {
+        setSidebarInfo(newSidebarInfo);
+        setSidebarOpen(true);
+      }
     }
-  }, [layers, centroidLocations, averagedPM25Data]);
+  }, [centroidLocations]);
   
-  // Find the nearest available lake level for a given elevation
-  const findNearestLakeLevel = (value: number): number => {
-    return AVAILABLE_LAKE_LEVELS.reduce((prev, curr) => 
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+  // Handle elevation change
+  const handleElevationChange = useCallback((elevation: number) => {
+    setSelectedElevation(elevation);
+    if (onElevationChange) {
+      onElevationChange(elevation);
+    }
+  }, [onElevationChange]);
+  
+  // Handle lake level change
+  const handleLakeLevelChange = useCallback((level: number) => {
+    const nearestLevel = AVAILABLE_LAKE_LEVELS.reduce((prev, curr) => 
+      Math.abs(curr - level) < Math.abs(prev - level) ? curr : prev
     );
-  };
-  
-  // Handle elevation slider change
-  const handleElevationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const sliderValue = parseFloat(event.target.value);
-    
-    // Find the nearest available lake level
-    const nearestLevel = findNearestLakeLevel(sliderValue);
-    
-    // Update both the elevation and lake level
-    setSelectedElevation(nearestLevel);
     setSelectedLakeLevel(nearestLevel);
-    
-    // Call parent component's handler if provided
+    setSelectedElevation(nearestLevel);
     if (onElevationChange) {
       onElevationChange(nearestLevel);
     }
-  };
+  }, [onElevationChange]);
   
-  const onMapMove = useCallback((evt: ViewStateChangeEvent) => {
-    // Ensure zoom doesn't go below 8
-    const newViewState = {
-      ...evt.viewState,
-      zoom: Math.max(8, evt.viewState.zoom)
-    };
-    setViewState(newViewState);
-  }, []);
-
-  const [initialViewState] = useState<MapViewState>({
+  const initialViewState = {
     longitude: -112.3297,
     latitude: 40.9121,
     zoom: 8
-  });
+  };
 
   return (
-    <MapContainer>
-      {onBackToIntro && (
-        <HelpButton 
-          onClick={onBackToIntro}
-          title="Help & Information"
+    <MapWrapper>
+      <MapArea $sidebarOpen={sidebarOpen}>
+        <Map
+          ref={mapRef}
+          {...viewState}
+          onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
+          mapStyle={MAPBOX_CONFIG.styleUrl}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          onLoad={onMapLoad}
+          onClick={handleMapClick}
+          interactiveLayerIds={[
+            layers.pm25Data ? 'pm25-point-layer' : null,
+            layers.bathymetry ? 'bathymetry-point-layer' : null,
+            layers.censusTracts ? 'census-tracts-all-fill' : null,
+            layers.censusTracts ? 'census-tracts-outline' : null,
+            layers.erodibility ? 'erodibility-fill' : null,
+            layers.erodibility ? 'erodibility-shadow' : null,
+            layers.erodibility ? 'erodibility-feather' : null,
+          ].filter(Boolean) as string[]}
         >
-          <HelpCircle size={36} />
-        </HelpButton>
-      )}
-      
-      <MapSidebarComponent 
-        selectedLakeLevel={selectedLakeLevel}
-        handleElevationChange={handleElevationChange}
-        showBathymetry={layers.bathymetry}
-      />
-      
-      <MapControlsComponent
-        layers={layers}
-        toggleLayer={toggleLayer}
-      />
-      
-      {/* Time slider for census tract layer - HIDDEN FOR TIME-INDEPENDENT VIEW */}
-      {/* TimeSlider component completely removed for averaged data display */}
-      
-      <Map
-        {...viewState}
-        ref={mapRef}
-        onMove={onMapMove}
-        minZoom={8}
-        mapStyle={layers.satellite
-          ? 'mapbox://styles/mapbox/satellite-v9'
-          : MAPBOX_CONFIG.styleUrl
-        }
-        mapboxAccessToken={MAPBOX_TOKEN}
-        onLoad={onMapLoad}
-        onClick={handleMapClick}
-        interactiveLayerIds={[
-          layers.pm25Data ? 'pm25-point-layer' : null,
-          layers.bathymetry ? 'bathymetry-point-layer' : null,
-          layers.censusTracts ? 'census-tracts-all-fill' : null,
-          layers.censusTracts ? 'census-tracts-outline' : null,
-          layers.erodibility ? 'erodibility-fill' : null,
-          layers.erodibility ? 'erodibility-shadow' : null,
-          layers.erodibility ? 'erodibility-feather' : null,
-        ].filter(Boolean) as string[]}
-      >
-        <NavigationControl position="top-right" />
-        
-        <div className="mapboxgl-ctrl-group mapboxgl-ctrl map-controls-container" 
-          style={{ position: 'absolute', bottom: '30px', right: '10px' }}>
-          <button 
-            className="zoom-control"
-            onClick={() => setViewState(prev => ({ ...prev, zoom: Math.min(prev.zoom + 1, 22) }))}
-            title="Zoom In"
-          >
-            <span className="mapboxgl-ctrl-icon">+</span>
-          </button>
-          <button 
-            className="zoom-control"
-            onClick={() => setViewState(prev => ({ ...prev, zoom: Math.max(prev.zoom - 1, 8) }))}
-            title="Zoom Out"
-          >
-            <span className="mapboxgl-ctrl-icon">−</span>
-          </button>
-          <button 
-            className="reset-view-btn"
-            onClick={() => setViewState(initialViewState)}
-            title="Reset View"
-          >
-            <span className="mapboxgl-ctrl-icon">⤧</span>
-          </button>
-        </div>
-        
-        {/* Only render sources and layers when map style has fully loaded */}
-        {mapStyleLoaded && (
-          <MapLayers
-            layers={layers}
-            selectedElevation={selectedElevation}
-            averagedPM25Data={averagedPM25Data}
-            centroidLocations={centroidLocations}
+          <NavigationControl position="top-left" />
+          
+          {/* Map info sidebar (top left) */}
+          <MapSidebarComponent 
+            selectedLakeLevel={selectedLakeLevel}
+            selectedTimestampIndex={selectedTimestampIndex}
+            pm25Data={pm25Data}
             loading={loading}
-            getPM25Points={getPM25Points}
           />
-        )}
-        
-        <MapPopup
-          popupInfo={popupInfo}
-          onClose={() => setPopupInfo(null)}
-          centroidLocations={centroidLocations}
-          averagedPM25Data={averagedPM25Data}
-          dustContributions={dustContributions}
-          mapRef={mapRef}
-          lakeLevel={selectedLakeLevel}
-        />
-      </Map>
-    </MapContainer>
+          
+          {/* Lake Level Control (bottom left) */}
+          <LakeLevelControl
+            selectedLevel={selectedLakeLevel}
+            onLevelChange={handleLakeLevelChange}
+          />
+          
+          {/* Minimized/Expanded controls (top right) */}
+          <MinimizedControls 
+            onClick={() => setControlsExpanded(!controlsExpanded)}
+            $expanded={controlsExpanded}
+          >
+            <Layers size={18} />
+            Map Layers
+            <ChevronRight size={16} />
+          </MinimizedControls>
+          
+          {controlsExpanded && (
+            <ExpandedControls>
+              <CloseButton onClick={() => setControlsExpanded(false)}>
+                <X size={16} />
+              </CloseButton>
+              <h3>DATA LAYERS</h3>
+              
+              <LayerToggle>
+                <input
+                  type="checkbox"
+                  checked={layers.censusTracts}
+                  onChange={() => toggleLayer('censusTracts')}
+                />
+                Census Tracts
+              </LayerToggle>
+              
+              <LayerToggle>
+                <input
+                  type="checkbox"
+                  checked={layers.bathymetry}
+                  onChange={() => toggleLayer('bathymetry')}
+                />
+                Lake Bathymetry
+              </LayerToggle>
+              
+              <LayerToggle>
+                <input
+                  type="checkbox"
+                  checked={layers.erodibility}
+                  onChange={() => toggleLayer('erodibility')}
+                />
+                Soil Erodibility
+              </LayerToggle>
+              
+              <LayerToggle>
+                <input
+                  type="checkbox"
+                  checked={layers.pm25Data}
+                  onChange={() => toggleLayer('pm25Data')}
+                />
+                PM2.5 Concentrations
+              </LayerToggle>
+              
+              <LayerToggle>
+                <input
+                  type="checkbox"
+                  checked={layers.satellite}
+                  onChange={() => toggleLayer('satellite')}
+                />
+                Satellite Imagery
+              </LayerToggle>
+            </ExpandedControls>
+          )}
+          
+          {/* Map layers */}
+          {mapStyleLoaded && (
+            <MapLayers
+              layers={layers}
+              selectedElevation={selectedElevation}
+              averagedPM25Data={averagedPM25Data}
+              centroidLocations={centroidLocations}
+              loading={loading}
+              getPM25Points={getPM25Points}
+            />
+          )}
+          
+          {/* Help button */}
+          <HelpButton onClick={onBackToIntro}>
+            <HelpCircle size={24} />
+          </HelpButton>
+        </Map>
+      </MapArea>
+      
+      {/* Info sidebar (right side) */}
+      <InfoSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        popupInfo={sidebarInfo}
+        centroidLocations={centroidLocations}
+        averagedPM25Data={averagedPM25Data}
+        dustContributions={dustContributions}
+        lakeLevel={selectedLakeLevel}
+        pm25Data={pm25Data}
+        selectedTimestampIndex={selectedTimestampIndex}
+      />
+    </MapWrapper>
   );
 }
 

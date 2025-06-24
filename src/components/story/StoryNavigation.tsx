@@ -39,7 +39,7 @@ const StoryNavigation: React.FC<StoryNavigationProps> = ({
           {Array.from({ length: totalSections }, (_, i) => (
             <NavDot
               key={i}
-              active={i === currentSection}
+              $active={i === currentSection}
               onClick={() => onSectionChange(i)}
             />
           ))}
@@ -143,18 +143,18 @@ const NavDots = styled.div`
   }
 `;
 
-const NavDot = styled.button<{ active: boolean }>`
+const NavDot = styled.button<{ $active: boolean }>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
   border: none;
-  background: ${props => props.active ? '#3498db' : 'rgba(255, 255, 255, 0.6)'};
+  background: ${props => props.$active ? '#3498db' : 'rgba(255, 255, 255, 0.6)'};
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background: ${props => props.active ? '#2980b9' : 'rgba(255, 255, 255, 0.8)'};
+    background: ${props => props.$active ? '#2980b9' : 'rgba(255, 255, 255, 0.8)'};
     transform: scale(1.2);
   }
 

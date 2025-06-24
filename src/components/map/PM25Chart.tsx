@@ -5,20 +5,21 @@ import { getPM25DataForAllLakeLevels, metersToFeet } from '../../utils/dataUtils
 
 const ChartContainer = styled.div`
   width: 100%;
-  height: 200px;
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
+  height: 280px;
+  margin-top: 10px;
+  padding: 15px 10px;
+  background-color: ${({ theme }) => theme.colors.snowbirdWhite};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
 `;
 
 const ChartTitle = styled.h5`
   margin: 0 0 10px 0;
   font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+  color: ${({ theme }) => theme.colors.moabMahogany};
   text-align: center;
+  font-family: ${({ theme }) => theme.typography.displayFont};
+  letter-spacing: 0.5px;
 `;
 
 const LoadingText = styled.div`
@@ -26,8 +27,9 @@ const LoadingText = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #666;
-  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 12px;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
 const ErrorText = styled.div`
@@ -35,8 +37,9 @@ const ErrorText = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #dc3545;
-  font-size: 14px;
+  color: ${({ theme }) => theme.colors.rockyMountainRust};
+  font-size: 12px;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
 interface PM25ChartProps {
@@ -104,43 +107,67 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
           data={data} 
           margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke="rgba(117, 29, 12, 0.1)" 
+          />
           <XAxis 
             dataKey="lakeLevelFeet" 
-            stroke="#666"
+            stroke="#2d5954"
             fontSize={11}
             tickFormatter={(value) => `${value}ft`}
             type="number"
             scale="linear"
             domain={['dataMin', 'dataMax']}
             ticks={data.map(d => d.lakeLevelFeet)}
+            style={{ fontFamily: 'Red Hat Display, sans-serif' }}
           />
           <YAxis 
-            stroke="#666"
+            stroke="#2d5954"
             fontSize={11}
             tickFormatter={(value) => `${value.toFixed(1)}`}
             width={35}
+            style={{ fontFamily: 'Red Hat Display, sans-serif' }}
           />
           <Tooltip 
             formatter={(value: number) => [`${value.toFixed(2)} µg/m³`, 'PM2.5']}
             labelFormatter={(label) => `Lake Level: ${label}ft (${(label / 3.28084).toFixed(1)}m ASL)`}
             contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #ccc',
+              backgroundColor: '#f9f6ef',
+              border: '1px solid #751d0c',
               borderRadius: '4px',
-              fontSize: '12px'
+              fontSize: '12px',
+              fontFamily: 'Red Hat Display, sans-serif',
+              padding: '8px'
+            }}
+            itemStyle={{
+              color: '#1a1a1a'
+            }}
+            labelStyle={{
+              color: '#751d0c',
+              fontWeight: 600
             }}
           />
           <Line 
             type="monotone" 
             dataKey="pm25Value" 
-            stroke="#8884d8" 
-            strokeWidth={2}
-            dot={{ fill: '#8884d8', strokeWidth: 2, r: 4 }}
-            activeDot={{ r: 6, stroke: '#8884d8', strokeWidth: 2 }}
+            stroke="#751d0c"
+            strokeWidth={2.5}
+            dot={{ 
+              fill: '#751d0c', 
+              strokeWidth: 2, 
+              r: 4,
+              stroke: '#f9f6ef'
+            }}
+            activeDot={{ 
+              r: 6, 
+              stroke: '#751d0c', 
+              strokeWidth: 2,
+              fill: '#f9f6ef'
+            }}
           />
         </LineChart>
       </ResponsiveContainer>
     </ChartContainer>
   );
-} 
+}
