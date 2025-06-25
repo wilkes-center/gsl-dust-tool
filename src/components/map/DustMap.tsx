@@ -20,7 +20,8 @@ const MapWrapper = styled.div`
   position: relative;
   display: flex;
   background-color: ${({ theme }) => theme.colors.snowbirdWhite};
-  margin-top: 60px;
+  flex: 1;
+  padding-top: 60px;
 `;
 
 const MapArea = styled.div<{ $sidebarOpen: boolean }>`
@@ -155,9 +156,10 @@ interface DustMapProps {
   onElevationChange?: (elevation: number) => void;
   onTimestampChange?: (timestamp: string) => void;
   onBackToIntro?: () => void;
+  onMapLoad?: () => void;
 }
 
-function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMapProps) {
+function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoad }: DustMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState<MapViewState>({
     longitude: -112.3297,
@@ -212,11 +214,14 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   }, [pm25Data, onTimestampChange]);
   
   // Handle map load
-  const onMapLoad = useCallback(() => {
+  const onMapLoadHandler = useCallback(() => {
     if (mapRef.current) {
       setMapStyleLoaded(true);
+      if (onMapLoad) {
+        onMapLoad();
+      }
     }
-  }, []);
+  }, [onMapLoad]);
   
   // Toggle layer visibility
   const toggleLayer = useCallback((layerName: keyof MapLayersType) => {
@@ -372,7 +377,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           mapStyle={MAPBOX_CONFIG.styleUrl}
           mapboxAccessToken={MAPBOX_TOKEN}
           minZoom={8}
-          onLoad={onMapLoad}
+          onLoad={onMapLoadHandler}
           onClick={handleMapClick}
           interactiveLayerIds={[
             layers.pm25Data ? 'pm25-point-layer' : null,
