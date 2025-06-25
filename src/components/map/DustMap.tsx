@@ -192,56 +192,19 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
   // Calculate averaged PM2.5 data
   useEffect(() => {
     if (pm25Data && pm25Data.length > 0 && !loading) {
-      console.log('🔍 Processing PM2.5 data:', {
-        dataLength: pm25Data.length,
-        sampleData: pm25Data.slice(0, 2),
-        loading
-      });
       const averaged = aggregatePM25Data(pm25Data);
-      console.log('📊 Averaged PM2.5 data:', {
-        keys: Object.keys(averaged),
-        sampleValues: Object.entries(averaged).slice(0, 5)
-      });
       setAveragedPM25Data(averaged);
-    } else {
-      console.log('⚠️ PM2.5 data not ready:', {
-        hasData: !!pm25Data,
-        dataLength: pm25Data?.length || 0,
-        loading
-      });
     }
   }, [pm25Data, loading]);
 
   // Load dust contributions
   useEffect(() => {
     const loadContributions = async () => {
-      console.log('🌪️ Loading dust contributions for lake level:', selectedLakeLevel);
       const contributions = await loadDustContributions(selectedLakeLevel);
-      console.log('✅ Dust contributions loaded:', {
-        count: Object.keys(contributions).length,
-        sampleKeys: Object.keys(contributions).slice(0, 5)
-      });
       setDustContributions(contributions);
     };
     loadContributions();
   }, [selectedLakeLevel]);
-
-  // Debug centroid locations
-  useEffect(() => {
-    console.log('📍 Centroid locations update:', {
-      count: centroidLocations?.length || 0,
-      sampleData: centroidLocations?.slice(0, 3),
-      loading
-    });
-  }, [centroidLocations, loading]);
-
-  // Debug averaged PM2.5 data
-  useEffect(() => {
-    console.log('🎯 Averaged PM2.5 data update:', {
-      count: Object.keys(averagedPM25Data).length,
-      sampleData: Object.entries(averagedPM25Data).slice(0, 3)
-    });
-  }, [averagedPM25Data]);
 
   // Update timestamp when PM2.5 data loads
   useEffect(() => {

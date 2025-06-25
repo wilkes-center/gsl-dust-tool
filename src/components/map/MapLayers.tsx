@@ -2,7 +2,6 @@ import { Source, Layer } from 'react-map-gl';
 import type { MapLayers as MapLayersType, PM25Point } from './types';
 import { getAggregatedPM25Color } from '../../utils/dataUtils';
 import theme from '../../styles/theme';
-import { useEffect } from 'react';
 
 interface MapLayersProps {
   layers: MapLayersType;
@@ -25,19 +24,6 @@ export function MapLayers({
   getPM25Points,
   selectedCensusTractId,
 }: MapLayersProps) {
-  
-  // Debug what's being passed to MapLayers
-  useEffect(() => {
-    console.log('🗺️ MapLayers received data:', {
-      layers,
-      selectedElevation,
-      centroidLocationsCount: centroidLocations?.length || 0,
-      loading,
-      averagedPM25DataCount: Object.keys(averagedPM25Data).length,
-      selectedCensusTractId,
-      pm25PointsCount: getPM25Points().length
-    });
-  }, [layers, selectedElevation, centroidLocations, loading, averagedPM25Data, selectedCensusTractId, getPM25Points]);
 
   return (
     <>
