@@ -89,66 +89,18 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
         {/* Content container */}
         <Content>
           {activeSection === 'about' && (
-            <GridLayout>
+            <CenteredContainer>
               {/* About This Tool */}
               <ContentCard>
                 <SectionTitle>About This Tool</SectionTitle>
                 <Divider />
-
-              </ContentCard>
-              
-              {/* PM2.5 Information */}
-              <ContentCard>
-                <SectionTitle>Understanding PM2.5</SectionTitle>
-                <Divider />
                 
                 <Paragraph>
-                  PM2.5 refers to fine particulate matter with a diameter of 2.5 micrometers or smaller.
-                  These particles are so small they can penetrate deep into your lungs and even enter your bloodstream.
+                  This tool visualizes PM2.5 dust emissions from the exposed lakebed and shows the specific dust source contributions for each census tract. As water levels decline, more lakebed becomes exposed and releases harmful dust particles during wind events. This tool allows users to explore different lake elevation scenarios and see how dust concentrations vary across time and space, helping communities understand their exposure risk to these dangerous fine particles that can penetrate deep into lungs and bloodstreams.
                 </Paragraph>
-                
-                {/* PM2.5 Levels visualization */}
-                <div>
-                  <SectionSubtitle>PM2.5 Levels</SectionSubtitle>
-                  
-                  <ColorBarContainer>
-                    <ColorBar />
-                    
-                    {/* Value markers and labels */}
-                    <LevelLabels>
-                      <LevelLabel>
-                        <LevelTitle color="#00d600">Good</LevelTitle>
-                        <LevelRange>0-54 μg/m³</LevelRange>
-                      </LevelLabel>
-                      <LevelLabel>
-                        <LevelTitle color="#ffee00">Moderate</LevelTitle>
-                        <LevelRange>55-154</LevelRange>
-                      </LevelLabel>
-                      <LevelLabel>
-                        <LevelTitle color="#ff8800">USG</LevelTitle>
-                        <LevelRange>155-254</LevelRange>
-                      </LevelLabel>
-                      <LevelLabel>
-                        <LevelTitle color="#ff1a1a">Unhealthy</LevelTitle>
-                        <LevelRange>255-354</LevelRange>
-                      </LevelLabel>
-                      <LevelLabel>
-                        <LevelTitle color="#9933ff">Very Unhealthy</LevelTitle>
-                        <LevelRange>355-424</LevelRange>
-                      </LevelLabel>
-                      <LevelLabel>
-                        <LevelTitle color="#990033">Hazardous</LevelTitle>
-                        <LevelRange>425+</LevelRange>
-                      </LevelLabel>
-                    </LevelLabels>
-                  </ColorBarContainer>
-                  
-                  <SmallNote>
-                    Note: USG stands for "Unhealthy for Sensitive Groups" - including children, older adults, and people with respiratory or heart conditions.
-                  </SmallNote>
-                </div>
+
               </ContentCard>
-            </GridLayout>
+            </CenteredContainer>
           )}
 
           {activeSection === 'howto' && (
@@ -714,6 +666,19 @@ const SubmitButton = styled.a`
   
   &:hover {
     background-color: #1e3d3a;
+  }
+`;
+
+const CenteredContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  padding-top: 2rem;
+  
+  ${ContentCard} {
+    max-width: 600px;
+    width: 100%;
   }
 `;
 

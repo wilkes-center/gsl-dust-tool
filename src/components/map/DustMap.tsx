@@ -273,17 +273,37 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           hasPM25Data: !!centroid
         };
       } else if (layerId === 'pm25-point-layer') {
-        // Clear census tract selection when clicking on other features
-        setSelectedCensusTractId(null);
-        
-        newSidebarInfo = {
-          longitude: event.lngLat.lng,
-          latitude: event.lngLat.lat,
-          type: 'pm25',
-          centroidName: feature.properties?.centroid_name || '',
-          pm25Value: feature.properties?.pm25 || 0,
-          geoid: feature.properties?.geoid
-        };
+        // When clicking on a centroid, show census tract information
+        const centroidGeoid = feature.properties?.geoid;
+        if (centroidGeoid) {
+          // Set the selected census tract ID for highlighting
+          setSelectedCensusTractId(centroidGeoid);
+          
+          // Find the centroid to get its coordinates
+          const centroid = centroidLocations.find(c => c.geoid === centroidGeoid);
+          
+          newSidebarInfo = {
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat,
+            type: 'censusTract',
+            INTPTLAT20: centroid?.lat.toString() || '',
+            INTPTLON20: centroid?.lon.toString() || '',
+            GEOID20: centroidGeoid,
+            hasPM25Data: true
+          };
+        } else {
+          // Fallback to original PM2.5 info if no geoid
+          setSelectedCensusTractId(null);
+          
+          newSidebarInfo = {
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat,
+            type: 'pm25',
+            centroidName: feature.properties?.centroid_name || '',
+            pm25Value: feature.properties?.pm25 || 0,
+            geoid: feature.properties?.geoid
+          };
+        }
       } else if (layerId === 'bathymetry-point-layer') {
         // Clear census tract selection when clicking on other features
         setSelectedCensusTractId(null);
