@@ -40,34 +40,44 @@ export function MapLayers({
             source-layer="UT_CensusTracts-cgq3a0"
             paint={{
               'fill-color': [
-                'match',
-                ['get', 'GEOID20'],
-                // Create a match for each GEOID to its corresponding PM2.5 color
-                ...((() => {
-                  // Create an object to store unique GEOID -> color mappings
-                  const geoidColorMap: Record<string, string> = {};
-                  
-                  // Populate the map with the latest color for each GEOID if PM2.5 data is available
-                  if (!loading && averagedPM25Data && Object.keys(averagedPM25Data).length > 0) {
-                    centroidLocations
-                      .filter(c => c.geoid)
-                      .forEach(centroid => {
-                        if (centroid.geoid) {
-                          const pm25Value = averagedPM25Data[centroid.centroid_name] || 0;
-                          const color = getAggregatedPM25Color(pm25Value);
-                          geoidColorMap[centroid.geoid] = color;
-                        }
-                      });
-                  }
-                  
-                  // Convert the object entries to a flat array of [geoid, color] pairs
-                  return Object.entries(geoidColorMap).flatMap(([geoid, color]) => 
-                    [geoid, color]
-                  );
-                })()),
-                'rgba(200,200,200,0.3)' // Light gray for tracts without PM2.5 data
+                'case',
+                ['==', ['get', 'GEOID20'], selectedCensusTractId || ''],
+                theme.colors.greatSaltLakeGreen, // Green fill for selected tract
+                [
+                  'match',
+                  ['get', 'GEOID20'],
+                  // Create a match for each GEOID to its corresponding PM2.5 color
+                  ...((() => {
+                    // Create an object to store unique GEOID -> color mappings
+                    const geoidColorMap: Record<string, string> = {};
+                    
+                    // Populate the map with the latest color for each GEOID if PM2.5 data is available
+                    if (!loading && averagedPM25Data && Object.keys(averagedPM25Data).length > 0) {
+                      centroidLocations
+                        .filter(c => c.geoid)
+                        .forEach(centroid => {
+                          if (centroid.geoid) {
+                            const pm25Value = averagedPM25Data[centroid.centroid_name] || 0;
+                            const color = getAggregatedPM25Color(pm25Value);
+                            geoidColorMap[centroid.geoid] = color;
+                          }
+                        });
+                    }
+                    
+                    // Convert the object entries to a flat array of [geoid, color] pairs
+                    return Object.entries(geoidColorMap).flatMap(([geoid, color]) => 
+                      [geoid, color]
+                    );
+                  })()),
+                  'rgba(200,200,200,0.3)' // Light gray for tracts without PM2.5 data
+                ]
               ],
-              'fill-opacity': 0.7
+              'fill-opacity': [
+                'case',
+                ['==', ['get', 'GEOID20'], selectedCensusTractId || ''],
+                0.8, // Higher opacity for selected tract
+                0.7  // Default opacity for non-selected tracts
+              ]
             }}
           />
           
