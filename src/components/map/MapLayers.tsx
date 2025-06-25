@@ -1,6 +1,7 @@
 import { Source, Layer } from 'react-map-gl';
 import type { MapLayers as MapLayersType, PM25Point } from './types';
 import { getAggregatedPM25Color } from '../../utils/dataUtils';
+import theme from '../../styles/theme';
 
 interface MapLayersProps {
   layers: MapLayersType;
@@ -10,6 +11,7 @@ interface MapLayersProps {
   averagedPM25Data: Record<string, number>;
   onErodibilityToggle?: () => void;
   getPM25Points: () => PM25Point[];
+  selectedCensusTractId?: string | null;
 }
 
 export function MapLayers({
@@ -20,6 +22,7 @@ export function MapLayers({
   averagedPM25Data,
   onErodibilityToggle,
   getPM25Points,
+  selectedCensusTractId,
 }: MapLayersProps) {
   return (
     <>
@@ -73,18 +76,33 @@ export function MapLayers({
             type="line"
             source-layer="UT_CensusTracts-cgq3a0"
             paint={{
-              'line-color': '#000000',
+              'line-color': [
+                'case',
+                ['==', ['get', 'GEOID20'], selectedCensusTractId || ''],
+                theme.colors.greatSaltLakeGreen, // Green highlight for selected tract
+                '#000000'  // Default black for non-selected tracts
+              ],
               'line-width': [
                 'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                2,
-                1
+                ['==', ['get', 'GEOID20'], selectedCensusTractId || ''],
+                4, // Thicker border for selected tract
+                [
+                  'case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  2,
+                  1
+                ]
               ],
               'line-opacity': [
                 'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                1,
-                0.7
+                ['==', ['get', 'GEOID20'], selectedCensusTractId || ''],
+                1, // Full opacity for selected tract
+                [
+                  'case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  1,
+                  0.7
+                ]
               ]
             }}
           />

@@ -51,4 +51,5 @@ export interface MapComponentProps {
   pm25Data: any[];
   loading: boolean;
   error: any;
+  selectedCensusTractId?: string | null;
 } 

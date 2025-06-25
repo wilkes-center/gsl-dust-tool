@@ -182,6 +182,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
   const [selectedLakeLevel, setSelectedLakeLevel] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
   const [selectedElevation, setSelectedElevation] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
   const [selectedTimestampIndex, setSelectedTimestampIndex] = useState<number>(0);
+  const [selectedCensusTractId, setSelectedCensusTractId] = useState<string | null>(null);
   
   const { centroidLocations, pm25Data, loading } = usePM25Data(selectedLakeLevel);
   const [averagedPM25Data, setAveragedPM25Data] = useState<Record<string, number>>({});
@@ -258,16 +259,24 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
 
       if (layerId === 'census-tracts-all-fill' || layerId === 'census-tracts-outline') {
         const centroid = centroidLocations.find(c => c.geoid === feature.properties?.GEOID20);
+        const geoid = feature.properties?.GEOID20 || '';
+        
+        // Set the selected census tract ID for highlighting
+        setSelectedCensusTractId(geoid);
+        
         newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
           type: 'censusTract',
           INTPTLAT20: feature.properties?.INTPTLAT20 || '',
           INTPTLON20: feature.properties?.INTPTLON20 || '',
-          GEOID20: feature.properties?.GEOID20 || '',
+          GEOID20: geoid,
           hasPM25Data: !!centroid
         };
       } else if (layerId === 'pm25-point-layer') {
+        // Clear census tract selection when clicking on other features
+        setSelectedCensusTractId(null);
+        
         newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
@@ -277,6 +286,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           geoid: feature.properties?.geoid
         };
       } else if (layerId === 'bathymetry-point-layer') {
+        // Clear census tract selection when clicking on other features
+        setSelectedCensusTractId(null);
+        
         newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
@@ -284,6 +296,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           depth: feature.properties?.bathymetry || 0
         };
       } else if (layerId === 'erodibility-fill' || layerId === 'erodibility-shadow' || layerId === 'erodibility-feather') {
+        // Clear census tract selection when clicking on other features
+        setSelectedCensusTractId(null);
+        
         newSidebarInfo = {
           longitude: event.lngLat.lng,
           latitude: event.lngLat.lat,
@@ -296,6 +311,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
         setSidebarInfo(newSidebarInfo);
         setSidebarOpen(true);
       }
+    } else {
+      // Clear selection when clicking on empty map area
+      setSelectedCensusTractId(null);
     }
   }, [centroidLocations]);
   
@@ -346,14 +364,16 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
             layers.erodibility ? 'erodibility-feather' : null,
           ].filter(Boolean) as string[]}
         >
-          <NavigationControl position="top-left" />
+          <NavigationControl position="bottom-left" />
           
           {/* Map info sidebar (top left) */}
           <MapSidebarComponent 
             selectedLakeLevel={selectedLakeLevel}
-            selectedTimestampIndex={selectedTimestampIndex}
-            pm25Data={pm25Data}
-            loading={loading}
+            handleElevationChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              const level = parseFloat(event.target.value);
+              handleLakeLevelChange(level);
+            }}
+            showBathymetry={layers.bathymetry}
           />
           
           {/* Lake Level Control (bottom left) */}
@@ -435,6 +455,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
               centroidLocations={centroidLocations}
               loading={loading}
               getPM25Points={getPM25Points}
+              selectedCensusTractId={selectedCensusTractId}
             />
           )}
           
