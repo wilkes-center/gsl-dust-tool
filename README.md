@@ -139,38 +139,7 @@ Start with the **Interactive Demo** to get a guided tour of the Great Salt Lake 
 - **Timeline Controls**: Satellite imagery browser
 - **PM2.5 Visualization**: Air quality data overlay
 
-## 📊 Data Sources
 
-The tool integrates multiple types of data:
-
-### **Dust Modeling Data** (Verified)
-- **PM2.5 Concentration Models**: Custom atmospheric dispersion modeling results
-- **Dust Contribution Analysis**: Source apportionment data (`Dust_Contribution_1275.csv`)
-- **Soil Erodibility Maps**: MapBox tileset (`GSL_erodibility_fraction-5bzz8s`)
-- **Census Tract Data**: Population and geographic boundaries (`points_with_tracts.csv`)
-
-### **Background Statistics** (Require Citation Verification)
-*Note: The following statistics are used in the application but original sources need verification:*
-- Lake level measurements and thresholds
-- Population exposure estimates (2.66 million people)
-- Economic impact figures ($1.85 billion annually)
-- Environmental statistics (12 million migratory birds)
-- Conservation funding and water rights data
-- Climate change indicators (2°F temperature increase)
-
-### **External Data Sources**
-- **Google Earth Engine**: Historical satellite imagery (1984-2022)
-- **MapBox**: Base mapping and visualization services
-
-### **Data Verification Notice**
-⚠️ **Important**: While the dust modeling data and visualizations are based on scientific atmospheric modeling, some background statistics in this tool require verification of original research sources. Users should independently verify key statistics for research or policy applications.
-
-**Recommended verification sources:**
-- USGS Great Salt Lake monitoring data
-- Utah Division of Water Resources reports
-- EPA air quality monitoring networks
-- Utah Department of Environmental Quality
-- Published peer-reviewed research on Great Salt Lake
 
 ## 🌍 Environmental Context
 
@@ -194,32 +163,5 @@ Utah has implemented significant measures:
 - **New legislation** restricting inefficient irrigation
 - **Conservation targets**: 770,000 acre-feet additional annual inflow needed
 
-## 🤝 Contributing
 
-We welcome contributions to improve this tool and help address the Great Salt Lake crisis.
-
-### Ways to Contribute
-- **Bug Reports**: Submit issues on GitHub
-- **Feature Requests**: Suggest new visualizations or data sources
-- **Data Updates**: Help maintain current information
-- **Documentation**: Improve user guides and technical docs
-
-### Repository
-- **GitHub**: [wilkes-center/gsl-dust-tool](https://github.com/wilkes-center/gsl-dust-tool)
-- **Issues**: [Submit feedback and bug reports](https://github.com/wilkes-center/gsl-dust-tool/issues)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the repository for details.
-
-## 🏛️ About
-
-Developed by the **Wilkes Center for Climate Science & Policy** to support public understanding of the Great Salt Lake crisis and its health implications.
-
-### Contact
-For questions about the tool or the underlying research, please visit our GitHub repository or submit an issue.
-
----
-
-*This tool is part of ongoing efforts to monitor and address the environmental and health impacts of the declining Great Salt Lake. The crisis requires immediate action to protect both human health and this critical ecosystem.*
 
