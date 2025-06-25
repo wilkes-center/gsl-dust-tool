@@ -95,21 +95,24 @@ const TimeSliderHeader = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  background: ${({ theme }) => theme.colors.snowbirdWhite};
-  border-radius: 12px;
-  padding: 2px;
+  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  background: linear-gradient(
+    to bottom,
+    rgba(117, 29, 12, 0.05),
+    rgba(249, 246, 239, 0)
+  );
   margin-bottom: 0px;
-  border: none;
-  box-shadow: none;
 
   h3 {
     margin: 0;
-    color: ${({ theme }) => theme.colors.moabMahogany};
-    font-size: 26px;
-    font-weight: ${({ theme }) => theme.typography.weights.semiBold};
     font-family: ${({ theme }) => theme.typography.displayFont};
-    letter-spacing: 1.2px;
-    margin-bottom: 0px;
+    font-size: 16px;
+    font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+    color: ${({ theme }) => theme.colors.moabMahogany};
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: ${({ theme }) => theme.spacing.xs};
   }
 
   .level-display {
@@ -120,14 +123,14 @@ const TimeSliderHeader = styled.div`
     margin-bottom: 0px;
 
     span {
-      color: ${({ theme }) => theme.colors.olympicParkObsidian};
+      font-size: 20px;
       font-weight: ${({ theme }) => theme.typography.weights.semiBold};
-      font-size: 16px;
-      font-family: ${({ theme }) => theme.typography.fontFamily};
-      background: #fff;
-      padding: 2px 8px;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(224,183,164,0.08);
+      color: ${({ theme }) => theme.colors.moabMahogany};
+      font-family: ${({ theme }) => theme.typography.displayFont};
+      background: rgba(249, 246, 239, 0.5);
+      padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+      border-radius: ${({ theme }) => theme.borderRadius.md};
+      border: 1px solid rgba(117, 29, 12, 0.1);
       text-align: center;
       line-height: 1.2;
       min-width: 80px;
@@ -137,14 +140,6 @@ const TimeSliderHeader = styled.div`
       opacity: 0.8;
     }
   }
-`;
-
-const Divider = styled.hr`
-  width: 100%;
-  border: none;
-  height: 2px;
-  background-color: ${({ theme }) => theme.colors.moabMahogany};
-  margin: 8px 0;
 `;
 
 const LevelControlButton = styled.button`
@@ -177,13 +172,27 @@ const LevelControlButton = styled.button`
   }
 `;
 
+const SliderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.sm};
+  background: linear-gradient(
+    to bottom,
+    rgba(249, 246, 239, 0.3),
+    rgba(249, 246, 239, 0.1)
+  );
+`;
+
 const LevelControls = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 4px 0;
-  width: 100%;
-  padding: 0 10px;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.xs};
 `;
 
 // Add interface for the styled component props
@@ -440,48 +449,42 @@ const LakeLevelTickLabel = styled.span<{ $isSelected: boolean; $side: 'left' | '
   `}
 `;
 
-const SliderContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: calc(100% - 80px);
-  padding: 0px 0;
-`;
-
 // Health level indicator components
 const HealthLevelIndicator = styled.div<{ $color: string }>`
   width: 100%;
-  padding: 8px 12px;
-  margin: 4px 0;
-  border-radius: 8px;
-  background-color: ${props => props.$color};
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: ${({ theme }) => theme.spacing.md};
+  margin: ${({ theme }) => theme.spacing.sm} 0;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background: white;
+  border: 1px solid rgba(117, 29, 12, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(117, 29, 12, 0.2);
+  }
 `;
 
 const HealthLevelTitle = styled.div<{ $color: string }>`
-  font-size: 13px;
+  font-size: 14px;
   font-weight: ${({ theme }) => theme.typography.weights.semiBold};
-  color: ${props => props.$color === '#8B0000' ? '#FFFFFF' : props.theme.colors.olympicParkObsidian};
-  margin-bottom: 2px;
-  text-shadow: ${props => props.$color === '#8B0000' ? '0 1px 2px rgba(0, 0, 0, 0.8)' : '0 1px 2px rgba(255, 255, 255, 0.8)'};
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  font-family: ${({ theme }) => theme.typography.displayFont};
+  letter-spacing: 0.3px;
 `;
 
 const HealthLevelDescription = styled.div<{ $color: string }>`
-  font-size: 11px;
-  color: ${props => props.$color === '#8B0000' ? '#FFFFFF' : props.theme.colors.olympicParkObsidian};
-  opacity: 0.9;
-  line-height: 1.3;
-  text-shadow: ${props => props.$color === '#8B0000' ? '0 1px 2px rgba(0, 0, 0, 0.6)' : '0 1px 2px rgba(255, 255, 255, 0.6)'};
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.4;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
 const HealthLevelContainer = styled.div`
   width: 100%;
-  margin-top: 8px;
+  padding: 0 ${({ theme }) => theme.spacing.sm};
 `;
 
 interface MapSidebarProps {
@@ -558,7 +561,6 @@ export function MapSidebarComponent({
           <span>{metersToFeet(selectedLakeLevel).toFixed(1)} ft</span>
         </div>
       </TimeSliderHeader>
-      <Divider />
       
       {/* Health Level Indicator */}
       {currentHealthLevel && (

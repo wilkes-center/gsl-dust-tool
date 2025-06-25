@@ -89,48 +89,41 @@ const ControlContainer = styled.div`
   position: absolute;
   top: ${({ theme }) => theme.spacing.xl};
   left: ${({ theme }) => theme.spacing.xl};
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  box-shadow: 
-    0 16px 32px rgba(0, 0, 0, 0.1),
-    0 6px 12px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 180px;
+  background: ${({ theme }) => theme.colors.snowbirdWhite};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  width: 200px;
   min-height: 480px;
   z-index: ${({ theme }) => theme.zIndices.mapControls};
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 20px 40px rgba(0, 0, 0, 0.15),
-      0 10px 20px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: ${({ theme }) => theme.colors.moabMahogany};
+    box-shadow: 0 4px 12px rgba(117, 29, 12, 0.15);
   }
 `;
 
 const Header = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  text-align: center;
-  background: linear-gradient(135deg, rgba(117, 29, 12, 0.05), rgba(117, 29, 12, 0.02));
-  border-bottom: 1px solid rgba(117, 29, 12, 0.08);
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  background: linear-gradient(
+    to bottom,
+    rgba(117, 29, 12, 0.05),
+    rgba(249, 246, 239, 0)
+  );
+  margin-bottom: 0px;
   
   &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 32px;
-    height: 2px;
-    background: ${({ theme }) => theme.colors.moabMahogany};
-    border-radius: 1px;
+    display: none;
   }
 `;
 
@@ -148,31 +141,26 @@ const IconWrapper = styled.div`
 `;
 
 const Title = styled.h3`
-  font-family: ${({ theme }) => theme.typography.fontFamily};
-  font-size: 14px;
-  font-weight: ${({ theme }) => theme.typography.weights.bold};
-  color: ${({ theme }) => theme.colors.moabMahogany};
   margin: 0;
+  font-family: ${({ theme }) => theme.typography.displayFont};
+  font-size: 16px;
+  font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const LevelDisplay = styled.div<{ $color: string }>`
   padding: ${({ theme }) => theme.spacing.lg};
   text-align: center;
-  background: ${props => `${props.$color}08`};
-  border-bottom: 1px solid ${props => `${props.$color}15`};
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(249, 246, 239, 0.5);
+  border-bottom: 1px solid rgba(117, 29, 12, 0.1);
+  transition: all 0.2s ease;
   position: relative;
   
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, ${props => props.$color}30, transparent);
+    display: none;
   }
 `;
 
@@ -202,6 +190,11 @@ const SliderContainer = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 220px;
+  background: linear-gradient(
+    to bottom,
+    rgba(249, 246, 239, 0.3),
+    rgba(249, 246, 239, 0.1)
+  );
 `;
 
 const SliderWrapper = styled.div`
@@ -251,6 +244,84 @@ const SliderTrack = styled.div`
     );
     border-radius: 8px;
     pointer-events: none;
+  }
+`;
+
+const SliderMarkers = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+`;
+
+const SliderMarker = styled.div<{ $position: number; $active: boolean }>`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: ${props => props.$position}%;
+  width: ${props => props.$active ? '24px' : '20px'};
+  height: ${props => props.$active ? '4px' : '3px'};
+  background: ${props => props.$active ? '#ffffff' : 'rgba(255, 255, 255, 0.9)'};
+  border-radius: 2px;
+  box-shadow: ${props => props.$active 
+    ? '0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(117, 29, 12, 0.6)' 
+    : '0 1px 4px rgba(0, 0, 0, 0.3)'
+  };
+  transition: all 0.3s ease;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: ${props => props.$active ? '10px' : '8px'};
+    height: ${props => props.$active ? '10px' : '8px'};
+    background: ${props => props.$active ? props.theme.colors.moabMahogany : 'rgba(117, 29, 12, 0.7)'};
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: ${props => props.$active ? '0 1px 3px rgba(0, 0, 0, 0.3)' : 'none'};
+  }
+`;
+
+const SliderMarkerLabel = styled.div<{ $active: boolean }>`
+  position: absolute;
+  left: ${props => props.$active ? '30px' : '26px'};
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: ${props => props.$active ? '10px' : '8px'};
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  color: ${props => props.$active ? props.theme.colors.moabMahogany : props.theme.colors.textSecondary};
+  background: ${props => props.$active ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.85)'};
+  padding: ${props => props.$active ? '4px 8px' : '2px 6px'};
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  opacity: ${props => props.$active ? 1 : 0.7};
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  border: ${props => props.$active ? '1px solid rgba(117, 29, 12, 0.2)' : '1px solid rgba(0, 0, 0, 0.1)'};
+  pointer-events: none;
+  z-index: 25;
+  min-width: ${props => props.$active ? '60px' : '50px'};
+  text-align: center;
+  
+  .meters {
+    display: block;
+    font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+    color: ${props => props.$active ? props.theme.colors.moabMahogany : props.theme.colors.textSecondary};
+    line-height: 1.1;
+  }
+  
+  .feet {
+    display: block;
+    font-size: ${props => props.$active ? '8px' : '7px'};
+    opacity: 0.7;
+    margin-top: 2px;
+    line-height: 1;
   }
 `;
 
@@ -446,23 +517,23 @@ const TickMark = styled.div<{ $active?: boolean; $level: number }>`
 `;
 
 const HealthIndicator = styled.div<{ $color: string; $bgColor: string; $gradient: string }>`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${props => props.$gradient};
-  background-size: 200% 200%;
-  animation: gradientShift 4s ease-in-out infinite;
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding: ${({ theme }) => theme.spacing.md};
+  margin: ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background: white;
+  border: 1px solid rgba(117, 29, 12, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
   
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(117, 29, 12, 0.2);
+  }
+  
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    display: none;
   }
   
   @keyframes gradientShift {
@@ -481,39 +552,37 @@ const HealthHeader = styled.div`
 `;
 
 const HealthIcon = styled.div<{ $color: string }>`
-  color: white;
+  color: ${({ theme }) => theme.colors.moabMahogany};
   display: flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(117, 29, 12, 0.1);
   border-radius: 50%;
-  backdrop-filter: blur(10px);
   
   svg {
     width: 16px;
     height: 16px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   }
 `;
 
 const HealthName = styled.div<{ $color: string }>`
-  font-weight: ${({ theme }) => theme.typography.weights.bold};
-  color: white;
   font-size: 14px;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  letter-spacing: 0.3px;
+  font-family: ${({ theme }) => theme.typography.displayFont};
 `;
 
 const HealthDescription = styled.div`
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.3;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.4;
   padding-left: 32px;
   position: relative;
   z-index: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
 const WaterLevelIndicator = styled.div<{ $level: number; $maxLevel: number; $color: string }>`
@@ -595,9 +664,6 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
   return (
     <ControlContainer ref={containerRef}>
       <Header>
-        <IconWrapper>
-          <Droplets />
-        </IconWrapper>
         <Title>Lake Level</Title>
       </Header>
       
@@ -621,6 +687,30 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
           </LevelButton>
           
           <SliderTrack />
+          <SliderMarkers>
+            {AVAILABLE_LAKE_LEVELS.map((level, index) => {
+              const positionPercent = ((level - MIN_LAKE_LEVEL) / (MAX_LAKE_LEVEL - MIN_LAKE_LEVEL)) * 100;
+              const isActive = Math.abs(level - selectedLevel) < 0.1;
+              
+              // Only show labels for every other marker, plus the active one
+              const shouldShowLabel = isActive || index % 2 === 0;
+              
+              return (
+                <SliderMarker
+                  key={level}
+                  $position={positionPercent}
+                  $active={isActive}
+                >
+                  {shouldShowLabel && (
+                    <SliderMarkerLabel $active={isActive}>
+                      <span className="meters">{level.toFixed(1)}m</span>
+                      <span className="feet">{metersToFeet(level).toFixed(0)}ft</span>
+                    </SliderMarkerLabel>
+                  )}
+                </SliderMarker>
+              );
+            })}
+          </SliderMarkers>
           <WaterLevelIndicator 
             $level={selectedLevel - MIN_LAKE_LEVEL} 
             $maxLevel={MAX_LAKE_LEVEL - MIN_LAKE_LEVEL}

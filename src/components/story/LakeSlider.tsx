@@ -20,94 +20,189 @@ const LakeSlider: React.FC<LakeSliderProps> = ({ selectedLakeLevel, onLakeLevelC
 
   return (
     <LakeSliderContainer>
-      <SliderTitle>Lake Level: {Math.round(metersToFeet(selectedLakeLevel))} feet</SliderTitle>
-      <SliderInput
-        type="range"
-        min={minLevel}
-        max={maxLevel}
-        value={selectedLakeLevel}
-        onChange={handleSliderChange}
-        step={0.1}
-      />
-      <SliderLabels>
-        <SliderLabel>{Math.round(metersToFeet(minLevel))} ft</SliderLabel>
-        <SliderLabel>{Math.round(metersToFeet((minLevel + maxLevel) / 2))} ft</SliderLabel>
-        <SliderLabel>{Math.round(metersToFeet(maxLevel))} ft</SliderLabel>
-      </SliderLabels>
-      <SliderDescription>
-        Adjust the slider to see how different lake levels affect the ecosystem and surrounding communities
-      </SliderDescription>
+      <SliderHeader>
+        <SliderTitle>Lake Level</SliderTitle>
+      </SliderHeader>
+      <SliderContent>
+        <CurrentLevelDisplay>
+          <LevelValue>{Math.round(metersToFeet(selectedLakeLevel))} ft</LevelValue>
+          <LevelSubValue>{selectedLakeLevel.toFixed(1)}m ASL</LevelSubValue>
+        </CurrentLevelDisplay>
+        <SliderWrapper>
+          <SliderInput
+            type="range"
+            min={minLevel}
+            max={maxLevel}
+            value={selectedLakeLevel}
+            onChange={handleSliderChange}
+            step={0.1}
+          />
+          <SliderLabels>
+            <SliderLabel>{Math.round(metersToFeet(minLevel))} ft</SliderLabel>
+            <SliderLabel>{Math.round(metersToFeet((minLevel + maxLevel) / 2))} ft</SliderLabel>
+            <SliderLabel>{Math.round(metersToFeet(maxLevel))} ft</SliderLabel>
+          </SliderLabels>
+        </SliderWrapper>
+        <SliderDescription>
+          Adjust the slider to see how different lake levels affect the ecosystem and surrounding communities
+        </SliderDescription>
+      </SliderContent>
     </LakeSliderContainer>
   );
 };
 
 const LakeSliderContainer = styled.div`
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background-color: ${({ theme }) => theme.colors.snowbirdWhite};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(117, 29, 12, 0.1);
+  margin: ${({ theme }) => theme.spacing.lg} 0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(117, 29, 12, 0.2);
+  }
+`;
+
+const SliderHeader = styled.div`
+  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  background: linear-gradient(
+    to bottom,
+    rgba(117, 29, 12, 0.05),
+    rgba(249, 246, 239, 0)
+  );
 `;
 
 const SliderTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 15px 0;
+  font-family: ${({ theme }) => theme.typography.displayFont};
+  font-size: 16px;
+  font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  margin: 0;
   text-align: center;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+`;
+
+const SliderContent = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+`;
+
+const CurrentLevelDisplay = styled.div`
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md};
+  background-color: rgba(249, 246, 239, 0.5);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border: 1px solid rgba(117, 29, 12, 0.1);
+`;
+
+const LevelValue = styled.div`
+  font-size: 24px;
+  font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  font-family: ${({ theme }) => theme.typography.displayFont};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const LevelSubValue = styled.div`
+  font-size: 14px;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  color: ${({ theme }) => theme.colors.olympicParkObsidian};
+  letter-spacing: 0.3px;
+`;
+
+const SliderWrapper = styled.div`
+  margin: ${({ theme }) => theme.spacing.lg} 0;
 `;
 
 const SliderInput = styled.input`
   width: 100%;
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(to right, #e74c3c, #f39c12, #27ae60);
+  background: linear-gradient(to right, 
+    ${({ theme }) => theme.colors.rockyMountainRust}, 
+    ${({ theme }) => theme.colors.canyonlandsTan}, 
+    ${({ theme }) => theme.colors.spiralJettySage}
+  );
   outline: none;
   -webkit-appearance: none;
   appearance: none;
-  margin: 20px 0;
+  margin: ${({ theme }) => theme.spacing.md} 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: #2c3e50;
+    background: ${({ theme }) => theme.colors.moabMahogany};
+    border: 2px solid ${({ theme }) => theme.colors.snowbirdWhite};
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
   }
 
   &::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: #2c3e50;
+    background: ${({ theme }) => theme.colors.moabMahogany};
+    border: 2px solid ${({ theme }) => theme.colors.snowbirdWhite};
     cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &:focus {
+    outline: none;
+    
+    &::-webkit-slider-thumb {
+      box-shadow: 0 0 0 3px rgba(117, 29, 12, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &::-moz-range-thumb {
+      box-shadow: 0 0 0 3px rgba(117, 29, 12, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
   }
 `;
 
 const SliderLabels = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
 const SliderLabel = styled.span`
-  font-size: 12px;
-  color: #7f8c8d;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: ${({ theme }) => theme.typography.weights.light};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 `;
 
 const SliderDescription = styled.p`
-  font-size: 14px;
-  color: #7f8c8d;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
   text-align: center;
-  margin: 15px 0 0 0;
-  font-style: italic;
+  margin: ${({ theme }) => theme.spacing.md} 0 0 0;
+  line-height: 1.6;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
 `;
 
 export default LakeSlider; 

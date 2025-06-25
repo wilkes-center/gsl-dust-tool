@@ -195,23 +195,25 @@ export const ColorBox = styled.span`
 export const LakeLevelSliderContainer = styled.div`
   position: absolute;
   left: ${({ theme }) => theme.spacing.md};
-  top: ${({ theme }) => theme.spacing.md};  /* Position from top */
-  background: ${({ theme }) => theme.colors.snowbirdWhite};
+  top: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.snowbirdWhite};
   padding: ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  box-shadow: ${({ theme }) => theme.shadows.md};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(117, 29, 12, 0.1);
   z-index: ${({ theme }) => theme.zIndices.mapControls};
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 250px;
-  border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
-  background: linear-gradient(
-    to bottom,
-    rgba(249, 246, 239, 1),
-    rgba(249, 246, 239, 0.9)
-  );
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 280px;
+  min-height: 400px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(117, 29, 12, 0.2);
+  }
 `;
 
 // Lake level slider
