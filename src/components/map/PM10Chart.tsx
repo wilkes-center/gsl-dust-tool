@@ -58,10 +58,10 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
         if (chartData.length === 0) {
           setError('No data available for this monitoring point');
         } else {
-          // Convert to feet and add to data
+          // Keep original meter values for data positioning, add feet for display
           const dataWithFeet = chartData.map((item: {lakeLevel: number, pm25Value: number}) => ({
             ...item,
-            lakeLevelFeet: Math.round(metersToFeet(item.lakeLevel))
+            lakeLevelFeet: metersToFeet(item.lakeLevel) // Don't round - keep precise conversion
           }));
           setData(dataWithFeet);
         }
@@ -106,14 +106,14 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis 
-            dataKey="lakeLevelFeet" 
+            dataKey="lakeLevel" 
             stroke="#666"
             fontSize={11}
-            tickFormatter={(value) => `${value}ft`}
+            tickFormatter={(value) => `${Math.round(metersToFeet(value))}ft`}
             type="number"
             scale="linear"
             domain={['dataMin', 'dataMax']}
-            ticks={data.map(d => d.lakeLevelFeet)}
+            ticks={data.map(d => d.lakeLevel)}
           />
           <YAxis 
             stroke="#666"
@@ -123,7 +123,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
           />
           <Tooltip 
             formatter={(value: number) => [`${value.toFixed(2)} µg/m³`, 'PM2.5']}
-            labelFormatter={(label) => `Lake Level: ${label}ft (${(label / 3.28084).toFixed(1)}m ASL)`}
+            labelFormatter={(label) => `Lake Level: ${Math.round(metersToFeet(label))}ft (${label.toFixed(1)}m ASL)`}
             contentStyle={{
               backgroundColor: '#fff',
               border: '1px solid #ccc',
