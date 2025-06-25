@@ -98,7 +98,7 @@ export async function getCentroidLocations(): Promise<CentroidLocation[]> {
 export async function getPM10Data(lakeLevel: number): Promise<PM10Data[]> {
   try {
     // Use BASE_URL to ensure paths work correctly in production
-    const filepath = `${import.meta.env.BASE_URL}src/assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
+    const filepath = `${import.meta.env.BASE_URL}assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
     console.log(`Attempting to load PM10 data from: ${filepath}`);
     
     const response = await fetch(filepath);
@@ -157,7 +157,7 @@ export async function getPM10Data(lakeLevel: number): Promise<PM10Data[]> {
 export async function getPM25Data(lakeLevel: number): Promise<PM25Data[]> {
   try {
     // Use BASE_URL to ensure paths work correctly in production
-    const filepath = `${import.meta.env.BASE_URL}src/assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
+    const filepath = `${import.meta.env.BASE_URL}assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
     console.log(`Attempting to load PM2.5 data from: ${filepath}`);
     
     const response = await fetch(filepath);
@@ -640,7 +640,7 @@ export async function getPM25DataForAllLakeLevels(centroidName: string): Promise
 export async function loadDustContributions(lakeLevel: number = 1275): Promise<Record<string, DustContribution>> {
   try {
     console.log(`Loading dust contributions for lake level ${lakeLevel}...`);
-    const response = await fetch(`/gsl-dust-tool/assets/Dust_Contribution_${lakeLevel}.csv?t=${Date.now()}`);
+    const response = await fetch(`${import.meta.env.BASE_URL}assets/Dust_Contribution_${lakeLevel}.csv?t=${Date.now()}`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch dust contributions: ${response.statusText}`);
