@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { MapPin, Info, HelpCircle, MessageSquare, Github, Play, BarChart3 } from 'lucide-react';
+import { MapPin, Info, HelpCircle, MessageSquare, Github, Play } from 'lucide-react';
 
 interface IntroPageProps {
   onComplete: () => void;
-  onViewDemo?: () => void;
-  onViewAnalysis?: () => void;
 }
 
 interface TabButtonProps {
@@ -19,7 +17,7 @@ interface ContentCardProps {
 /**
  * Introduction page component shown to users on first visit
  */
-const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo, onViewAnalysis }) => {
+const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
   const [activeSection, setActiveSection] = useState('about');
 
   return (
@@ -49,18 +47,6 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete, onViewDemo, onViewAna
           
           {/* Action Buttons */}
           <EnterButtonContainer>
-            {onViewAnalysis && (
-              <DemoButton onClick={onViewAnalysis}>
-                <BarChart3 size={20} className="mr-2" />
-                View Analysis
-              </DemoButton>
-            )}
-            {onViewDemo && (
-              <DemoButton onClick={onViewDemo}>
-                <Play size={20} className="mr-2" />
-                Interactive Demo
-              </DemoButton>
-            )}
             <EnterButton onClick={onComplete}>
               <MapPin size={20} className="mr-2" />
               Enter Map
@@ -394,28 +380,6 @@ const EnterButton = styled.button`
   }
 `;
 
-const DemoButton = styled.button`
-  background-color: #2d5954;
-  color: white;
-  font-weight: 700;
-  font-size: 1.125rem;
-  padding: 0.75rem 2.5rem;
-  border-radius: 0.75rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-right: 1rem;
-  
-  &:hover {
-    background-color: #3a6b65;
-    transform: scale(1.05);
-  }
-`;
-
 const TabContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -503,10 +467,11 @@ const SectionTitle = styled.h2`
 `;
 
 const SectionSubtitle = styled.h4`
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #2d5954;
-  margin-bottom: 1rem;
+  margin: 1.5rem 0 1rem 0;
+  color: #1a1a1a;
+  font-family: 'Red Hat Display', sans-serif;
 `;
 
 const Divider = styled.div`
@@ -610,16 +575,6 @@ const StepDescription = styled.p`
   font-size: 1rem;
   color: #1a1a1a;
   font-family: 'Red Hat Display', sans-serif;
-`;
-
-const HelpNote = styled.div`
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(45, 89, 84, 0.2);
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #1a1a1a;
 `;
 
 const TutorialCard = styled.div`

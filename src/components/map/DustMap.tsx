@@ -8,7 +8,6 @@ import { HelpCircle, Layers, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { MAPBOX_TOKEN, MAPBOX_CONFIG, AVAILABLE_LAKE_LEVELS, getPM25Color } from './constants';
 import { MapViewState, PopupInfo, PM25Point, MapLayers as MapLayersType } from './types';
-import { MapSidebarComponent } from './MapSidebar';
 import { MapLayers } from './MapLayers';
 import { InfoSidebar } from './InfoSidebar';
 import { LakeLevelControl } from './LakeLevelControl';
@@ -352,6 +351,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
           mapStyle={MAPBOX_CONFIG.styleUrl}
           mapboxAccessToken={MAPBOX_TOKEN}
+          minZoom={8}
           onLoad={onMapLoad}
           onClick={handleMapClick}
           interactiveLayerIds={[
@@ -365,16 +365,6 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro }: DustMa
           ].filter(Boolean) as string[]}
         >
           <NavigationControl position="bottom-left" />
-          
-          {/* Map info sidebar (top left) */}
-          <MapSidebarComponent 
-            selectedLakeLevel={selectedLakeLevel}
-            handleElevationChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              const level = parseFloat(event.target.value);
-              handleLakeLevelChange(level);
-            }}
-            showBathymetry={layers.bathymetry}
-          />
           
           {/* Lake Level Control (bottom left) */}
           <LakeLevelControl

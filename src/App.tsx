@@ -29,15 +29,7 @@ const IntroPageWrapper = () => {
     navigate('/map');
   };
   
-  const handleViewDemo = () => {
-    navigate('/story');
-  };
-  
-  const handleViewAnalysis = () => {
-    navigate('/analysis');
-  };
-  
-  return <IntroPage onComplete={handleEnterMap} onViewDemo={handleViewDemo} onViewAnalysis={handleViewAnalysis} />;
+  return <IntroPage onComplete={handleEnterMap} />;
 };
 
 /**
