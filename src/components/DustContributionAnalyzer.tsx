@@ -237,6 +237,9 @@ const DustContributionAnalyzer: React.FC = () => {
                   outerRadius={120}
                   fill="#8884d8"
                   dataKey="value"
+                  animationBegin={0}
+                  animationDuration={400}
+                  isAnimationActive={true}
                 >
                   {currentData.map((entry, index) => (
                     <Cell 
@@ -371,6 +374,9 @@ const DustContributionAnalyzer: React.FC = () => {
                   fill={color}
                   name={sourceLabels[source]}
                   radius={[2, 2, 0, 0]}
+                  animationBegin={0}
+                  animationDuration={400}
+                  isAnimationActive={true}
                 />
               ))}
             </BarChart>

@@ -138,6 +138,9 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
             strokeWidth={2}
             dot={{ fill: '#8884d8', strokeWidth: 2, r: 4 }}
             activeDot={{ r: 6, stroke: '#8884d8', strokeWidth: 2 }}
+            animationBegin={0}
+            animationDuration={400}
+            isAnimationActive={true}
           />
         </LineChart>
       </ResponsiveContainer>

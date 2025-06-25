@@ -165,6 +165,9 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
               strokeWidth: 2,
               fill: '#f9f6ef'
             }}
+            animationBegin={0}
+            animationDuration={400}
+            isAnimationActive={true}
           />
         </LineChart>
       </ResponsiveContainer>

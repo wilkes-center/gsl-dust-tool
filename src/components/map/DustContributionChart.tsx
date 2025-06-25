@@ -185,6 +185,9 @@ export function DustContributionChart({ contribution, lakeLevel }: DustContribut
             outerRadius={130}
             paddingAngle={2}
             dataKey="value"
+            animationBegin={0}
+            animationDuration={400}
+            isAnimationActive={true}
           >
             {chartData.map((entry, index) => (
               <Cell 
