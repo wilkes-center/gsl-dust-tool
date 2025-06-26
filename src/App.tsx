@@ -143,7 +143,7 @@ const MapWrapper = () => {
     <AppContainer>
       {/* Always render Header and DustMap but hide them during loading */}
       <MapContainer $isVisible={showMap}>
-        <Header elevation={selectedElevation} />
+        <Header elevation={selectedElevation} onBackToIntro={handleBackToIntro} />
         <DustMap 
           onElevationChange={handleElevationChange}
           onTimestampChange={handleTimestampChange}

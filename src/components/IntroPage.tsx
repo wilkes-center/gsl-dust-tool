@@ -95,8 +95,16 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                 <SectionTitle>About This Tool</SectionTitle>
                 <Divider />
                 
-                <Paragraph>
-                  This tool visualizes PM2.5 dust emissions from the exposed lakebed and shows the specific dust source contributions for each census tract. As water levels decline, more lakebed becomes exposed and releases harmful dust particles during wind events. This tool allows users to explore different lake elevation scenarios and see how dust concentrations vary across time and space, helping communities understand their exposure risk to these dangerous fine particles that can penetrate deep into lungs and bloodstreams.
+                <Paragraph style={{ fontSize: '1.25rem' }}>
+                  This tool visualizes PM2.5 dust emissions from The Great Salt Lake and shows the specific dust source contributions for each census tract.
+                </Paragraph>
+
+                <Paragraph style={{ fontSize: '1.25rem' }}>
+                  The underlying data used to produce these visualizes were generated and processed by Derek Mallia and Kevin Perry
+                </Paragraph>
+
+                <Paragraph style={{ fontSize: '1.25rem' }}>
+                  Tool developed by Praveenaa Kulandhaivel
                 </Paragraph>
 
               </ContentCard>
@@ -216,6 +224,11 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
             </ContentCard>
           )}
         </Content>
+        
+        {/* Footer */}
+        <Footer>
+          Wilkes Center for Climate Science and Policy
+        </Footer>
       </ContentContainer>
     </IntroContainer>
   );
@@ -348,7 +361,7 @@ const TabWrapper = styled.div`
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 `;
 
-const TabButton = styled.button<TabButtonProps>`  padding: 0.75rem 2rem;
+const TabButton = styled.button<TabButtonProps>`  padding: 1rem 2.5rem;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -359,6 +372,7 @@ const TabButton = styled.button<TabButtonProps>`  padding: 0.75rem 2rem;
   background-color: ${props => props.$active ? 'rgba(153, 170, 136, 0.3)' : 'transparent'};
   color: ${props => props.$active ? '#2d5954' : 'rgba(45, 89, 84, 0.7)'};
   font-weight: ${props => props.$active ? '600' : '400'};
+  font-size: 1.125rem;
   
   &:hover {
     background-color: ${props => props.$active ? 'rgba(153, 170, 136, 0.3)' : 'rgba(45, 89, 84, 0.05)'};
@@ -680,6 +694,22 @@ const CenteredContainer = styled.div`
     max-width: 600px;
     width: 100%;
   }
+`;
+
+const Footer = styled.footer`
+  background-color: #000000;
+  color: #ffffff;
+  text-align: center;
+  padding: 1rem 2rem;
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-top: auto;
+  width: calc(100% + 4rem);
+  margin-left: -2rem;
+  margin-right: -2rem;
+  margin-bottom: -2rem;
 `;
 
 export default IntroPage; 

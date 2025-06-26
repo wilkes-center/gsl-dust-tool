@@ -24,6 +24,12 @@ const Title = styled.h1`
   font-size: 28px;
   margin: 0;
   letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const InfoContainer = styled.div`
@@ -50,12 +56,13 @@ const InfoValue = styled.span`
 
 interface HeaderProps {
   elevation: number;
+  onBackToIntro: () => void;
 }
 
-function Header({ elevation }: HeaderProps) {
+function Header({ elevation, onBackToIntro }: HeaderProps) {
   return (
     <HeaderContainer>
-      <Title>GREAT SALT LAKE DUST EXPOSURE MODELING TOOL</Title>
+      <Title onClick={onBackToIntro}>GREAT SALT LAKE DUST EXPOSURE MODELING TOOL</Title>
       <InfoContainer>
         <InfoItem>
           <InfoLabel>Lake Level</InfoLabel>
