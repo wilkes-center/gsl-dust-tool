@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { X } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import { PopupInfo } from './types';
 import { getAggregatedPM25Color, DustContribution } from '../../utils/dataUtils';
 import { getErodibilityColor } from './constants';
@@ -238,10 +238,56 @@ const ChartSection = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(117, 29, 12, 0.1);
   transition: all 0.2s ease;
+  position: relative;
   
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     border-color: rgba(117, 29, 12, 0.2);
+  }
+`;
+
+const ChartSectionWithArrow = styled.div`
+  background: white;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(117, 29, 12, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(117, 29, 12, 0.2);
+  }
+`;
+
+const DownArrowButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  background: ${({ theme }) => theme.colors.moabMahogany};
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(117, 29, 12, 0.3);
+  z-index: 10;
+  
+  &:hover {
+    background: #8b2113;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(117, 29, 12, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
   }
 `;
 
@@ -298,6 +344,43 @@ export function InfoSidebar({
   pm25Data = [],
   selectedTimestampIndex = 0,
 }: InfoSidebarProps) {
+  const sidebarContentRef = React.useRef<HTMLDivElement>(null);
+  const chartsContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    // Try multiple approaches to ensure scrolling works
+    const sidebarContent = sidebarContentRef.current;
+    const chartsContainer = chartsContainerRef.current;
+    
+    if (sidebarContent) {
+      // Method 1: Scroll the main sidebar content to bottom
+      sidebarContent.scrollTo({
+        top: sidebarContent.scrollHeight,
+        behavior: 'smooth'
+      });
+      
+      // Method 2: Also try scrolling to a large value as fallback
+      setTimeout(() => {
+        sidebarContent.scrollTo({
+          top: 9999,
+          behavior: 'smooth'
+        });
+      }, 100);
+      
+      console.log('Scrolling sidebar content. ScrollHeight:', sidebarContent.scrollHeight);
+    }
+    
+    if (chartsContainer) {
+      // Also scroll the charts container if it's scrollable
+      chartsContainer.scrollTo({
+        top: chartsContainer.scrollHeight,
+        behavior: 'smooth'
+      });
+      
+      console.log('Scrolling charts container. ScrollHeight:', chartsContainer.scrollHeight);
+    }
+  };
+
   const getAirQuality = (pm25Value: number) => {
     if (pm25Value < 5) return "Low";
     if (pm25Value < 10) return "Moderate";
@@ -353,7 +436,7 @@ export function InfoSidebar({
         </CloseButton>
       </SidebarHeader>
       
-      <SidebarContent>
+      <SidebarContent ref={sidebarContentRef}>
         {!popupInfo ? (
           <NoDataMessage>
             Click on the map to view location information
@@ -502,15 +585,21 @@ export function InfoSidebar({
             
             {/* Charts section - highlighted */}
             {popupInfo.type === 'censusTract' && centroid ? (
-              <ChartsContainer>
+              <ChartsContainer ref={chartsContainerRef}>
                 {/* Dust Contribution Pie Chart - Featured First */}
                 {dustContribution && (
-                  <ChartSection>
+                  <ChartSectionWithArrow>
                     <DustContributionChart 
                       contribution={dustContribution} 
                       lakeLevel={lakeLevel}
                     />
-                  </ChartSection>
+                    <DownArrowButton 
+                      onClick={scrollToBottom}
+                      title="Scroll to bottom"
+                    >
+                      <ChevronDown size={20} />
+                    </DownArrowButton>
+                  </ChartSectionWithArrow>
                 )}
                 
                 {/* PM2.5 Time Series Line Chart */}
