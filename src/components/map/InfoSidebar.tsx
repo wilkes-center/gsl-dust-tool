@@ -6,6 +6,7 @@ import { getAggregatedPM25Color, DustContribution } from '../../utils/dataUtils'
 import { getErodibilityColor } from './constants';
 import { PM25Chart } from './PM25Chart';
 import { DustContributionChart } from './DustContributionChart';
+import PMValue from '../common/PMValue';
 
 // Styled components
 const SidebarContainer = styled.div<{ $isOpen: boolean }>`
@@ -467,7 +468,7 @@ export function InfoSidebar({
                   {centroid && (
                     <>
                       <FullWidthItem>
-                        <InfoLabel>PM2.5 Average</InfoLabel>
+                        <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
                         <PM25Container>
                           <PM25ValueRow>
                             <HighlightValue>{pm25Value.toFixed(1)} µg/m³</HighlightValue>
@@ -507,7 +508,7 @@ export function InfoSidebar({
                         <InfoValue>{popupInfo.INTPTLAT20}, {popupInfo.INTPTLON20}</InfoValue>
                       </InfoItem>
                       <InfoItem>
-                        <InfoLabel>PM2.5 Status</InfoLabel>
+                        <InfoLabel><PMValue type="2.5" /> Status</InfoLabel>
                         <InfoValue>No monitoring data</InfoValue>
                       </InfoItem>
                     </InfoGrid>
@@ -523,7 +524,7 @@ export function InfoSidebar({
                   </FullWidthItem>
                   
                   <FullWidthItem>
-                    <InfoLabel>PM2.5 Average</InfoLabel>
+                    <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
                     <PM25Container>
                       <PM25ValueRow>
                         <HighlightValue>{popupInfo.pm25Value.toFixed(1)} µg/m³</HighlightValue>
@@ -601,7 +602,7 @@ export function InfoSidebar({
                   </ChartSectionWithArrow>
                 )}
                 
-                {/* PM2.5 Time Series Line Chart */}
+                {/* PM₂.₅ Time Series Line Chart */}
                 <ChartSection>
                   <PM25Chart centroidName={centroid.centroid_name} />
                 </ChartSection>
@@ -611,14 +612,14 @@ export function InfoSidebar({
                 No air quality monitoring data available for this census tract.
                 <br />
                 <br />
-                Select a tract with monitoring stations to view PM2.5 trends and dust source contributions.
+                Select a tract with monitoring stations to view <PMValue type="2.5" /> trends and dust source contributions.
               </NoChartsMessage>
             ) : popupInfo.type === 'bathymetry' || popupInfo.type === 'erodibility' ? (
               <NoChartsMessage>
                 Charts are available for census tracts with air quality monitoring data.
                 <br />
                 <br />
-                Click on a census tract to view PM2.5 trends and dust source analysis.
+                Click on a census tract to view <PMValue type="2.5" /> trends and dust source analysis.
               </NoChartsMessage>
             ) : null}
           </>

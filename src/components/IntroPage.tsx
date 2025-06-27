@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { MapPin, Info, HelpCircle, MessageSquare, Github, Play } from 'lucide-react';
+import PMValue from './common/PMValue';
 
 interface IntroPageProps {
   onComplete: () => void;
@@ -96,15 +97,15 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                 <Divider />
                 
                 <Paragraph style={{ fontSize: '1.25rem' }}>
-                  This tool visualizes PM2.5 dust emissions from The Great Salt Lake and shows the specific dust source contributions for each census tract.
+                  This tool visualizes <PMValue type="2.5" /> dust emissions from The Great Salt Lake and shows the specific dust source contributions for each census tract.
                 </Paragraph>
 
                 <Paragraph style={{ fontSize: '1.25rem' }}>
-                  The underlying data used to produce these visualizes were generated and processed by Derek Mallia and Kevin Perry
+                  The underlying data used to produce these visualizes were generated and processed by Derek Mallia and Kevin Perry.
                 </Paragraph>
 
                 <Paragraph style={{ fontSize: '1.25rem' }}>
-                  Tool developed by Praveenaa Kulandhaivel
+                  Tool developed by Praveenaa Kulandhaivel.
                 </Paragraph>
 
               </ContentCard>
@@ -147,7 +148,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                     <StepNumber>4</StepNumber>
                     <StepContent>
                       <StepTitle>View emissions levels</StepTitle>
-                      <StepDescription>Mouse over colored areas to see specific PM2.5 concentration values.</StepDescription>
+                      <StepDescription>Mouse over colored areas to see specific <PMValue type="2.5" /> concentration values.</StepDescription>
                     </StepContent>
                   </Step>
                   

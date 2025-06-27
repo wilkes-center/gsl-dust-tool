@@ -1,6 +1,8 @@
 // MapControls.tsx
+import React from 'react';
 import styled from 'styled-components';
 import { MapLayers } from './types';
+import PMValue from '../common/PMValue';
 
 const MapControlsPanel = styled.div`
   position: absolute;
@@ -214,7 +216,7 @@ export function MapControlsComponent({
             onChange={() => toggleLayer('pm25Data')}
             id="pm25-layer"
           />
-          <label htmlFor="pm25-layer">PM2.5 Concentrations</label>
+          <label htmlFor="pm25-layer"><PMValue type="2.5" /> Concentrations</label>
         </LayerToggle>
         
         <LayerToggle>
@@ -233,7 +235,7 @@ export function MapControlsComponent({
         {/* Census Tracts Brown legend */}
         {layers.censusTracts && (
           <Legend>
-            <h4>CENSUS TRACTS (PM2.5)</h4>
+            <h4>CENSUS TRACTS (<PMValue type="2.5" />)</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
                 <ColorBox style={{backgroundColor: '#f7f2e9'}} />
@@ -259,10 +261,10 @@ export function MapControlsComponent({
           </Legend>
         )}
 
-        {/* PM2.5 legend for point data */}
+        {/* PM₂.₅ legend for point data */}
         {layers.pm25Data && (
           <Legend>
-            <h4>PM2.5 POINTS</h4>
+            <h4><PMValue type="2.5" /> POINTS</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <LegendItem>
                 <ColorBox style={{backgroundColor: '#f7f2e9'}} />

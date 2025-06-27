@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styled from 'styled-components';
-import { getPM25DataForAllLakeLevels, metersToFeet } from '../../utils/dataUtils';
+import { getPM10DataForAllLakeLevels, metersToFeet } from '../../utils/dataUtils';
+import PMValue from '../common/PMValue';
 
 const ChartContainer = styled.div`
   width: 100%;
@@ -39,12 +40,12 @@ const ErrorText = styled.div`
   font-size: 14px;
 `;
 
-interface PM25ChartProps {
+interface PM10ChartProps {
   centroidName: string;
 }
 
-export function PM25Chart({ centroidName }: PM25ChartProps) {
-  const [data, setData] = useState<{lakeLevel: number, lakeLevelFeet: number, pm25Value: number}[]>([]);
+export function PM10Chart({ centroidName }: PM10ChartProps) {
+  const [data, setData] = useState<{lakeLevel: number, lakeLevelFeet: number, pm10Value: number}[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,19 +55,19 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
       setError(null);
       
       try {
-        const chartData = await getPM25DataForAllLakeLevels(centroidName);
+        const chartData = await getPM10DataForAllLakeLevels(centroidName);
         if (chartData.length === 0) {
           setError('No data available for this monitoring point');
         } else {
           // Keep original meter values for data positioning, add feet for display
-          const dataWithFeet = chartData.map((item: {lakeLevel: number, pm25Value: number}) => ({
+          const dataWithFeet = chartData.map((item: {lakeLevel: number, pm10Value: number}) => ({
             ...item,
             lakeLevelFeet: metersToFeet(item.lakeLevel) // Don't round - keep precise conversion
           }));
           setData(dataWithFeet);
         }
       } catch (err) {
-        console.error('Error loading PM2.5 chart data:', err);
+        console.error('Error loading PM₁₀ chart data:', err);
         setError('Failed to load chart data');
       } finally {
         setLoading(false);
@@ -81,7 +82,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
   if (loading) {
     return (
       <ChartContainer>
-        <ChartTitle>PM2.5 Levels by Lake Elevation</ChartTitle>
+        <ChartTitle><PMValue type="10" /> Levels by Lake Elevation</ChartTitle>
         <LoadingText>Loading chart data...</LoadingText>
       </ChartContainer>
     );
@@ -90,7 +91,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
   if (error) {
     return (
       <ChartContainer>
-        <ChartTitle>PM2.5 Levels by Lake Elevation</ChartTitle>
+        <ChartTitle><PMValue type="10" /> Levels by Lake Elevation</ChartTitle>
         <ErrorText>{error}</ErrorText>
       </ChartContainer>
     );
@@ -98,7 +99,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
 
   return (
     <ChartContainer>
-      <ChartTitle>PM2.5 Levels by Lake Elevation</ChartTitle>
+      <ChartTitle><PMValue type="10" /> Levels by Lake Elevation</ChartTitle>
       <ResponsiveContainer width="100%" height="85%">
         <LineChart 
           data={data} 
@@ -122,7 +123,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
             width={35}
           />
           <Tooltip 
-            formatter={(value: number) => [`${value.toFixed(2)} µg/m³`, 'PM2.5']}
+            formatter={(value: number) => [`${value.toFixed(2)} µg/m³`, 'PM₁₀']}
             labelFormatter={(label) => `Lake Level: ${Math.round(metersToFeet(label))}ft (${label.toFixed(1)}m ASL)`}
             contentStyle={{
               backgroundColor: '#fff',
@@ -133,7 +134,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
           />
           <Line 
             type="monotone" 
-            dataKey="pm25Value" 
+            dataKey="pm10Value" 
             stroke="#8884d8" 
             strokeWidth={2}
             dot={{ fill: '#8884d8', strokeWidth: 2, r: 4 }}

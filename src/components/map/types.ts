@@ -29,7 +29,7 @@ export interface BathymetryLayerProps {
   getBathymetryLayer: () => LayerProps;
 }
 
-// PM2.5 point for rendering
+// PM₂.₅ point for rendering
 export interface PM25Point {
   centroid_name: string;
   longitude: number;

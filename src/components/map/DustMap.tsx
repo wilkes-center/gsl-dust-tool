@@ -5,6 +5,7 @@ import type { MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { usePM25Data, aggregatePM25Data, getAggregatedPM25Color, loadDustContributions, DustContribution } from '../../utils/dataUtils';
 import { HelpCircle, Layers, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import PMValue from '../common/PMValue';
 
 import { MAPBOX_TOKEN, MAPBOX_CONFIG, AVAILABLE_LAKE_LEVELS, getPM25Color } from './constants';
 import { MapViewState, PopupInfo, PM25Point, MapLayers as MapLayersType } from './types';
@@ -189,7 +190,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
   const [averagedPM25Data, setAveragedPM25Data] = useState<Record<string, number>>({});
   const [dustContributions, setDustContributions] = useState<Record<string, DustContribution>>({});
 
-  // Calculate averaged PM2.5 data
+  // Calculate averaged PM₂.₅ data
   useEffect(() => {
     if (pm25Data && pm25Data.length > 0 && !loading) {
       const averaged = aggregatePM25Data(pm25Data);
@@ -206,7 +207,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
     loadContributions();
   }, [selectedLakeLevel]);
 
-  // Update timestamp when PM2.5 data loads
+  // Update timestamp when PM₂.₅ data loads
   useEffect(() => {
     if (pm25Data && pm25Data.length > 0 && onTimestampChange) {
       onTimestampChange(pm25Data[0].timestamp);
@@ -231,7 +232,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
     }));
   }, []);
   
-  // Get PM2.5 points
+  // Get PM₂.₅ points
   const getPM25Points = useCallback((): PM25Point[] => {
     if (!centroidLocations || Object.keys(averagedPM25Data).length === 0) {
       return [];
@@ -297,7 +298,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
             hasPM25Data: true
           };
         } else {
-          // Fallback to original PM2.5 info if no geoid
+          // Fallback to original PM₂.₅ info if no geoid
           setSelectedCensusTractId(null);
           
           newSidebarInfo = {
@@ -447,7 +448,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
                   checked={layers.pm25Data}
                   onChange={() => toggleLayer('pm25Data')}
                 />
-                PM2.5 Concentrations
+                <PMValue type="2.5" /> Concentrations
               </LayerToggle>
               
               <LayerToggle>

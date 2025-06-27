@@ -93,25 +93,25 @@ export async function getCentroidLocations(): Promise<CentroidLocation[]> {
 }
 
 /**
- * Load PM10 data for a specific lake level
+ * Load PM₁₀ data for a specific lake level
  */
 export async function getPM10Data(lakeLevel: number): Promise<PM10Data[]> {
   try {
     // Use BASE_URL to ensure paths work correctly in production
     const filepath = `${import.meta.env.BASE_URL}assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
-    console.log(`Attempting to load PM10 data from: ${filepath}`);
+    console.log(`Attempting to load PM₁₀ data from: ${filepath}`);
     
     const response = await fetch(filepath);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch PM10 data: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch PM₁₀ data: ${response.status} ${response.statusText}`);
     }
     
     const text = await response.text();
     
     // Check if we have valid data
     if (!text || text.trim().length === 0) {
-      console.error(`Empty or invalid PM10 data file for lake level ${lakeLevel}`);
+      console.error(`Empty or invalid PM₁₀ data file for lake level ${lakeLevel}`);
       return [];
     }
     
@@ -119,7 +119,7 @@ export async function getPM10Data(lakeLevel: number): Promise<PM10Data[]> {
     const lines = text.split('\n');
     
     if (lines.length <= 1) {
-      console.error(`PM10 data file for lake level ${lakeLevel} has insufficient data`);
+      console.error(`PM₁₀ data file for lake level ${lakeLevel} has insufficient data`);
       return [];
     }
     
@@ -143,34 +143,34 @@ export async function getPM10Data(lakeLevel: number): Promise<PM10Data[]> {
       pm10Data.push(dataPoint);
     }
     
-    console.log(`Successfully loaded ${pm10Data.length} PM10 data points for lake level ${lakeLevel}`);
+    console.log(`Successfully loaded ${pm10Data.length} PM₁₀ data points for lake level ${lakeLevel}`);
     return pm10Data;
   } catch (error) {
-    console.error(`Error loading PM10 data for lake level ${lakeLevel}:`, error);
+    console.error(`Error loading PM₁₀ data for lake level ${lakeLevel}:`, error);
     return [];
   }
 }
 
 /**
- * Load PM2.5 data for a specific lake level
+ * Load PM₂.₅ data for a specific lake level
  */
 export async function getPM25Data(lakeLevel: number): Promise<PM25Data[]> {
   try {
     // Use BASE_URL to ensure paths work correctly in production
     const filepath = `${import.meta.env.BASE_URL}assets/gsl_${lakeLevel.toFixed(1)}_mASL_centroid_results.csv`;
-    console.log(`Attempting to load PM2.5 data from: ${filepath}`);
+    console.log(`Attempting to load PM₂.₅ data from: ${filepath}`);
     
     const response = await fetch(filepath);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch PM2.5 data: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch PM₂.₅ data: ${response.status} ${response.statusText}`);
     }
     
     const text = await response.text();
     
     // Check if we have valid data
     if (!text || text.trim().length === 0) {
-      console.error(`Empty or invalid PM2.5 data file for lake level ${lakeLevel}`);
+      console.error(`Empty or invalid PM₂.₅ data file for lake level ${lakeLevel}`);
       return [];
     }
     
@@ -178,7 +178,7 @@ export async function getPM25Data(lakeLevel: number): Promise<PM25Data[]> {
     const lines = text.split('\n');
     
     if (lines.length <= 1) {
-      console.error(`PM2.5 data file for lake level ${lakeLevel} has insufficient data`);
+      console.error(`PM₂.₅ data file for lake level ${lakeLevel} has insufficient data`);
       return [];
     }
     
@@ -202,16 +202,16 @@ export async function getPM25Data(lakeLevel: number): Promise<PM25Data[]> {
       pm25Data.push(dataPoint);
     }
     
-    console.log(`Successfully loaded ${pm25Data.length} PM2.5 data points for lake level ${lakeLevel}`);
+    console.log(`Successfully loaded ${pm25Data.length} PM₂.₅ data points for lake level ${lakeLevel}`);
     return pm25Data;
   } catch (error) {
-    console.error(`Error loading PM2.5 data for lake level ${lakeLevel}:`, error);
+    console.error(`Error loading PM₂.₅ data for lake level ${lakeLevel}:`, error);
     return [];
   }
 }
 
 /**
- * Custom hook to get PM10 data for a specific lake level
+ * Custom hook to get PM₁₀ data for a specific lake level
  */
 export function usePM10Data(lakeLevel: number) {
   const [centroidLocations, setCentroidLocations] = useState<CentroidLocation[]>([]);
@@ -241,13 +241,13 @@ export function usePM10Data(lakeLevel: number) {
         
         setCentroidLocations(locations);
         
-        // Then load PM10 data for the selected lake level
+        // Then load PM₁₀ data for the selected lake level
         const data = await getPM10Data(lakeLevel);
         
         if (!isMounted) return;
         
         if (data.length === 0) {
-          throw new Error(`No PM10 data available for lake level ${lakeLevel}`);
+          throw new Error(`No PM₁₀ data available for lake level ${lakeLevel}`);
         }
         
         setPM10Data(data);
@@ -256,12 +256,12 @@ export function usePM10Data(lakeLevel: number) {
       } catch (err) {
         if (!isMounted) return;
         
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load PM10 data';
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load PM₁₀ data';
         console.error(errorMessage);
         
         // Only retry a limited number of times
         if (retryCount < maxRetries) {
-          console.log(`Retrying PM10 data load (attempt ${retryCount + 1}/${maxRetries})`);
+          console.log(`Retrying PM₁₀ data load (attempt ${retryCount + 1}/${maxRetries})`);
           setRetryCount(prev => prev + 1);
           
           // Wait briefly before retrying
@@ -286,7 +286,7 @@ export function usePM10Data(lakeLevel: number) {
 }
 
 /**
- * Custom hook to get PM2.5 data for a specific lake level
+ * Custom hook to get PM₂.₅ data for a specific lake level
  */
 export function usePM25Data(lakeLevel: number) {
   const [centroidLocations, setCentroidLocations] = useState<CentroidLocation[]>([]);
@@ -316,13 +316,13 @@ export function usePM25Data(lakeLevel: number) {
         
         setCentroidLocations(locations);
         
-        // Then load PM2.5 data for the selected lake level
+        // Then load PM₂.₅ data for the selected lake level
         const data = await getPM25Data(lakeLevel);
         
         if (!isMounted) return;
         
         if (data.length === 0) {
-          throw new Error(`No PM2.5 data available for lake level ${lakeLevel}`);
+          throw new Error(`No PM₂.₅ data available for lake level ${lakeLevel}`);
         }
         
         setPM25Data(data);
@@ -331,12 +331,12 @@ export function usePM25Data(lakeLevel: number) {
       } catch (err) {
         if (!isMounted) return;
         
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load PM2.5 data';
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load PM₂.₅ data';
         console.error(errorMessage);
         
         // Only retry a limited number of times
         if (retryCount < maxRetries) {
-          console.log(`Retrying PM2.5 data load (attempt ${retryCount + 1}/${maxRetries})`);
+          console.log(`Retrying PM₂.₅ data load (attempt ${retryCount + 1}/${maxRetries})`);
           setRetryCount(prev => prev + 1);
           
           // Wait briefly before retrying
@@ -373,49 +373,49 @@ export function metersToFeet(meters: number): number {
 export const AVAILABLE_LAKE_LEVELS = [1275.0, 1276.0, 1277.0, 1278.0, 1279.0, 1280.0, 1281.0, 1282.0];
 
 /**
- * Get PM10 color based on value
+ * Get PM₁₀ color based on value
  */
 export function getPM10Color(value: number): string {
-  if (value < 5) return '#f7f2e9';      // Warm off-white (low PM10)
-  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate PM10)
-  if (value < 15) return '#d6c5a2';     // Café au lait (high PM10)
-  if (value < 20) return '#c4a373';     // Medium coffee (very high PM10)
-  return '#a0784a';                     // Dark coffee (extremely high PM10)
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low PM₁₀)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate PM₁₀)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high PM₁₀)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high PM₁₀)
+  return '#a0784a';                     // Dark coffee (extremely high PM₁₀)
 }
 
 /**
- * Get PM2.5 color based on value
+ * Get PM₂.₅ color based on value
  */
 export function getPM25Color(value: number): string {
-  if (value < 5) return '#f7f2e9';      // Warm off-white (low PM2.5)
-  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate PM2.5)
-  if (value < 15) return '#d6c5a2';     // Café au lait (high PM2.5)
-  if (value < 20) return '#c4a373';     // Medium coffee (very high PM2.5)
-  return '#a0784a';                     // Dark coffee (extremely high PM2.5)
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low PM₂.₅)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate PM₂.₅)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high PM₂.₅)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high PM₂.₅)
+  return '#a0784a';                     // Dark coffee (extremely high PM₂.₅)
 }
 
 /**
- * Get color for averaged PM10 values (averaged across all timestamps)
- * Uses the same color scale as individual PM10 values
+ * Get color for averaged PM₁₀ values (averaged across all timestamps)
+ * Uses the same color scale as individual PM₁₀ values
  */
 export function getAggregatedPM10Color(value: number): string {
-  if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM10)
-  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate averaged PM10)
-  if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM10)
-  if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM10)
-  return '#a0784a';                     // Dark coffee (extremely high averaged PM10)
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM₁₀)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate averaged PM₁₀)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM₁₀)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM₁₀)
+  return '#a0784a';                     // Dark coffee (extremely high averaged PM₁₀)
 }
 
 /**
- * Get color for averaged PM2.5 values (averaged across all timestamps)
- * Uses the same color scale as individual PM2.5 values
+ * Get color for averaged PM₂.₅ values (averaged across all timestamps)
+ * Uses the same color scale as individual PM₂.₅ values
  */
 export function getAggregatedPM25Color(value: number): string {
-  if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM2.5)
-  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate averaged PM2.5)
-  if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM2.5)
-  if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM2.5)
-  return '#a0784a';                     // Dark coffee (extremely high averaged PM2.5)
+  if (value < 5) return '#f7f2e9';      // Warm off-white (low averaged PM₂.₅)
+  if (value < 10) return '#e8dcc6';     // Light coffee with cream (moderate averaged PM₂.₅)
+  if (value < 15) return '#d6c5a2';     // Café au lait (high averaged PM₂.₅)
+  if (value < 20) return '#c4a373';     // Medium coffee (very high averaged PM₂.₅)
+  return '#a0784a';                     // Dark coffee (extremely high averaged PM₂.₅)
 }
 
 /**
@@ -520,7 +520,7 @@ export function generateShoreline(bathymetryData: BathymetryPoint[], elevation: 
 }
 
 /**
- * Calculate average PM10 data across all timestamps for each centroid
+ * Calculate average PM₁₀ data across all timestamps for each centroid
  * Returns a single data point with averaged values for each centroid
  */
 export function averagePM10Data(pm10Data: PM10Data[]): Record<string, number> {
@@ -552,7 +552,7 @@ export function averagePM10Data(pm10Data: PM10Data[]): Record<string, number> {
 export const aggregatePM10Data = averagePM10Data;
 
 /**
- * Load PM10 data for all lake levels for a specific centroid
+ * Load PM₁₀ data for all lake levels for a specific centroid
  * Returns an array of {lakeLevel, pm10Value} objects
  */
 export async function getPM10DataForAllLakeLevels(centroidName: string): Promise<{lakeLevel: number, pm10Value: number}[]> {
@@ -562,7 +562,7 @@ export async function getPM10DataForAllLakeLevels(centroidName: string): Promise
     try {
       const pm10Data = await getPM10Data(lakeLevel);
       if (pm10Data && pm10Data.length > 0) {
-        // Calculate average PM10 for this centroid across all timestamps
+        // Calculate average PM₁₀ for this centroid across all timestamps
         const aggregated = averagePM10Data(pm10Data);
         const pm10Value = aggregated[centroidName];
         
@@ -574,7 +574,7 @@ export async function getPM10DataForAllLakeLevels(centroidName: string): Promise
         }
       }
     } catch (error) {
-      console.warn(`Failed to load PM10 data for lake level ${lakeLevel}:`, error);
+      console.warn(`Failed to load PM₁₀ data for lake level ${lakeLevel}:`, error);
       // Continue with other lake levels even if one fails
     }
   }
@@ -617,7 +617,7 @@ export async function getPM25DataForAllLakeLevels(centroidName: string): Promise
     try {
       const pm25Data = await getPM25Data(lakeLevel);
       if (pm25Data && pm25Data.length > 0) {
-        // Calculate average PM2.5 for this centroid across all timestamps
+        // Calculate average PM₂.₅ for this centroid across all timestamps
         const aggregated = averagePM25Data(pm25Data);
         const pm25Value = aggregated[centroidName];
         
@@ -629,7 +629,7 @@ export async function getPM25DataForAllLakeLevels(centroidName: string): Promise
         }
       }
     } catch (error) {
-      console.warn(`Failed to load PM2.5 data for lake level ${lakeLevel}:`, error);
+      console.warn(`Failed to load PM₂.₅ data for lake level ${lakeLevel}:`, error);
       // Continue with other lake levels even if one fails
     }
   }

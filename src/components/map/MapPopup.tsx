@@ -6,6 +6,7 @@ import { getAggregatedPM25Color, DustContribution } from '../../utils/dataUtils'
 import { getErodibilityColor } from './constants';
 import { PM25Chart } from './PM25Chart';
 import { DustContributionChart } from './DustContributionChart';
+import PMValue from '../common/PMValue';
 
 // Styled components following the brand guide
 const StyledPopupContent = styled.div`
@@ -231,10 +232,10 @@ export function MapPopup({
             {popupInfo.hasPM25Data ? (
               <>
                 <InfoRow>
-                  <InfoLabel>PM2.5 Status</InfoLabel>
+                  <InfoLabel><PMValue type="2.5" /> Status</InfoLabel>
                   <StatusValue status="Active">Active</StatusValue>
                 </InfoRow>
-                {/* Find the corresponding centroid and display its PM2.5 value */}
+                {/* Find the corresponding centroid and display its PM₂.₅ value */}
                 {(() => {
                   const centroid = centroidLocations.find(c => c.geoid === popupInfo.GEOID20);
                   if (!centroid) return null;
@@ -255,7 +256,7 @@ export function MapPopup({
                         <HighlightValue>{centroid.centroid_name}</HighlightValue>
                       </InfoRow>
                       <InfoRow>
-                        <InfoLabel>PM2.5 Average</InfoLabel>
+                        <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
                         <HighlightValue>{pm25Value.toFixed(1)} µg/m³</HighlightValue>
                         <QualityIndicator quality={getAirQuality(pm25Value)}>
                           {getAirQuality(pm25Value)}
@@ -285,20 +286,20 @@ export function MapPopup({
               </>
             ) : (
               <InfoRow>
-                <InfoLabel>PM2.5 Status</InfoLabel>
+                <InfoLabel><PMValue type="2.5" /> Status</InfoLabel>
                 <InfoValue>Not available for this tract</InfoValue>
               </InfoRow>
             )}
           </>
         ) : popupInfo.type === 'pm25' ? (
           <>
-            <PopupHeader>PM2.5 Monitoring Point</PopupHeader>
+            <PopupHeader><PMValue type="2.5" /> Monitoring Point</PopupHeader>
             <InfoRow>
               <InfoLabel>Location</InfoLabel>
               <HighlightValue>{popupInfo.centroidName}</HighlightValue>
             </InfoRow>
             <InfoRow>
-              <InfoLabel>PM2.5 Average</InfoLabel>
+              <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
               <HighlightValue>{popupInfo.pm25Value.toFixed(1)} µg/m³</HighlightValue>
               <QualityIndicator quality={getAirQuality(popupInfo.pm25Value)}>
                 {getAirQuality(popupInfo.pm25Value)}

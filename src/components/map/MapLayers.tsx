@@ -34,7 +34,7 @@ export function MapLayers({
           type="vector"
           url="mapbox://pkulandh.7y35kkod"
         >
-          {/* PM2.5 colored census tracts */}
+          {/* PM₂.₅ colored census tracts */}
           <Layer
             id="census-tracts-all-fill"
             type="fill"
@@ -47,12 +47,12 @@ export function MapLayers({
                 [
                   'match',
                   ['get', 'GEOID20'],
-                  // Create a match for each GEOID to its corresponding PM2.5 color
+                  // Create a match for each GEOID to its corresponding PM₂.₅ color
                   ...((() => {
                     // Create an object to store unique GEOID -> color mappings
                     const geoidColorMap: Record<string, string> = {};
                     
-                    // Populate the map with the latest color for each GEOID if PM2.5 data is available
+                    // Populate the map with the latest color for each GEOID if PM₂.₅ data is available
                     if (!loading && averagedPM25Data && Object.keys(averagedPM25Data).length > 0) {
                       centroidLocations
                         .filter(c => c.geoid)
@@ -70,7 +70,7 @@ export function MapLayers({
                       [geoid, color]
                     );
                   })()),
-                  'rgba(200,200,200,0.3)' // Light gray for tracts without PM2.5 data
+                  'rgba(200,200,200,0.3)' // Light gray for tracts without PM₂.₅ data
                 ]
               ],
               'fill-opacity': [
@@ -201,7 +201,7 @@ export function MapLayers({
         </Source>
       )}
       
-      {/* PM2.5 Data Points */}
+      {/* PM₂.₅ Data Points */}
       {layers.pm25Data && !loading && (
         <Source
           id="pm25-data-source"

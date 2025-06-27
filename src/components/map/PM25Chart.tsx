@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styled from 'styled-components';
 import { getPM25DataForAllLakeLevels, metersToFeet } from '../../utils/dataUtils';
+import PMValue from '../common/PMValue';
 
 const ChartContainer = styled.div`
   width: 100%;
@@ -69,7 +70,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
           setData(dataWithFeet);
         }
       } catch (err) {
-        console.error('Error loading PM2.5 chart data:', err);
+        console.error('Error loading PM₂.₅ chart data:', err);
         setError('Failed to load chart data');
       } finally {
         setLoading(false);
@@ -84,7 +85,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
   if (loading) {
     return (
       <ChartContainer>
-        <ChartTitle>PM2.5 Levels by Lake Elevation</ChartTitle>
+        <ChartTitle><PMValue type="2.5" /> Levels by Lake Elevation</ChartTitle>
         <LoadingText>Loading chart data...</LoadingText>
       </ChartContainer>
     );
@@ -93,7 +94,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
   if (error) {
     return (
       <ChartContainer>
-        <ChartTitle>PM2.5 Levels by Lake Elevation</ChartTitle>
+        <ChartTitle><PMValue type="2.5" /> Levels by Lake Elevation</ChartTitle>
         <ErrorText>{error}</ErrorText>
       </ChartContainer>
     );
@@ -101,7 +102,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
 
   return (
     <ChartContainer>
-      <ChartTitle>PM2.5 Levels by Lake Elevation</ChartTitle>
+      <ChartTitle><PMValue type="2.5" /> Levels by Lake Elevation</ChartTitle>
       <ResponsiveContainer width="100%" height="85%">
         <LineChart 
           data={data} 
@@ -130,7 +131,7 @@ export function PM25Chart({ centroidName }: PM25ChartProps) {
             style={{ fontFamily: 'Red Hat Display, sans-serif' }}
           />
           <Tooltip 
-            formatter={(value: number) => [`${value.toFixed(2)} µg/m³`, 'PM2.5']}
+            formatter={(value: number) => [`${value.toFixed(2)} µg/m³`, 'PM₂.₅']}
             labelFormatter={(label) => `Lake Level: ${Math.round(metersToFeet(label))}ft (${label.toFixed(1)}m ASL)`}
             contentStyle={{
               backgroundColor: '#f9f6ef',
