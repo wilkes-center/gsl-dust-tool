@@ -263,15 +263,14 @@ const ChartSectionWithArrow = styled.div`
 
 const DownArrowButton = styled.button`
   position: absolute;
-  top: 50%;
+  bottom: 15px;
   right: 15px;
-  transform: translateY(-50%);
   background: ${({ theme }) => theme.colors.moabMahogany};
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -282,12 +281,12 @@ const DownArrowButton = styled.button`
   
   &:hover {
     background: #8b2113;
-    transform: translateY(-50%) scale(1.1);
+    transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(117, 29, 12, 0.4);
   }
   
   &:active {
-    transform: translateY(-50%) scale(0.95);
+    transform: scale(0.95);
   }
 `;
 
@@ -597,7 +596,7 @@ export function InfoSidebar({
                       onClick={scrollToBottom}
                       title="Scroll to bottom"
                     >
-                      <ChevronDown size={20} />
+                      <ChevronDown size={28} />
                     </DownArrowButton>
                   </ChartSectionWithArrow>
                 )}
