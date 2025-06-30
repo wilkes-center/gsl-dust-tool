@@ -390,11 +390,12 @@ export function InfoSidebar({
   };
 
   const getPM25FilledMarkers = (pm25Value: number) => {
-    // Return how many markers should be filled (0-4)
+    // Return how many markers should be filled (1-5) to match the 5 categories
     if (pm25Value < 5) return 1;
     if (pm25Value < 10) return 2;
     if (pm25Value < 15) return 3;
-    return 4;
+    if (pm25Value < 20) return 4;
+    return 5;
   };
 
   const getErodibilityClass = (value: number) => {
@@ -473,7 +474,7 @@ export function InfoSidebar({
                           <PM25ValueRow>
                             <HighlightValue>{pm25Value.toFixed(1)} µg/m³</HighlightValue>
                             <PM25Markers>
-                              {[1, 2, 3, 4].map((marker) => (
+                              {[1, 2, 3, 4, 5].map((marker) => (
                                 <PM25Marker 
                                   key={marker}
                                   filled={marker <= getPM25FilledMarkers(pm25Value)}
@@ -529,7 +530,7 @@ export function InfoSidebar({
                       <PM25ValueRow>
                         <HighlightValue>{popupInfo.pm25Value.toFixed(1)} µg/m³</HighlightValue>
                         <PM25Markers>
-                          {[1, 2, 3, 4].map((marker) => (
+                          {[1, 2, 3, 4, 5].map((marker) => (
                             <PM25Marker 
                               key={marker}
                               filled={marker <= getPM25FilledMarkers(popupInfo.pm25Value)}
