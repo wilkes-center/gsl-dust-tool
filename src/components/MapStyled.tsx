@@ -609,40 +609,110 @@ export const TimeSlider = styled.div`
 
 export const TimeSliderTicks = styled.div`
   position: absolute;
-  width: 16px;
-  height: 100%;
-  margin-left: ${({ theme }) => theme.spacing.xxs};
+  bottom: -12px;
+  left: 24px;
+  right: 24px;
+  height: 14px;
+  pointer-events: none;
 `;
 
 export const TimeSliderTick = styled.div<{ $left: string; $isSelected: boolean }>`
   position: absolute;
-  bottom: ${props => props.$left};
-  transform: translateY(50%);
-  width: ${props => props.$isSelected ? '16px' : '6px'};
-  height: ${props => props.$isSelected ? '4px' : '1px'};
-  background-color: ${props => props.$isSelected 
-    ? '#D2B48C' // Tan for selected tick
-    : props.theme.colors.moabMahogany}; // Mahogany for other ticks
-  box-shadow: ${props => props.$isSelected ? '0 0 10px 3px rgba(210,180,140,0.45)' : 'none'};
-  border-radius: 2px;
-  left: 0;
+  left: ${props => props.$left};
+  bottom: 0;
+  width: ${props => props.$isSelected ? '3px' : '2px'};
+  height: ${props => props.$isSelected ? '10px' : '8px'};
+  background: ${props => props.$isSelected 
+    ? `linear-gradient(180deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        ${props.theme.colors.moabMahogany} 20%, 
+        #8B1A1A 100%
+      )`
+    : `linear-gradient(180deg, 
+        rgba(117, 29, 12, 0.7) 0%, 
+        rgba(117, 29, 12, 0.4) 70%,
+        rgba(117, 29, 12, 0.2) 100%
+      )`
+  };
+  transform: translateX(-50%);
+  border-radius: ${props => props.$isSelected ? '2px' : '1px'};
+  box-shadow: ${props => props.$isSelected 
+    ? `0 2px 4px rgba(117, 29, 12, 0.3),
+       0 1px 2px rgba(0, 0, 0, 0.1),
+       inset 0 1px 0 rgba(255, 255, 255, 0.2)`
+    : '0 1px 2px rgba(0, 0, 0, 0.1)'
+  };
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 0 0 2px 2px;
+    opacity: ${props => props.$isSelected ? 1 : 0.3};
+  }
 `;
 
-export const TimeSliderTickLabel = styled.span<{ $isSelected: boolean, $isEdge?: boolean, $labelPosition?: 'above' | 'below' }>`
+export const TimeSliderTickLabel = styled.div<{ $isSelected: boolean }>`
   position: absolute;
-  bottom: 50%;
-  transform: translateY(50%);
-  font-size: ${props => props.$isSelected ? '11px' : '9px'};
-  color: ${props => props.$isSelected 
-    ? props.theme.colors.moabMahogany 
-    : props.theme.colors.olympicParkObsidian};
-  font-weight: ${props => props.$isSelected 
-    ? props.theme.typography.weights.semiBold 
-    : props.theme.typography.weights.regular};
+  bottom: 16px;
+  transform: translateX(0);
+  font-size: ${props => props.$isSelected ? "12px" : "11px"};
+  color: ${props => props.$isSelected ? "#751d0c" : "rgba(117, 29, 12, 0.85)"};
+  font-weight: ${props => props.$isSelected ? "700" : "500"};
   white-space: nowrap;
-  left: ${props => props.$labelPosition === 'above' ? '22px' : '-18px'};
-  right: ${props => props.$labelPosition === 'above' ? 'unset' : '22px'};
-  pointer-events: none;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  letter-spacing: ${props => props.$isSelected ? "0.3px" : "0.2px"};
+  text-shadow: ${props => props.$isSelected 
+    ? "0 1px 2px rgba(117, 29, 12, 0.2), 0 0 3px rgba(255, 255, 255, 0.8)" 
+    : "0 0.5px 1px rgba(255, 255, 255, 0.8)"
+  };
+  background: ${props => props.$isSelected 
+    ? `linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.98) 0%, 
+        rgba(248, 249, 250, 0.95) 50%,
+        rgba(245, 245, 247, 0.92) 100%
+      )`
+    : "rgba(255, 255, 255, 0.85)"
+  };
+  padding: ${props => props.$isSelected ? "3px 6px" : "2px 4px"};
+  border-radius: ${props => props.$isSelected ? "4px" : "3px"};
+  box-shadow: ${props => props.$isSelected 
+    ? `0 2px 6px rgba(117, 29, 12, 0.15), 
+       0 1px 2px rgba(0, 0, 0, 0.1),
+       inset 0 1px 0 rgba(255, 255, 255, 0.6)`
+    : "0 1px 3px rgba(0, 0, 0, 0.08)"
+  };
+  border: ${props => props.$isSelected 
+    ? "1px solid rgba(117, 29, 12, 0.2)"
+    : "1px solid rgba(117, 29, 12, 0.1)"
+  };
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(3px);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 10;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.6) 50%, 
+      transparent 100%
+    );
+    border-radius: 0 0 4px 4px;
+    opacity: ${props => props.$isSelected ? 1 : 0.5};
+  }
 `;
 
 // Bottom Left Legend container
@@ -662,4 +732,465 @@ export const BottomLeftLegend = styled.div`
     rgba(249, 246, 239, 1),
     rgba(249, 246, 239, 0.9)
   );
+`;
+
+// Horizontal Time Slider Components
+export const HorizontalTimeSliderContainer = styled.div<{ $expanded: boolean }>`
+  position: absolute;
+  bottom: 40px;
+  left: 60px;
+  background: ${({ theme }) => theme.colors.snowbirdWhite};
+  backdrop-filter: blur(12px);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  overflow: hidden;
+  
+  width: ${props => props.$expanded ? '800px' : '180px'};
+  height: ${props => props.$expanded ? '140px' : '80px'};
+  
+  @media (max-width: 768px) {
+    width: ${props => props.$expanded ? '95vw' : '180px'};
+    left: ${props => props.$expanded ? '2.5vw' : '60px'};
+  }
+`;
+
+export const HorizontalTimeSliderToggle = styled.button<{ $expanded: boolean }>`
+  width: 100%;
+  height: 60px;
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  font-size: 15px;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 10;
+  
+  &:hover {
+    background: rgba(117, 29, 12, 0.05);
+  }
+  
+  .timestamp {
+    color: ${({ theme }) => theme.colors.olympicParkObsidian};
+    font-weight: ${({ theme }) => theme.typography.weights.medium};
+    font-size: 12px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    background: #f8f9fa;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(117, 29, 12, 0.1);
+    letter-spacing: 0.2px;
+  }
+  
+  .play-button {
+    background: none;
+    border: 1px solid rgba(117, 29, 12, 0.3);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #751d0c;
+    transition: all 0.2s ease;
+    width: 28px;
+    height: 28px;
+    
+    &:hover {
+      background: rgba(117, 29, 12, 0.1);
+      border-color: #751d0c;
+    }
+  }
+  
+  .averaged-button {
+    background: none;
+    border: 1px solid rgba(117, 29, 12, 0.3);
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #751d0c;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    font-weight: 500;
+    
+    &:hover {
+      background: rgba(117, 29, 12, 0.1);
+      border-color: #751d0c;
+    }
+  }
+`;
+
+export const HorizontalTimeSliderContent = styled.div<{ $expanded: boolean }>`
+  height: ${props => props.$expanded ? '70px' : '0'};
+  overflow: ${props => props.$expanded ? 'visible' : 'hidden'};
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.8);
+  border-top: ${props => props.$expanded ? '1px solid rgba(117, 29, 12, 0.1)' : 'none'};
+  padding-top: ${props => props.$expanded ? '8px' : '0'};
+  position: relative;
+`;
+
+export const HorizontalTimeSliderHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  height: 40px;
+  
+  h4 {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.moabMahogany};
+    font-size: 14px;
+    font-weight: ${({ theme }) => theme.typography.weights.semiBold};
+    font-family: ${({ theme }) => theme.typography.displayFont};
+    letter-spacing: 0.3px;
+  }
+  
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .timestamp {
+    color: ${({ theme }) => theme.colors.olympicParkObsidian};
+    font-weight: ${({ theme }) => theme.typography.weights.medium};
+    font-size: 12px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    background: #f8f9fa;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(117, 29, 12, 0.1);
+    letter-spacing: 0.2px;
+  }
+  
+  .play-button {
+    background: none;
+    border: 1px solid rgba(117, 29, 12, 0.3);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #751d0c;
+    transition: all 0.2s ease;
+    width: 24px;
+    height: 24px;
+    
+    &:hover {
+      background: rgba(117, 29, 12, 0.1);
+      border-color: #751d0c;
+    }
+  }
+  
+  .averaged-button {
+    background: none;
+    border: 1px solid rgba(117, 29, 12, 0.3);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #751d0c;
+    transition: all 0.2s ease;
+    font-size: 11px;
+    font-weight: 500;
+    
+    &:hover {
+      background: rgba(117, 29, 12, 0.1);
+      border-color: #751d0c;
+    }
+  }
+`;
+
+export const HorizontalTimeSliderTrack = styled.div`
+  position: relative;
+  padding: 12px 24px;
+  margin-top: 4px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(248, 249, 250, 0.98) 50%,
+    rgba(245, 245, 247, 0.95) 100%
+  );
+  border-radius: 12px;
+  margin: 4px 8px;
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(117, 29, 12, 0.08);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.8) 50%, 
+      transparent 100%
+    );
+    border-radius: 12px 12px 0 0;
+  }
+`;
+
+export const HorizontalTimeSliderInput = styled.input`
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(
+    to right,
+    ${({ theme }) => theme.colors.moabMahogany} 0%,
+    ${({ theme }) => theme.colors.moabMahogany} var(--progress, 0%),
+    rgba(117, 29, 12, 0.12) var(--progress, 0%),
+    rgba(117, 29, 12, 0.12) 100%
+  );
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(117, 29, 12, 0.15);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.4) 50%, 
+      transparent 100%
+    );
+    border-radius: 4px 4px 0 0;
+  }
+  
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 30% 30%, 
+      rgba(255, 255, 255, 0.4) 0%, 
+      ${({ theme }) => theme.colors.moabMahogany} 30%, 
+      #8B1A1A 100%
+    );
+    cursor: pointer;
+    box-shadow: 
+      0 3px 8px rgba(117, 29, 12, 0.4), 
+      0 1px 3px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    }
+  }
+  
+  &::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 
+      0 5px 15px rgba(117, 29, 12, 0.5), 
+      0 2px 6px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 0 0 3px rgba(117, 29, 12, 0.1);
+  }
+  
+  &::-webkit-slider-thumb:active {
+    transform: scale(1.1);
+    box-shadow: 
+      0 2px 10px rgba(117, 29, 12, 0.6), 
+      0 1px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  &::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 30% 30%, 
+      rgba(255, 255, 255, 0.4) 0%, 
+      ${({ theme }) => theme.colors.moabMahogany} 30%, 
+      #8B1A1A 100%
+    );
+    cursor: pointer;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 
+      0 3px 8px rgba(117, 29, 12, 0.4), 
+      0 1px 3px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  &::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 
+      0 5px 15px rgba(117, 29, 12, 0.5), 
+      0 2px 6px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 0 0 3px rgba(117, 29, 12, 0.1);
+  }
+`;
+
+export const HorizontalTimeSliderTicks = styled.div`
+  position: absolute;
+  bottom: -12px;
+  left: 24px;
+  right: 24px;
+  height: 14px;
+  pointer-events: none;
+`;
+
+export const HorizontalTimeSliderTick = styled.div<{ $left: string; $isSelected: boolean }>`
+  position: absolute;
+  left: ${props => props.$left};
+  bottom: 0;
+  width: ${props => props.$isSelected ? '3px' : '2px'};
+  height: ${props => props.$isSelected ? '10px' : '8px'};
+  background: ${props => props.$isSelected 
+    ? `linear-gradient(180deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        ${props.theme.colors.moabMahogany} 20%, 
+        #8B1A1A 100%
+      )`
+    : `linear-gradient(180deg, 
+        rgba(117, 29, 12, 0.7) 0%, 
+        rgba(117, 29, 12, 0.4) 70%,
+        rgba(117, 29, 12, 0.2) 100%
+      )`
+  };
+  transform: translateX(-50%);
+  border-radius: ${props => props.$isSelected ? '2px' : '1px'};
+  box-shadow: ${props => props.$isSelected 
+    ? `0 2px 4px rgba(117, 29, 12, 0.3),
+       0 1px 2px rgba(0, 0, 0, 0.1),
+       inset 0 1px 0 rgba(255, 255, 255, 0.2)`
+    : '0 1px 2px rgba(0, 0, 0, 0.1)'
+  };
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 0 0 2px 2px;
+    opacity: ${props => props.$isSelected ? 1 : 0.3};
+  }
+`;
+
+export const HorizontalTimeSliderHourlyTick = styled.div<{ $left: string; $isSelected: boolean }>`
+  position: absolute;
+  left: ${props => props.$left};
+  bottom: 3px;
+  width: 1px;
+  height: ${props => props.$isSelected ? '6px' : '4px'};
+  background: ${props => props.$isSelected 
+    ? 'linear-gradient(180deg, rgba(117, 29, 12, 0.9) 0%, rgba(117, 29, 12, 0.6) 100%)' 
+    : 'linear-gradient(180deg, rgba(117, 29, 12, 0.4) 0%, rgba(117, 29, 12, 0.2) 100%)'
+  };
+  transform: translateX(-50%);
+  border-radius: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${props => props.$isSelected 
+    ? '0 1px 2px rgba(117, 29, 12, 0.3)' 
+    : '0 0.5px 1px rgba(0, 0, 0, 0.1)'
+  };
+`;
+
+export const HorizontalTimeSliderTickLabel = styled.div<{ $isSelected: boolean }>`
+  position: absolute;
+  bottom: 16px;
+  transform: translateX(0);
+  font-size: ${props => props.$isSelected ? "12px" : "11px"};
+  color: ${props => props.$isSelected ? "#751d0c" : "rgba(117, 29, 12, 0.85)"};
+  font-weight: ${props => props.$isSelected ? "700" : "500"};
+  white-space: nowrap;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  letter-spacing: ${props => props.$isSelected ? "0.3px" : "0.2px"};
+  text-shadow: ${props => props.$isSelected 
+    ? "0 1px 2px rgba(117, 29, 12, 0.2), 0 0 3px rgba(255, 255, 255, 0.8)" 
+    : "0 0.5px 1px rgba(255, 255, 255, 0.8)"
+  };
+  background: ${props => props.$isSelected 
+    ? `linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.98) 0%, 
+        rgba(248, 249, 250, 0.95) 50%,
+        rgba(245, 245, 247, 0.92) 100%
+      )`
+    : "rgba(255, 255, 255, 0.85)"
+  };
+  padding: ${props => props.$isSelected ? "3px 6px" : "2px 4px"};
+  border-radius: ${props => props.$isSelected ? "4px" : "3px"};
+  box-shadow: ${props => props.$isSelected 
+    ? `0 2px 6px rgba(117, 29, 12, 0.15), 
+       0 1px 2px rgba(0, 0, 0, 0.1),
+       inset 0 1px 0 rgba(255, 255, 255, 0.6)`
+    : "0 1px 3px rgba(0, 0, 0, 0.08)"
+  };
+  border: ${props => props.$isSelected 
+    ? "1px solid rgba(117, 29, 12, 0.2)"
+    : "1px solid rgba(117, 29, 12, 0.1)"
+  };
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(3px);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 10;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.6) 50%, 
+      transparent 100%
+    );
+    border-radius: 0 0 4px 4px;
+    opacity: ${props => props.$isSelected ? 1 : 0.5};
+  }
 `;

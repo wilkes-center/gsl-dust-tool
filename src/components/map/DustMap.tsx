@@ -12,6 +12,7 @@ import { MapViewState, PopupInfo, PM25Point, MapLayers as MapLayersType } from '
 import { MapLayers } from './MapLayers';
 import { InfoSidebar } from './InfoSidebar';
 import { LakeLevelControl } from './LakeLevelControl';
+import HorizontalTimeSlider from './HorizontalTimeSlider';
 import styled from 'styled-components';
 
 // Styled components
@@ -185,6 +186,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
   const [selectedElevation, setSelectedElevation] = useState<number>(AVAILABLE_LAKE_LEVELS[0]);
   const [selectedTimestampIndex, setSelectedTimestampIndex] = useState<number>(0);
   const [selectedCensusTractId, setSelectedCensusTractId] = useState<string | null>(null);
+  const [timelineMode, setTimelineMode] = useState<'averaged' | 'time-specific'>('averaged');
   
   const { centroidLocations, pm25Data, loading } = usePM25Data(selectedLakeLevel);
   const [averagedPM25Data, setAveragedPM25Data] = useState<Record<string, number>>({});
@@ -207,12 +209,18 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
     loadContributions();
   }, [selectedLakeLevel]);
 
-  // Update timestamp when PM₂.₅ data loads
+  // Update timestamp when PM₂.₅ data loads or timestamp index changes
   useEffect(() => {
     if (pm25Data && pm25Data.length > 0 && onTimestampChange) {
-      onTimestampChange(pm25Data[0].timestamp);
+      const currentTimestamp = pm25Data[selectedTimestampIndex]?.timestamp || pm25Data[0].timestamp;
+      onTimestampChange(currentTimestamp);
     }
-  }, [pm25Data, onTimestampChange]);
+  }, [pm25Data, selectedTimestampIndex, onTimestampChange]);
+
+  // Handle timestamp index change
+  const handleTimestampIndexChange = useCallback((index: number) => {
+    setSelectedTimestampIndex(index);
+  }, []);
   
   // Handle map load
   const onMapLoadHandler = useCallback(() => {
@@ -232,14 +240,55 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
     }));
   }, []);
   
+  // Handle timeline mode change
+  const handleTimelineModeChange = useCallback((mode: 'averaged' | 'time-specific') => {
+    setTimelineMode(mode);
+  }, []);
+  
+  // Get current timestamp PM25 data
+  const getCurrentTimestampPM25Data = useCallback((): Record<string, number> => {
+    // If in averaged mode, return averaged data
+    if (timelineMode === 'averaged') {
+      return averagedPM25Data;
+    }
+    
+    // Otherwise, return time-specific data
+    if (!pm25Data || pm25Data.length === 0) {
+      return {};
+    }
+    
+    const currentData = pm25Data[selectedTimestampIndex] || pm25Data[0];
+    const result: Record<string, number> = {};
+    
+    // Extract PM25 values for each centroid from the current timestamp
+    Object.keys(currentData).forEach(key => {
+      if (key !== 'timestamp') {
+        const value = currentData[key];
+        if (typeof value === 'number') {
+          result[key] = value;
+        }
+      }
+    });
+    
+    return result;
+  }, [pm25Data, selectedTimestampIndex, timelineMode, averagedPM25Data]);
+  
   // Get PM₂.₅ points
   const getPM25Points = useCallback((): PM25Point[] => {
-    if (!centroidLocations || Object.keys(averagedPM25Data).length === 0) {
+    if (!centroidLocations) {
+      return [];
+    }
+
+    // Use current timestamp data if available, otherwise fall back to averaged data
+    const currentPM25Data = getCurrentTimestampPM25Data();
+    const dataToUse = Object.keys(currentPM25Data).length > 0 ? currentPM25Data : averagedPM25Data;
+    
+    if (Object.keys(dataToUse).length === 0) {
       return [];
     }
 
     return centroidLocations.map(centroid => {
-      const pm25Value = averagedPM25Data[centroid.centroid_name] || 0;
+      const pm25Value = dataToUse[centroid.centroid_name] || 0;
       
       return {
         centroid_name: centroid.centroid_name,
@@ -250,7 +299,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
         color: getAggregatedPM25Color(pm25Value)
       };
     });
-  }, [centroidLocations, averagedPM25Data]);
+  }, [centroidLocations, getCurrentTimestampPM25Data, averagedPM25Data]);
   
   // Handle map clicks
   const handleMapClick = useCallback((event: any) => {
@@ -397,6 +446,15 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
             selectedLevel={selectedLakeLevel}
             onLevelChange={handleLakeLevelChange}
           />
+
+          {/* Time Slider Control */}
+          <HorizontalTimeSlider
+            pm25Data={pm25Data || []}
+            selectedTimestampIndex={selectedTimestampIndex}
+            onTimestampIndexChange={handleTimestampIndexChange}
+            loading={loading}
+            onModeChange={handleTimelineModeChange}
+          />
           
           {/* Minimized/Expanded controls (top right) */}
           <MinimizedControls 
@@ -467,7 +525,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
             <MapLayers
               layers={layers}
               selectedElevation={selectedElevation}
-              averagedPM25Data={averagedPM25Data}
+              averagedPM25Data={getCurrentTimestampPM25Data()}
               centroidLocations={centroidLocations}
               loading={loading}
               getPM25Points={getPM25Points}
@@ -488,7 +546,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
         onClose={() => setSidebarOpen(false)}
         popupInfo={sidebarInfo}
         centroidLocations={centroidLocations}
-        averagedPM25Data={averagedPM25Data}
+        averagedPM25Data={getCurrentTimestampPM25Data()}
         dustContributions={dustContributions}
         lakeLevel={selectedLakeLevel}
         pm25Data={pm25Data}
