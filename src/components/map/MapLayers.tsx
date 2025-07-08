@@ -32,13 +32,13 @@ export function MapLayers({
         <Source
           id="census-tracts-source"
           type="vector"
-          url="mapbox://pkulandh.7y35kkod"
+          url="mapbox://pkulandh.6457iv91"
         >
           {/* PM₂.₅ colored census tracts */}
           <Layer
             id="census-tracts-all-fill"
             type="fill"
-            source-layer="UT_CensusTracts-cgq3a0"
+            source-layer="Utah_CensusTracts"
             paint={{
               'fill-color': [
                 'case',
@@ -85,7 +85,7 @@ export function MapLayers({
           <Layer
             id="census-tracts-outline"
             type="line"
-            source-layer="UT_CensusTracts-cgq3a0"
+            source-layer="Utah_CensusTracts"
             paint={{
               'line-color': [
                 'case',

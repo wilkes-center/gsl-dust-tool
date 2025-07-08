@@ -424,9 +424,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
           ref={mapRef}
           {...viewState}
           onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
-          mapStyle={MAPBOX_CONFIG.styleUrl}
+          mapStyle={layers.satellite ? "mapbox://styles/mapbox/satellite-v9" : MAPBOX_CONFIG.styleUrl}
           mapboxAccessToken={MAPBOX_TOKEN}
-          minZoom={8}
+          minZoom={5}
           onLoad={onMapLoadHandler}
           onClick={handleMapClick}
           interactiveLayerIds={[
