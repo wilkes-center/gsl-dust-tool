@@ -101,7 +101,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                 </Paragraph>
 
                 <Paragraph style={{ fontSize: '1.25rem' }}>
-                  The underlying data used to produce these visualizes were generated and processed by Derek Mallia and Kevin Perry.
+                  The underlying data used to produce these visualizes were generated and processed by <a href="https://home.chpc.utah.edu/~u0703457/dereks_homepage/" target="_blank" rel="noopener noreferrer" style={{ color: '#2d5954', textDecoration: 'underline' }}>Derek Mallia</a> and <a href="https://profiles.faculty.utah.edu/u0302380" target="_blank" rel="noopener noreferrer" style={{ color: '#2d5954', textDecoration: 'underline' }}>Kevin Perry</a>.
                 </Paragraph>
 
                 <Paragraph style={{ fontSize: '1.25rem' }}>
