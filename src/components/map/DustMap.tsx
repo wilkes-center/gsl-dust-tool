@@ -13,6 +13,8 @@ import { MapLayers } from './MapLayers';
 import { InfoSidebar } from './InfoSidebar';
 import { LakeLevelControl } from './LakeLevelControl';
 import HorizontalTimeSlider from './HorizontalTimeSlider';
+import DustLegend from './DustLegend';
+import ErodibilityLegend from './ErodibilityLegend';
 import styled from 'styled-components';
 
 // Styled components
@@ -92,7 +94,7 @@ const ExpandedControls = styled.div`
   position: absolute;
   top: calc(${({ theme }) => theme.spacing.md} + 50px);
   right: ${({ theme }) => theme.spacing.md};
-  z-index: ${({ theme }) => theme.zIndices.mapControls};
+  z-index: ${({ theme }) => theme.zIndices.popups}; /* Increased from mapControls to popups to show above legends */
   background: ${({ theme }) => theme.colors.snowbirdWhite};
   padding: ${({ theme }) => theme.spacing.md};
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -178,7 +180,7 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
     satellite: false,
     bathymetry: true,
     censusTracts: true,
-    pm25Data: false,
+    pm25Data: false,  // Back to default off
     erodibility: true,
   });
   
@@ -532,6 +534,12 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
               selectedCensusTractId={selectedCensusTractId}
             />
           )}
+          
+          {/* Dust Legend - show when PM₂.₅ points OR census tracts are visible */}
+          <DustLegend visible={layers.pm25Data || layers.censusTracts} />
+          
+          {/* Erodibility Legend */}
+          <ErodibilityLegend visible={layers.erodibility} />
           
           {/* Help button */}
           <HelpButton onClick={onBackToIntro}>
