@@ -669,9 +669,9 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
       
       <LevelDisplay $color={currentHealthLevel?.color || '#999'}>
         <LevelValue $color={currentHealthLevel?.color || '#999'}>
-          {selectedLevel.toFixed(1)}m
+          {metersToFeet(selectedLevel).toFixed(1)} ft
         </LevelValue>
-        <FeetValue>{metersToFeet(selectedLevel).toFixed(1)} ft</FeetValue>
+        <FeetValue>{selectedLevel.toFixed(1)}m ASL</FeetValue>
       </LevelDisplay>
       
       <SliderContainer>
@@ -703,8 +703,8 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
                 >
                   {shouldShowLabel && (
                     <SliderMarkerLabel $active={isActive}>
-                      <span className="meters">{level.toFixed(1)}m</span>
-                      <span className="feet">{metersToFeet(level).toFixed(0)}ft</span>
+                      <span className="meters">{metersToFeet(level).toFixed(1)}ft</span>
+                      <span className="feet">{level.toFixed(1)}m</span>
                     </SliderMarkerLabel>
                   )}
                 </SliderMarker>

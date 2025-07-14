@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { MapPin, Info, HelpCircle, MessageSquare, Github, Play } from 'lucide-react';
+import { MapPin, Info, MessageSquare, Github, Play, X } from 'lucide-react';
 import PMValue from './common/PMValue';
 
 interface IntroPageProps {
@@ -20,6 +20,7 @@ interface ContentCardProps {
  */
 const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
   const [activeSection, setActiveSection] = useState('about');
+  const [showDemo, setShowDemo] = useState(false);
 
   return (
     <IntroContainer>
@@ -52,6 +53,10 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
               <MapPin size={20} className="mr-2" />
               Enter Map
             </EnterButton>
+            <DemoButton onClick={() => setShowDemo(true)}>
+              <Play size={20} className="mr-2" />
+              Interactive Demo
+            </DemoButton>
           </EnterButtonContainer>
           
           {/* Navigation Tabs */}
@@ -64,15 +69,6 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                 <Info size={20} className="mr-3" />
                 <span>About</span>
                 {activeSection === 'about' && <TabIndicator />}
-              </TabButton>
-              
-              <TabButton 
-                $active={activeSection === 'howto'}
-                onClick={() => setActiveSection('howto')}
-              >
-                <HelpCircle size={20} className="mr-3" />
-                <span>How to Use</span>
-                {activeSection === 'howto' && <TabIndicator />}
               </TabButton>
               
               <TabButton 
@@ -96,102 +92,31 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
                 <SectionTitle>About This Tool</SectionTitle>
                 <Divider />
                 
-                <Paragraph style={{ fontSize: '1.25rem' }}>
-                  This tool visualizes <PMValue type="2.5" /> dust emissions from The Great Salt Lake and shows the specific dust source contributions for each census tract.
+
+
+
+                <Paragraph style={{ fontSize: '1.25rem', marginTop: '2rem' }}>
+                  This tool synthesizes output from the following data sources: the HYSPLIT-STILT atmospheric transport model (Lin et al. 2003; Loughner et al. 2021), a modified version of the FENGSHA dust emission model (Mallia et al. 2017), and Great Salt Lake (GSL) field measurements collected by Kevin Perry. GSL bathymetry data is used to estimate exposed lakebed areas for lake level scenarios. Using this information, this tool estimates dust exposure for different census tracts across northern Utah corresponding to different Great Salt Lake water levels. We gratefully acknowledge funding from the Utah Department of Air Quality and Division of Natural Resources, and the Wilkes Center for Climate Science and Policy for supporting the development of the GSL dust exposure tool.
                 </Paragraph>
 
-                <Paragraph style={{ fontSize: '1.25rem' }}>
-                  The underlying data used to produce these visualizes were generated and processed by <a href="https://home.chpc.utah.edu/~u0703457/dereks_homepage/" target="_blank" rel="noopener noreferrer" style={{ color: '#2d5954', textDecoration: 'underline' }}>Derek Mallia</a> and <a href="https://profiles.faculty.utah.edu/u0302380" target="_blank" rel="noopener noreferrer" style={{ color: '#2d5954', textDecoration: 'underline' }}>Kevin Perry</a>.
+                
+
+                <SectionSubtitle>References:</SectionSubtitle>
+
+                <Paragraph style={{ fontSize: '1rem', lineHeight: '1.8', marginBottom: '1rem' }}>
+                  Lin, J.C., C. Gerbig, S.C. Wofsy, et al., A near-field tool for simulating the upstream influence of atmospheric observations (2003), The Stochastic Time-Inverted Lagrangian Transport (STILT) model. J. Geophy. Res., 108(D16), 4493.
                 </Paragraph>
 
-                <Paragraph style={{ fontSize: '1.25rem' }}>
-                  Tool developed by Praveenaa Kulandhaivel.
+                <Paragraph style={{ fontSize: '1rem', lineHeight: '1.8', marginBottom: '1rem' }}>
+                  Loughner, C., B. Fasoli, A.F. Stein, and J.C. Lin (2021), Incorporating features from the Stochastic Time-Inverted Lagrangian Transport (STILT) model into the Hybrid Single-Particle Lagrangian Integrated Trajectory (HYSPLIT) model: a unified dispersion model for time-forward and time-reversed applications. J. Applied Meteorology and Climatology, 60, 799-810.
+                </Paragraph>
+
+                <Paragraph style={{ fontSize: '1rem', lineHeight: '1.8', marginBottom: '1rem' }}>
+                  Mallia, D.V., A. Kochanski, D. Wu, C. Pennell, W. Oswald, and J.C. Lin (2017), Wind-blown dust modeling using a backward Lagrangian particle dispersion model. J. Applied Meteorology and Climatology, 56, 2845-2867.
                 </Paragraph>
 
               </ContentCard>
             </CenteredContainer>
-          )}
-
-          {activeSection === 'howto' && (
-            <WideGrid>
-              {/* Quick Start Guide */}
-              <GuideCard>
-                <SectionTitle>Quick Start Guide</SectionTitle>
-                <Divider />
-                
-                <StepList>
-                  <Step>
-                    <StepNumber>1</StepNumber>
-                    <StepContent>
-                      <StepTitle>Navigate the map</StepTitle>
-                      <StepDescription>Use standard zoom and pan controls located on the left side of the screen.</StepDescription>
-                    </StepContent>
-                  </Step>
-                  
-                  <Step>
-                    <StepNumber>2</StepNumber>
-                    <StepContent>
-                      <StepTitle>Choose lake elevation</StepTitle>
-                      <StepDescription>Select different GSL elevation scenarios to see how dust emissions change.</StepDescription>
-                    </StepContent>
-                  </Step>
-                  
-                  <Step>
-                    <StepNumber>3</StepNumber>
-                    <StepContent>
-                      <StepTitle>Use timeline controls</StepTitle>
-                      <StepDescription>Play through the timeline or choose a specific date/time.</StepDescription>
-                    </StepContent>
-                  </Step>
-                  
-                  <Step>
-                    <StepNumber>4</StepNumber>
-                    <StepContent>
-                      <StepTitle>View emissions levels</StepTitle>
-                      <StepDescription>Mouse over colored areas to see specific <PMValue type="2.5" /> concentration values.</StepDescription>
-                    </StepContent>
-                  </Step>
-                  
-                  <Step>
-                    <StepNumber>5</StepNumber>
-                    <StepContent>
-                      <StepTitle>Toggle map layers</StepTitle>
-                      <StepDescription>Use the layer control to customize your view and see different data visualizations.</StepDescription>
-                    </StepContent>
-                  </Step>
-                </StepList>
-                
-
-              </GuideCard>
-              
-              {/* Video Tutorial */}
-              <TutorialCard>
-                <TutorialHeader>
-                  <h2>Video Tutorial</h2>
-                </TutorialHeader>
-                
-                <VideoContainer>
-                  {/* Play button overlay */}
-                  <PlayButtonOverlay>
-                    <PlayButton>
-                      <Play size={40} className="ml-1" />
-                    </PlayButton>
-                  </PlayButtonOverlay>
-                  
-                  {/* Video thumbnail/placeholder */}
-                  <VideoPlaceholder>
-                    (Video would be embedded here)
-                  </VideoPlaceholder>
-                </VideoContainer>
-                
-                <VideoInfo>
-                  <div>
-                    <VideoTitle>Introduction to Great Salt Lake Dust Exposure Modeling Tool</VideoTitle>
-                    <VideoDuration>Duration: 4:30</VideoDuration>
-                  </div>
-                </VideoInfo>
-              </TutorialCard>
-            </WideGrid>
           )}
 
           {activeSection === 'feedback' && (
@@ -231,6 +156,32 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
           Wilkes Center for Climate Science and Policy
         </Footer>
       </ContentContainer>
+
+      {/* Demo Modal */}
+      {showDemo && (
+        <DemoModal>
+          <DemoOverlay onClick={() => setShowDemo(false)} />
+          <DemoContent>
+            <DemoHeader>
+              <DemoTitle>Interactive Demo</DemoTitle>
+              <CloseButton onClick={() => setShowDemo(false)}>
+                <X size={24} />
+              </CloseButton>
+            </DemoHeader>
+            <DemoIframeContainer>
+              <iframe 
+                src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd" 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                allowFullScreen 
+                allow="geolocation"
+                title="Great Salt Lake Crisis Interactive Demo"
+              />
+            </DemoIframeContainer>
+          </DemoContent>
+        </DemoModal>
+      )}
     </IntroContainer>
   );
 };
@@ -346,6 +297,15 @@ const EnterButton = styled.button`
   }
 `;
 
+const DemoButton = styled(EnterButton)`
+  background-color: #2d5954;
+  margin-left: 1rem;
+  
+  &:hover {
+    background-color: #1e3d3a;
+  }
+`;
+
 const TabContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -395,26 +355,6 @@ const Content = styled.div`
   margin-bottom: 2rem;
 `;
 
-const GridLayout = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const WideGrid = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 3fr;
-  gap: 2rem;
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
 const ContentCard = styled.div<ContentCardProps>`
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
@@ -423,8 +363,6 @@ const ContentCard = styled.div<ContentCardProps>`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   grid-column: ${props => props.wide ? '1 / -1' : 'auto'};
 `;
-
-const GuideCard = styled(ContentCard)``;
 
 const SectionTitle = styled.h2`
   font-size: 1.875rem;
@@ -501,129 +439,6 @@ const SmallNote = styled.div`
   margin-top: 1rem;
 `;
 
-const StepList = styled.ol`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const Step = styled.li`
-  display: flex;
-  align-items: flex-start;
-`;
-
-const StepNumber = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: #99aa88;
-  color: #2d5954;
-  font-weight: 700;
-  margin-right: 1rem;
-  flex-shrink: 0;
-`;
-
-const StepContent = styled.div``;
-
-const StepTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #2d5954;
-  margin-bottom: 0.25rem;
-`;
-
-const StepDescription = styled.p`
-  font-size: 1rem;
-  color: #1a1a1a;
-  font-family: 'Red Hat Display', sans-serif;
-`;
-
-const TutorialCard = styled.div`
-  background-color: #1a1a1a;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-`;
-
-const TutorialHeader = styled.div`
-  padding: 1.5rem;
-  border-bottom: 1px solid #333;
-  
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #f9f6ef;
-    margin: 0;
-  }
-`;
-
-const VideoContainer = styled.div`
-  aspect-ratio: 16 / 9;
-  background-color: #222;
-  position: relative;
-`;
-
-const PlayButtonOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-`;
-
-const PlayButton = styled.div`
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  background-color: rgba(117, 29, 12, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: #751d0c;
-  }
-`;
-
-const VideoPlaceholder = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #555;
-  font-family: 'Red Hat Display', sans-serif;
-`;
-
-const VideoInfo = styled.div`
-  padding: 1.5rem;
-  background-color: #222;
-  border-top: 1px solid #333;
-`;
-
-const VideoTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #f9f6ef;
-  margin: 0 0 0.25rem 0;
-`;
-
-const VideoDuration = styled.p`
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
-`;
-
 const FeedbackContainer = styled.div`
   background-color: white;
   border-radius: 0.75rem;
@@ -692,9 +507,83 @@ const CenteredContainer = styled.div`
   padding-top: 2rem;
   
   ${ContentCard} {
-    max-width: 600px;
+    max-width: 900px;
     width: 100%;
   }
+`;
+
+const DemoModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+`;
+
+const DemoOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+`;
+
+const DemoContent = styled.div`
+  position: relative;
+  z-index: 1002;
+  background-color: #f9f6ef;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 95%;
+  max-width: 1400px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+const DemoHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #2d5954;
+  color: #f9f6ef;
+`;
+
+const DemoTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #f9f6ef;
+`;
+
+const CloseButton = styled.button`
+  background-color: transparent;
+  border: none;
+  color: #f9f6ef;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    color: #cccccc;
+  }
+`;
+
+const DemoIframeContainer = styled.div`
+  flex: 1;
+  background-color: #ffffff;
+  overflow: hidden;
 `;
 
 const Footer = styled.footer`

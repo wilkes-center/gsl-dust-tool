@@ -559,6 +559,7 @@ export function MapSidebarComponent({
         <h3>LAKE LEVEL</h3>
         <div className="level-display">
           <span>{metersToFeet(selectedLakeLevel).toFixed(1)} ft</span>
+          <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>({selectedLakeLevel.toFixed(1)}m)</span>
         </div>
       </TimeSliderHeader>
       
@@ -625,10 +626,10 @@ export function MapSidebarComponent({
                   $isSelected={isSelected}
                 >
                   <LakeLevelTickLabel $isSelected={isSelected} $side="left">
-                    {level.toFixed(1)} mASL
+                    {metersToFeet(level).toFixed(1)} ft
                   </LakeLevelTickLabel>
                   <LakeLevelTickLabel $isSelected={isSelected} $side="right">
-                    {metersToFeet(level).toFixed(1)} ft
+                    {level.toFixed(1)} mASL
                   </LakeLevelTickLabel>
                 </LakeLevelTick>
               );

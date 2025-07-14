@@ -25,7 +25,7 @@ const LakeSlider: React.FC<LakeSliderProps> = ({ selectedLakeLevel, onLakeLevelC
       </SliderHeader>
       <SliderContent>
         <CurrentLevelDisplay>
-          <LevelValue>{Math.round(metersToFeet(selectedLakeLevel))} ft</LevelValue>
+          <LevelValue>{metersToFeet(selectedLakeLevel).toFixed(1)} ft</LevelValue>
           <LevelSubValue>{selectedLakeLevel.toFixed(1)}m ASL</LevelSubValue>
         </CurrentLevelDisplay>
         <SliderWrapper>
@@ -38,9 +38,9 @@ const LakeSlider: React.FC<LakeSliderProps> = ({ selectedLakeLevel, onLakeLevelC
             step={0.1}
           />
           <SliderLabels>
-            <SliderLabel>{Math.round(metersToFeet(minLevel))} ft</SliderLabel>
-            <SliderLabel>{Math.round(metersToFeet((minLevel + maxLevel) / 2))} ft</SliderLabel>
-            <SliderLabel>{Math.round(metersToFeet(maxLevel))} ft</SliderLabel>
+            <SliderLabel>{metersToFeet(minLevel).toFixed(1)} ft</SliderLabel>
+            <SliderLabel>{metersToFeet((minLevel + maxLevel) / 2).toFixed(1)} ft</SliderLabel>
+            <SliderLabel>{metersToFeet(maxLevel).toFixed(1)} ft</SliderLabel>
           </SliderLabels>
         </SliderWrapper>
         <SliderDescription>

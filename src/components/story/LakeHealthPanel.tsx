@@ -59,7 +59,7 @@ const LakeHealthPanel: React.FC<LakeHealthPanelProps> = ({ selectedLakeLevel }) 
     <PanelContainer>
       <HealthLevelsTitle>Current Lake Health</HealthLevelsTitle>
       <CurrentLevelIndicator>
-        {Math.round(metersToFeet(selectedLakeLevel))} ft
+        {metersToFeet(selectedLakeLevel).toFixed(1)} ft ({selectedLakeLevel.toFixed(1)}m)
       </CurrentLevelIndicator>
       <HealthStatus status={healthStatus}>
         {healthStatus === 'healthy' ? 'Healthy' : 
