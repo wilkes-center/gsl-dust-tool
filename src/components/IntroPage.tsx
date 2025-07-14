@@ -38,12 +38,12 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
             <LogoContainer>
               <img 
                 src="/gsl-dust-tool/logo192.png" 
-                alt="Great Salt Lake Dust Exposure Modeling Tool Logo" 
+                alt="Great Salt Lake Basin Dust Exposure Modeling Tool Logo" 
                 className="w-full h-full object-contain rounded-md" 
               />
             </LogoContainer>
             <Title>
-              <TitleAccent>Great Salt Lake</TitleAccent> Dust Exposure Modeling Tool
+              <TitleAccent>Great Salt Lake Basin</TitleAccent> Dust Exposure Modeling Tool
             </Title>
           </LogoTitle>
           

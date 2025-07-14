@@ -62,7 +62,7 @@ interface HeaderProps {
 function Header({ elevation, onBackToIntro }: HeaderProps) {
   return (
     <HeaderContainer>
-      <Title onClick={onBackToIntro}>GREAT SALT LAKE DUST EXPOSURE MODELING TOOL</Title>
+      <Title onClick={onBackToIntro}>GREAT SALT LAKE BASIN DUST EXPOSURE MODELING TOOL</Title>
       <InfoContainer>
         <InfoItem>
           <InfoLabel>Lake Level</InfoLabel>
