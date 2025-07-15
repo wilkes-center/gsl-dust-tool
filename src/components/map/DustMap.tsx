@@ -15,6 +15,8 @@ import { LakeLevelControl } from './LakeLevelControl';
 import HorizontalTimeSlider from './HorizontalTimeSlider';
 import DustLegend from './DustLegend';
 import ErodibilityLegend from './ErodibilityLegend';
+import { SearchBar } from './SearchBar';
+import { SearchMarker } from './SearchMarker';
 import styled from 'styled-components';
 
 // Styled components
@@ -61,7 +63,7 @@ const HelpButton = styled.button`
 
 const MinimizedControls = styled.button<{ $expanded: boolean }>`
   position: absolute;
-  top: ${({ theme }) => theme.spacing.md};
+  top: 70px;
   right: ${({ theme }) => theme.spacing.md};
   z-index: ${({ theme }) => theme.zIndices.mapControls};
   background: ${({ theme }) => theme.colors.snowbirdWhite};
@@ -92,7 +94,7 @@ const MinimizedControls = styled.button<{ $expanded: boolean }>`
 
 const ExpandedControls = styled.div`
   position: absolute;
-  top: calc(${({ theme }) => theme.spacing.md} + 50px);
+  top: 120px;
   right: ${({ theme }) => theme.spacing.md};
   z-index: ${({ theme }) => theme.zIndices.popups}; /* Increased from mapControls to popups to show above legends */
   background: ${({ theme }) => theme.colors.snowbirdWhite};
@@ -189,6 +191,13 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
   const [selectedTimestampIndex, setSelectedTimestampIndex] = useState<number>(0);
   const [selectedCensusTractId, setSelectedCensusTractId] = useState<string | null>(null);
   const [timelineMode, setTimelineMode] = useState<'averaged' | 'time-specific'>('averaged');
+  
+  // Search-related state
+  const [searchMarker, setSearchMarker] = useState<{
+    longitude: number;
+    latitude: number;
+    placeName: string;
+  } | null>(null);
   
   const { centroidLocations, pm25Data, loading } = usePM25Data(selectedLakeLevel);
   const [averagedPM25Data, setAveragedPM25Data] = useState<Record<string, number>>({});
@@ -412,6 +421,25 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
       onElevationChange(nearestLevel);
     }
   }, [onElevationChange]);
+
+  // Handle search location selection
+  const handleLocationSelect = useCallback((longitude: number, latitude: number, placeName: string) => {
+    setSearchMarker({ longitude, latitude, placeName });
+    
+    // Animate to the selected location
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [longitude, latitude],
+        zoom: 12,
+        duration: 2000
+      });
+    }
+  }, []);
+
+  // Handle search marker close
+  const handleSearchMarkerClose = useCallback(() => {
+    setSearchMarker(null);
+  }, []);
   
   const initialViewState = {
     longitude: -112.3297,
@@ -442,6 +470,19 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
           ].filter(Boolean) as string[]}
         >
           <NavigationControl position="bottom-left" />
+          
+          {/* Search Bar */}
+          <SearchBar onLocationSelect={handleLocationSelect} />
+          
+          {/* Search Marker */}
+          {searchMarker && (
+            <SearchMarker
+              longitude={searchMarker.longitude}
+              latitude={searchMarker.latitude}
+              placeName={searchMarker.placeName}
+              onClose={handleSearchMarkerClose}
+            />
+          )}
           
           {/* Lake Level Control (bottom left) */}
           <LakeLevelControl
@@ -551,7 +592,10 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
       {/* Info sidebar (right side) */}
       <InfoSidebar
         isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        onClose={() => {
+          setSidebarOpen(false);
+          setSelectedCensusTractId(null);
+        }}
         popupInfo={sidebarInfo}
         centroidLocations={centroidLocations}
         averagedPM25Data={getCurrentTimestampPM25Data()}

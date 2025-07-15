@@ -27,8 +27,8 @@ const ErodibilityLegend: React.FC<ErodibilityLegendProps> = ({ visible }) => {
 
 const LegendContainer = styled.div`
   position: absolute;
-  top: calc(16px + 150px);  /* Reduced from 180px to 150px due to smaller legend above */
-  right: 16px;
+  top: calc(16px + 210px);  /* Positioned below DustLegend which is at 136px */
+  right: 16px;  /* Changed back from left: 16px to right: 16px */
   z-index: ${({ theme }) => theme.zIndices.mapControls};
   background: ${({ theme }) => theme.colors.snowbirdWhite};
   backdrop-filter: blur(8px);

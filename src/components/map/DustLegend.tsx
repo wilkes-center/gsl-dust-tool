@@ -27,8 +27,8 @@ const DustLegend: React.FC<DustLegendProps> = ({ visible }) => {
 
 const LegendContainer = styled.div`
   position: absolute;
-  top: calc(16px + 60px);
-  right: 16px;
+  top: calc(16px + 120px);  /* Positioned below map layers button which is at 70px */
+  right: 16px;  /* Changed back from left: 16px to right: 16px */
   z-index: ${({ theme }) => theme.zIndices.mapControls};
   background: ${({ theme }) => theme.colors.snowbirdWhite};
   backdrop-filter: blur(8px);
