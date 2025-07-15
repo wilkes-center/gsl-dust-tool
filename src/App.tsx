@@ -8,7 +8,6 @@ import theme from './styles/theme';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { AVAILABLE_LAKE_LEVELS } from './components/map/constants';
 import IntroPage from './components/IntroPage';
-import StoryMap from './components/StoryMap';
 import DustContributionAnalyzer from './components/DustContributionAnalyzer';
 import LoadingAnimation from './components/LoadingAnimation';
 
@@ -55,19 +54,6 @@ const IntroPageWrapper = () => {
   };
   
   return <IntroPage onComplete={handleEnterMap} />;
-};
-
-/**
- * Story map wrapper component with navigation
- */
-const StoryMapWrapper = () => {
-  const navigate = useNavigate();
-  
-  const handleBack = () => {
-    navigate('/');
-  };
-  
-  return <StoryMap onBack={handleBack} />;
 };
 
 /**
@@ -171,7 +157,6 @@ function App() {
         <Router basename="/gsl-dust-tool">
           <Routes>
             <Route path="/" element={<IntroPageWrapper />} />
-            <Route path="/story" element={<StoryMapWrapper />} />
             <Route path="/map" element={<MapWrapper />} />
             <Route path="/analysis" element={<AnalysisWrapper />} />
           </Routes>
