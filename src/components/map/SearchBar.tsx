@@ -140,7 +140,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onLocationSelect, sidebarO
             <SearchInput
               ref={inputRef}
               type="text"
-              placeholder="Search for a location..."
+              placeholder="Search for a location / zipcode"
               value={query}
               onChange={handleInputChange}
               onFocus={() => setIsOpen(true)}
