@@ -143,7 +143,7 @@ const IconWrapper = styled.div`
 const Title = styled.h3`
   margin: 0;
   font-family: ${({ theme }) => theme.typography.displayFont};
-  font-size: 16px;
+  font-size: 18px;
   font-weight: ${({ theme }) => theme.typography.weights.semiBold};
   color: ${({ theme }) => theme.colors.moabMahogany};
   letter-spacing: 0.5px;
@@ -152,6 +152,7 @@ const Title = styled.h3`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
+  white-space: nowrap;
 `;
 
 const HelpIcon = styled.button`
@@ -206,37 +207,28 @@ const StoryMapContent = styled.div`
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
 `;
 
-const StoryMapHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e5e5;
-  background: #f9f9f9;
-`;
-
-const StoryMapTitle = styled.h2`
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
+const StoryMapCloseButton = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
-
+  transition: all 0.2s ease;
+  z-index: 10001;
+  backdrop-filter: blur(4px);
+  
   &:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   svg {
@@ -769,7 +761,7 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
       <ControlContainer ref={containerRef}>
         <Header>
           <Title>
-            Lake Level
+            LAKE LEVEL
             <HelpIcon
               onClick={() => setShowStoryMap(true)}
               title="Learn more about lake levels"
@@ -891,17 +883,14 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
       {showStoryMap && (
         <StoryMapModal onClick={() => setShowStoryMap(false)}>
           <StoryMapContent onClick={(e) => e.stopPropagation()}>
-            <StoryMapHeader>
-              <StoryMapTitle>Great Salt Lake Crisis - Interactive Story</StoryMapTitle>
-              <CloseButton onClick={() => setShowStoryMap(false)}>
-                <X />
-              </CloseButton>
-            </StoryMapHeader>
+            <StoryMapCloseButton onClick={() => setShowStoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
             <StoryMapIframe
-              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-GxMtqA"
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-Amxc3s"
               allowFullScreen
               allow="geolocation"
-              title="Great Salt Lake Crisis Interactive Story"
+              title="Lake Level Interactive Story"
             />
           </StoryMapContent>
         </StoryMapModal>

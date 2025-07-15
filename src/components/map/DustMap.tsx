@@ -214,37 +214,28 @@ const StoryMapContent = styled.div`
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-`;
-
-const StoryMapHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e5e5;
-  background: #f9f9f9;
-`;
-
-const StoryMapTitle = styled.h2`
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
+  position: relative;
 `;
 
 const StoryMapCloseButton = styled.button`
-  background: none;
-  border: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
-
+  transition: all 0.2s ease;
+  z-index: 10001;
+  backdrop-filter: blur(4px);
+  
   &:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   svg {
@@ -792,12 +783,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
       {showCensusTractsStoryMap && (
         <StoryMapModal onClick={() => setShowCensusTractsStoryMap(false)}>
           <StoryMapContent onClick={(e) => e.stopPropagation()}>
-            <StoryMapHeader>
-              <StoryMapTitle>Census Tracts - Interactive Story</StoryMapTitle>
-              <StoryMapCloseButton onClick={() => setShowCensusTractsStoryMap(false)}>
-                <X />
-              </StoryMapCloseButton>
-            </StoryMapHeader>
+            <StoryMapCloseButton onClick={() => setShowCensusTractsStoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
             <StoryMapIframe
               src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-4RMbQ3"
               allowFullScreen
@@ -811,12 +799,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
       {showBathymetryStoryMap && (
         <StoryMapModal onClick={() => setShowBathymetryStoryMap(false)}>
           <StoryMapContent onClick={(e) => e.stopPropagation()}>
-            <StoryMapHeader>
-              <StoryMapTitle>Lake Bathymetry - Interactive Story</StoryMapTitle>
-              <StoryMapCloseButton onClick={() => setShowBathymetryStoryMap(false)}>
-                <X />
-              </StoryMapCloseButton>
-            </StoryMapHeader>
+            <StoryMapCloseButton onClick={() => setShowBathymetryStoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
             <StoryMapIframe
               src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-GxMtqA"
               allowFullScreen
@@ -830,12 +815,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
       {showErodibilityStoryMap && (
         <StoryMapModal onClick={() => setShowErodibilityStoryMap(false)}>
           <StoryMapContent onClick={(e) => e.stopPropagation()}>
-            <StoryMapHeader>
-              <StoryMapTitle>Soil Erodibility - Interactive Story</StoryMapTitle>
-              <StoryMapCloseButton onClick={() => setShowErodibilityStoryMap(false)}>
-                <X />
-              </StoryMapCloseButton>
-            </StoryMapHeader>
+            <StoryMapCloseButton onClick={() => setShowErodibilityStoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
             <StoryMapIframe
               src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-kSOT5i"
               allowFullScreen
@@ -849,12 +831,9 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
       {showPM25StoryMap && (
         <StoryMapModal onClick={() => setShowPM25StoryMap(false)}>
           <StoryMapContent onClick={(e) => e.stopPropagation()}>
-            <StoryMapHeader>
-              <StoryMapTitle>PM2.5 Concentrations - Interactive Story</StoryMapTitle>
-              <StoryMapCloseButton onClick={() => setShowPM25StoryMap(false)}>
-                <X />
-              </StoryMapCloseButton>
-            </StoryMapHeader>
+            <StoryMapCloseButton onClick={() => setShowPM25StoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
             <StoryMapIframe
               src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-qixyg5"
               allowFullScreen

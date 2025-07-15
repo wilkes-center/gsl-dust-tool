@@ -118,37 +118,28 @@ const StoryMapContent = styled.div`
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-`;
-
-const StoryMapHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e5e5;
-  background: #f9f9f9;
-`;
-
-const StoryMapTitle = styled.h2`
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
+  position: relative;
 `;
 
 const StoryMapCloseButton = styled.button`
-  background: none;
-  border: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
-
+  transition: all 0.2s ease;
+  z-index: 10001;
+  backdrop-filter: blur(4px);
+  
   &:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   svg {
@@ -746,12 +737,9 @@ export function InfoSidebar({
       {showStoryMap && (
         <StoryMapModal onClick={() => setShowStoryMap(false)}>
           <StoryMapContent onClick={(e) => e.stopPropagation()}>
-            <StoryMapHeader>
-              <StoryMapTitle>Census Tract Data - Interactive Story</StoryMapTitle>
-              <StoryMapCloseButton onClick={() => setShowStoryMap(false)}>
-                <X />
-              </StoryMapCloseButton>
-            </StoryMapHeader>
+            <StoryMapCloseButton onClick={() => setShowStoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
             <StoryMapIframe
               src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-VMM9PH"
               allowFullScreen
