@@ -33,10 +33,10 @@ const LegendContainer = styled.div`
   background: ${({ theme }) => theme.colors.snowbirdWhite};
   backdrop-filter: blur(8px);
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.xs};
   box-shadow: ${({ theme }) => theme.shadows.md};
   border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
-  min-width: 200px;
+  min-width: 160px;
   transition: all 0.2s ease;
   
   &:hover {
@@ -46,26 +46,26 @@ const LegendContainer = styled.div`
 `;
 
 const LegendTitle = styled.div`
-  font-size: 14px;
+  font-size: 12px;
   font-weight: ${({ theme }) => theme.typography.weights.semiBold};
   color: ${({ theme }) => theme.colors.moabMahogany};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   text-align: center;
   font-family: ${({ theme }) => theme.typography.displayFont};
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  padding-bottom: ${({ theme }) => theme.spacing.xs};
+  padding-bottom: ${({ theme }) => theme.spacing.xxs};
   border-bottom: 1px solid rgba(117, 29, 12, 0.2);
 `;
 
 const LegendBar = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: ${({ theme }) => theme.spacing.xxs};
 `;
 
 const ColorGradient = styled.div`
-  height: 12px;
+  height: 10px;
   width: 100%;
   border-radius: ${({ theme }) => theme.borderRadius.sm};
   background: linear-gradient(to right, 
@@ -86,7 +86,7 @@ const LabelContainer = styled.div`
 `;
 
 const LegendLabel = styled.span`
-  font-size: 11px;
+  font-size: 10px;
   color: ${({ theme }) => theme.colors.textSecondary};
   font-family: ${({ theme }) => theme.typography.fontFamily};
   font-weight: ${({ theme }) => theme.typography.weights.regular};

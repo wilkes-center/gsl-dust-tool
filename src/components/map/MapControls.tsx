@@ -123,18 +123,18 @@ const InfoBox = styled.div`
 `;
 
 const Legend = styled.div`
-  font-size: 11px;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 10px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   background-color: rgba(249, 246, 239, 0.95);
-  padding: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.xs};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
   border-left: 2px solid ${({ theme }) => theme.colors.moabMahogany};
   
   h4 {
     color: ${({ theme }) => theme.colors.moabMahogany};
     margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 12px;
+    margin-bottom: ${({ theme }) => theme.spacing.xs};
+    font-size: 11px;
     font-weight: ${({ theme }) => theme.typography.weights.semiBold};
     letter-spacing: 0.5px;
     font-family: ${({ theme }) => theme.typography.displayFont};
@@ -144,9 +144,9 @@ const Legend = styled.div`
 const LegendItem = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: ${({ theme }) => theme.spacing.xxs};
   font-weight: ${({ theme }) => theme.typography.weights.regular};
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.5px;
   
   &:last-child {
@@ -156,9 +156,9 @@ const LegendItem = styled.div`
 
 const ColorBox = styled.span`
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-right: ${({ theme }) => theme.spacing.sm};
+  width: 14px;
+  height: 14px;
+  margin-right: ${({ theme }) => theme.spacing.xs};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
   border: 1px solid rgba(117, 29, 12, 0.3);
 `;

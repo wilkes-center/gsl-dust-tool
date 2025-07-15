@@ -7,15 +7,15 @@ const ChartContainer = styled.div`
   width: 100%;
   height: 450px;
   margin-top: 10px;
-  padding: 15px 10px;
+  padding: 12px 8px;
   background-color: ${({ theme }) => theme.colors.snowbirdWhite};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   position: relative;
 `;
 
 const ChartTitle = styled.h5`
-  margin: 0 0 10px 0;
-  font-size: 14px;
+  margin: 0 0 8px 0;
+  font-size: 13px;
   font-weight: ${({ theme }) => theme.typography.weights.semiBold};
   color: ${({ theme }) => theme.colors.moabMahogany};
   text-align: center;
@@ -36,30 +36,30 @@ const LoadingText = styled.div`
 // Custom legend component
 const LegendContainer = styled.div`
   position: absolute;
-  bottom: 15px;
+  bottom: 12px;
   left: 0;
   right: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px 20px;
-  padding: 0 20px;
-  max-width: 350px;
+  gap: 6px 16px;
+  padding: 0 16px;
+  max-width: 320px;
   margin: 0 auto;
 `;
 
 const LegendItem = styled.div<{ color: string }>`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 11px;
   font-family: ${({ theme }) => theme.typography.fontFamily};
   color: ${({ theme }) => theme.colors.olympicParkObsidian};
   font-weight: ${({ theme }) => theme.typography.weights.medium};
   
   &:before {
     content: '';
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     background-color: ${props => props.color};
     border-radius: 3px;
     border: 1px solid rgba(117, 29, 12, 0.2);

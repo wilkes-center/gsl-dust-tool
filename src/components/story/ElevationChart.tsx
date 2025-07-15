@@ -309,21 +309,21 @@ const ChartWrapper = styled.div`
 const ChartLegend = styled.div`
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
   flex-wrap: wrap;
 `;
 
 const LegendItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   color: #666;
 `;
 
 const LegendColor = styled.div<{ color: string }>`
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background-color: ${props => props.color};
   border-radius: 2px;
 `;

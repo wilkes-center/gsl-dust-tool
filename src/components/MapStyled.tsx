@@ -153,8 +153,8 @@ export const InfoBox = styled.div`
 
 // Legend container
 export const Legend = styled.div`
-  font-size: 11px;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 10px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   background-color: rgba(249, 246, 239, 0.95);
   padding: ${({ theme }) => theme.spacing.xs};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
@@ -164,7 +164,7 @@ export const Legend = styled.div`
     color: ${({ theme }) => theme.colors.moabMahogany};
     margin-top: ${({ theme }) => theme.spacing.xxs};
     margin-bottom: ${({ theme }) => theme.spacing.xs};
-    font-size: 12px;
+    font-size: 11px;
     font-weight: ${({ theme }) => theme.typography.weights.semiBold};
     letter-spacing: 0.5px;
     font-family: ${({ theme }) => theme.typography.displayFont};
@@ -177,15 +177,15 @@ export const LegendItem = styled.div`
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.xxs};
   font-weight: ${({ theme }) => theme.typography.weights.regular};
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.5px;
 `;
 
 // Color box for legend
 export const ColorBox = styled.span`
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   margin-right: ${({ theme }) => theme.spacing.xs};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
   border: 1px solid rgba(117, 29, 12, 0.3);
@@ -722,10 +722,10 @@ export const BottomLeftLegend = styled.div`
   bottom: 100px;
   z-index: ${({ theme }) => theme.zIndices.mapControls};
   background: ${({ theme }) => theme.colors.snowbirdWhite};
-  padding: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.xs};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   box-shadow: ${({ theme }) => theme.shadows.md};
-  max-width: 320px;
+  max-width: 280px;
   border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
   background: linear-gradient(
     to bottom,
