@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { AVAILABLE_LAKE_LEVELS, metersToFeet } from './constants';
-import { Waves, AlertTriangle, Heart, TrendingUp, Activity, ChevronUp, ChevronDown, Droplets } from 'lucide-react';
+import { Waves, AlertTriangle, Heart, TrendingUp, Activity, ChevronUp, ChevronDown, Droplets, HelpCircle, X } from 'lucide-react';
 
 // Lake health level definitions with enhanced visual properties
 interface HealthLevel {
@@ -149,6 +149,108 @@ const Title = styled.h3`
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-bottom: ${({ theme }) => theme.spacing.xs};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const HelpIcon = styled.button`
+  background: rgba(117, 29, 12, 0.1);
+  border: 1px solid rgba(117, 29, 12, 0.2);
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  margin-left: 4px;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(117, 29, 12, 0.2);
+    border-color: rgba(117, 29, 12, 0.4);
+    transform: scale(1.05);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const StoryMapModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const StoryMapContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+`;
+
+const StoryMapHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f9f9f9;
+`;
+
+const StoryMapTitle = styled.h2`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const StoryMapIframe = styled.iframe`
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
 `;
 
 const LevelDisplay = styled.div<{ $color: string }>`
@@ -626,6 +728,7 @@ interface LakeLevelControlProps {
 export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelControlProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [showStoryMap, setShowStoryMap] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const currentHealthLevel = getHealthLevel(selectedLevel);
   
@@ -662,116 +765,147 @@ export function LakeLevelControl({ selectedLevel, onLevelChange }: LakeLevelCont
   };
   
   return (
-    <ControlContainer ref={containerRef}>
-      <Header>
-        <Title>Lake Level</Title>
-      </Header>
-      
-      <LevelDisplay $color={currentHealthLevel?.color || '#999'}>
-        <LevelValue $color={currentHealthLevel?.color || '#999'}>
-          {metersToFeet(selectedLevel).toFixed(1)} ft
-        </LevelValue>
-        <FeetValue>{selectedLevel.toFixed(1)}m ASL</FeetValue>
-      </LevelDisplay>
-      
-      <SliderContainer>
-        <SliderWrapper>
-          <LevelButton 
-            $position="top"
-            onClick={handleHigher}
-            disabled={currentLevelIndex >= AVAILABLE_LAKE_LEVELS.length - 1}
-            title="Increase lake level"
-          >
-            <ChevronUp />
-            Higher
-          </LevelButton>
-          
-          <SliderTrack />
-          <SliderMarkers>
-            {AVAILABLE_LAKE_LEVELS.map((level, index) => {
-              const positionPercent = ((level - MIN_LAKE_LEVEL) / (MAX_LAKE_LEVEL - MIN_LAKE_LEVEL)) * 100;
-              const isActive = Math.abs(level - selectedLevel) < 0.1;
-              
-              // Only show labels for every other marker, plus the active one
-              const shouldShowLabel = isActive || index % 2 === 0;
-              
-              return (
-                <SliderMarker
+    <>
+      <ControlContainer ref={containerRef}>
+        <Header>
+          <Title>
+            Lake Level
+            <HelpIcon
+              onClick={() => setShowStoryMap(true)}
+              title="Learn more about lake levels"
+            >
+              <HelpCircle />
+            </HelpIcon>
+          </Title>
+        </Header>
+        
+        <LevelDisplay $color={currentHealthLevel?.color || '#999'}>
+          <LevelValue $color={currentHealthLevel?.color || '#999'}>
+            {metersToFeet(selectedLevel).toFixed(1)} ft
+          </LevelValue>
+          <FeetValue>{selectedLevel.toFixed(1)}m ASL</FeetValue>
+        </LevelDisplay>
+        
+        <SliderContainer>
+          <SliderWrapper>
+            <LevelButton 
+              $position="top"
+              onClick={handleHigher}
+              disabled={currentLevelIndex >= AVAILABLE_LAKE_LEVELS.length - 1}
+              title="Increase lake level"
+            >
+              <ChevronUp />
+              Higher
+            </LevelButton>
+            
+            <SliderTrack />
+            <SliderMarkers>
+              {AVAILABLE_LAKE_LEVELS.map((level, index) => {
+                const positionPercent = ((level - MIN_LAKE_LEVEL) / (MAX_LAKE_LEVEL - MIN_LAKE_LEVEL)) * 100;
+                const isActive = Math.abs(level - selectedLevel) < 0.1;
+                
+                // Only show labels for every other marker, plus the active one
+                const shouldShowLabel = isActive || index % 2 === 0;
+                
+                return (
+                  <SliderMarker
+                    key={level}
+                    $position={positionPercent}
+                    $active={isActive}
+                  >
+                    {shouldShowLabel && (
+                      <SliderMarkerLabel $active={isActive}>
+                        <span className="meters">{metersToFeet(level).toFixed(1)}ft</span>
+                        <span className="feet">{level.toFixed(1)}m</span>
+                      </SliderMarkerLabel>
+                    )}
+                  </SliderMarker>
+                );
+              })}
+            </SliderMarkers>
+            <WaterLevelIndicator 
+              $level={selectedLevel - MIN_LAKE_LEVEL} 
+              $maxLevel={MAX_LAKE_LEVEL - MIN_LAKE_LEVEL}
+              $color={currentHealthLevel?.color || '#4169E1'}
+            />
+            <VerticalSlider
+              type="range"
+              min={MIN_LAKE_LEVEL}
+              max={MAX_LAKE_LEVEL}
+              step={0.1}
+              value={selectedLevel}
+              onChange={handleSliderChange}
+              onMouseDown={() => setIsDragging(true)}
+              onMouseUp={() => setIsDragging(false)}
+              onTouchStart={() => setIsDragging(true)}
+              onTouchEnd={() => setIsDragging(false)}
+            />
+            <TickMarks>
+              {AVAILABLE_LAKE_LEVELS.map((level, index) => (
+                <TickMark
                   key={level}
-                  $position={positionPercent}
-                  $active={isActive}
-                >
-                  {shouldShowLabel && (
-                    <SliderMarkerLabel $active={isActive}>
-                      <span className="meters">{metersToFeet(level).toFixed(1)}ft</span>
-                      <span className="feet">{level.toFixed(1)}m</span>
-                    </SliderMarkerLabel>
-                  )}
-                </SliderMarker>
-              );
-            })}
-          </SliderMarkers>
-          <WaterLevelIndicator 
-            $level={selectedLevel - MIN_LAKE_LEVEL} 
-            $maxLevel={MAX_LAKE_LEVEL - MIN_LAKE_LEVEL}
-            $color={currentHealthLevel?.color || '#4169E1'}
-          />
-          <VerticalSlider
-            type="range"
-            min={MIN_LAKE_LEVEL}
-            max={MAX_LAKE_LEVEL}
-            step={0.1}
-            value={selectedLevel}
-            onChange={handleSliderChange}
-            onMouseDown={() => setIsDragging(true)}
-            onMouseUp={() => setIsDragging(false)}
-            onTouchStart={() => setIsDragging(true)}
-            onTouchEnd={() => setIsDragging(false)}
-          />
-          <TickMarks>
-            {AVAILABLE_LAKE_LEVELS.map((level, index) => (
-              <TickMark
-                key={level}
-                $active={Math.abs(level - selectedLevel) < 0.1}
-                $level={level}
-                style={{
-                  order: AVAILABLE_LAKE_LEVELS.length - index - 1
-                }}
-              />
-            ))}
-          </TickMarks>
-          
-          <LevelButton 
-            $position="bottom"
-            onClick={handleLower}
-            disabled={currentLevelIndex <= 0}
-            title="Decrease lake level"
+                  $active={Math.abs(level - selectedLevel) < 0.1}
+                  $level={level}
+                  style={{
+                    order: AVAILABLE_LAKE_LEVELS.length - index - 1
+                  }}
+                />
+              ))}
+            </TickMarks>
+            
+            <LevelButton 
+              $position="bottom"
+              onClick={handleLower}
+              disabled={currentLevelIndex <= 0}
+              title="Decrease lake level"
+            >
+              <ChevronDown />
+              Lower
+            </LevelButton>
+          </SliderWrapper>
+        </SliderContainer>
+        
+        {/* Health Level Indicator */}
+        {currentHealthLevel && (
+          <HealthIndicator 
+            $color={currentHealthLevel.color} 
+            $bgColor={currentHealthLevel.bgColor}
+            $gradient={currentHealthLevel.gradient}
           >
-            <ChevronDown />
-            Lower
-          </LevelButton>
-        </SliderWrapper>
-      </SliderContainer>
-      
-      {currentHealthLevel && (
-        <HealthIndicator 
-          $color={currentHealthLevel.color} 
-          $bgColor={currentHealthLevel.bgColor}
-          $gradient={currentHealthLevel.gradient}
-        >
-          <HealthHeader>
-            <HealthIcon $color={currentHealthLevel.color}>
-              <currentHealthLevel.icon />
-            </HealthIcon>
-            <HealthName $color={currentHealthLevel.color}>
-              {currentHealthLevel.name}
-            </HealthName>
-          </HealthHeader>
-          <HealthDescription>
-            {currentHealthLevel.description}
-          </HealthDescription>
-        </HealthIndicator>
+            <HealthHeader>
+              <HealthIcon $color={currentHealthLevel.color}>
+                <currentHealthLevel.icon />
+              </HealthIcon>
+              <HealthName $color={currentHealthLevel.color}>
+                {currentHealthLevel.name}
+              </HealthName>
+            </HealthHeader>
+            <HealthDescription>
+              {currentHealthLevel.description}
+            </HealthDescription>
+          </HealthIndicator>
+        )}
+      </ControlContainer>
+
+      {/* Story Map Modal */}
+      {showStoryMap && (
+        <StoryMapModal onClick={() => setShowStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Great Salt Lake Crisis - Interactive Story</StoryMapTitle>
+              <CloseButton onClick={() => setShowStoryMap(false)}>
+                <X />
+              </CloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-GxMtqA"
+              allowFullScreen
+              allow="geolocation"
+              title="Great Salt Lake Crisis Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
       )}
-    </ControlContainer>
+    </>
   );
 }

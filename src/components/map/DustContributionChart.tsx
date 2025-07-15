@@ -1,6 +1,7 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import styled from 'styled-components';
+import { HelpCircle, X } from 'lucide-react';
 import { DustContribution } from '../../utils/dataUtils';
 
 const ChartContainer = styled.div`
@@ -13,14 +14,48 @@ const ChartContainer = styled.div`
   position: relative;
 `;
 
+const ChartTitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+`;
+
 const ChartTitle = styled.h5`
-  margin: 0 0 8px 0;
+  margin: 0;
   font-size: 13px;
   font-weight: ${({ theme }) => theme.typography.weights.semiBold};
   color: ${({ theme }) => theme.colors.moabMahogany};
   text-align: center;
   font-family: ${({ theme }) => theme.typography.displayFont};
   letter-spacing: 0.5px;
+`;
+
+const HelpIcon = styled.button`
+  background: rgba(117, 29, 12, 0.1);
+  border: 1px solid rgba(117, 29, 12, 0.2);
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(117, 29, 12, 0.2);
+    border-color: rgba(117, 29, 12, 0.4);
+    transform: scale(1.05);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
 const LoadingText = styled.div`
@@ -65,6 +100,78 @@ const LegendItem = styled.div<{ color: string }>`
     border: 1px solid rgba(117, 29, 12, 0.2);
     flex-shrink: 0;
   }
+`;
+
+const StoryMapModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const StoryMapContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+`;
+
+const StoryMapHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f9f9f9;
+`;
+
+const StoryMapTitle = styled.h2`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+const StoryMapCloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const StoryMapIframe = styled.iframe`
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
 `;
 
 // Color scheme using style guide colors
@@ -125,6 +232,8 @@ const renderCustomizedLabel = (entry: any) => {
 };
 
 export function DustContributionChart({ contribution, lakeLevel }: DustContributionChartProps) {
+  const [showStoryMap, setShowStoryMap] = React.useState(false);
+
   // Transform data for the pie chart
   const chartData = [
     { name: DUST_SOURCE_NAMES.GSL, value: contribution.GSL, color: DUST_COLORS.GSL },
@@ -167,49 +276,79 @@ export function DustContributionChart({ contribution, lakeLevel }: DustContribut
   };
 
   return (
-    <ChartContainer>
-      <ChartTitle>
-        Dust Source Contributions
-        <br />
-        (Lake Level {lakeLevel || 1275}m)
-      </ChartTitle>
-      <ResponsiveContainer width="100%" height="75%">
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            innerRadius={50}
-            outerRadius={130}
-            paddingAngle={2}
-            dataKey="value"
-            animationBegin={0}
-            animationDuration={400}
-            isAnimationActive={true}
+    <>
+      <ChartContainer>
+        <ChartTitleContainer>
+          <ChartTitle>
+            Dust Source Contributions
+            <br />
+            (Lake Level {lakeLevel || 1275}m)
+          </ChartTitle>
+          <HelpIcon
+            onClick={() => setShowStoryMap(true)}
+            title="Learn more about dust source contributions"
           >
-            {chartData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={entry.color}
-                stroke="rgba(117, 29, 12, 0.1)"
-                strokeWidth={1}
-              />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
-      
-      {/* Custom legend */}
-      <LegendContainer>
-        {chartData.map((entry, index) => (
-          <LegendItem key={`legend-${index}`} color={entry.color}>
-            {entry.name}
-          </LegendItem>
-        ))}
-      </LegendContainer>
-    </ChartContainer>
+            <HelpCircle />
+          </HelpIcon>
+        </ChartTitleContainer>
+        <ResponsiveContainer width="100%" height="75%">
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              innerRadius={50}
+              outerRadius={130}
+              paddingAngle={2}
+              dataKey="value"
+              animationBegin={0}
+              animationDuration={400}
+              isAnimationActive={true}
+            >
+              {chartData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.color}
+                  stroke="rgba(117, 29, 12, 0.1)"
+                  strokeWidth={1}
+                />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+        
+        {/* Custom legend */}
+        <LegendContainer>
+          {chartData.map((entry, index) => (
+            <LegendItem key={`legend-${index}`} color={entry.color}>
+              {entry.name}
+            </LegendItem>
+          ))}
+        </LegendContainer>
+      </ChartContainer>
+
+      {/* Story Map Modal */}
+      {showStoryMap && (
+        <StoryMapModal onClick={() => setShowStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Dust Source Contributions - Interactive Story</StoryMapTitle>
+              <StoryMapCloseButton onClick={() => setShowStoryMap(false)}>
+                <X />
+              </StoryMapCloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-GA7AVq"
+              allowFullScreen
+              allow="geolocation"
+              title="Dust Source Contributions Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+    </>
   );
 }

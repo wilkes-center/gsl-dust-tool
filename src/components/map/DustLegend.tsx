@@ -1,27 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { HelpCircle, X } from 'lucide-react';
 
 interface DustLegendProps {
   visible: boolean;
+  sidebarOpen?: boolean;
 }
 
 /**
- * Horizontal PM₂.₅ dust concentrations legend component showing brown tones from light to dark
+ * PM2.5 dust concentration legend component
  */
-const DustLegend: React.FC<DustLegendProps> = ({ visible }) => {
+const DustLegend: React.FC<DustLegendProps> = ({ visible, sidebarOpen = false }) => {
+  const [showStoryMap, setShowStoryMap] = useState(false);
+
   if (!visible) return null;
 
   return (
-    <LegendContainer>
-      <LegendTitle>PM2.5</LegendTitle>
-      <LegendBar>
-        <ColorGradient />
-        <LabelContainer>
-          <LegendLabel>Low</LegendLabel>
-          <LegendLabel>High</LegendLabel>
-        </LabelContainer>
-      </LegendBar>
-    </LegendContainer>
+    <>
+      <LegendContainer>
+        <LegendTitleContainer>
+          <LegendTitle>PM2.5</LegendTitle>
+          <HelpIcon
+            onClick={() => setShowStoryMap(true)}
+            title="Learn more about PM2.5 concentrations"
+          >
+            <HelpCircle />
+          </HelpIcon>
+        </LegendTitleContainer>
+        <LegendBar>
+          <LabelContainer>
+            <LegendLabel>High</LegendLabel>
+          </LabelContainer>
+          <ColorGradient />
+          <LabelContainer>
+            <LegendLabel>Low</LegendLabel>
+          </LabelContainer>
+        </LegendBar>
+      </LegendContainer>
+
+      {/* Story Map Modal */}
+      {showStoryMap && (
+        <StoryMapModal onClick={() => setShowStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapCloseButton onClick={() => setShowStoryMap(false)}>
+              <X />
+            </StoryMapCloseButton>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-qixyg5"
+              allowFullScreen
+              allow="geolocation"
+              title="PM2.5 Concentrations Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+    </>
   );
 };
 
@@ -36,7 +69,8 @@ const LegendContainer = styled.div`
   padding: ${({ theme }) => theme.spacing.xs};
   box-shadow: ${({ theme }) => theme.shadows.md};
   border: 2px solid ${({ theme }) => theme.colors.moabMahogany};
-  min-width: 160px;
+  min-width: 80px;
+  width: 80px;
   transition: all 0.2s ease;
   
   &:hover {
@@ -45,52 +79,153 @@ const LegendContainer = styled.div`
   }
 `;
 
+const LegendTitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(117, 29, 12, 0.2);
+`;
+
 const LegendTitle = styled.div`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: ${({ theme }) => theme.typography.weights.semiBold};
   color: ${({ theme }) => theme.colors.moabMahogany};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  text-align: center;
   font-family: ${({ theme }) => theme.typography.displayFont};
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
   text-transform: uppercase;
-  padding-bottom: ${({ theme }) => theme.spacing.xxs};
-  border-bottom: 1px solid rgba(117, 29, 12, 0.2);
+  text-align: center;
+  line-height: 1.0;
+  flex: 1;
+`;
+
+const HelpIcon = styled.button`
+  background: ${({ theme }) => theme.colors.moabMahogany};
+  border: 1px solid ${({ theme }) => theme.colors.moabMahogany};
+  color: ${({ theme }) => theme.colors.snowbirdWhite};
+  cursor: pointer;
+  padding: 1px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+    background: ${({ theme }) => theme.colors.moabMahogany};
+    border-color: ${({ theme }) => theme.colors.moabMahogany};
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(117, 29, 12, 0.3);
+  }
+
+  svg {
+    width: 8px;
+    height: 8px;
+  }
+`;
+
+const StoryMapModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const StoryMapContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+`;
+
+const StoryMapCloseButton = styled.button`
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10001;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const StoryMapIframe = styled.iframe`
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
 `;
 
 const LegendBar = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xxs};
+  align-items: center;
+  gap: 2px;
 `;
 
 const ColorGradient = styled.div`
-  height: 10px;
-  width: 100%;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  background: linear-gradient(to right, 
-    #f7f2e9,  /* Warm off-white (low PM₂.₅) */
-    #e8dcc6,  /* Light coffee with cream (moderate PM₂.₅) */
-    #d6c5a2,  /* Café au lait (high PM₂.₅) */
-    #c4a373,  /* Medium coffee (very high PM₂.₅) */
-    #a0784a   /* Dark coffee (extremely high PM₂.₅) */
+  width: 18px;
+  height: 50px;
+  background: linear-gradient(
+    to bottom,
+    #a0784a 0%,
+    #c4a373 25%,
+    #d6c5a2 50%,
+    #e8dcc6 75%,
+    #f7f2e9 100%
   );
-  border: 1px solid rgba(117, 29, 12, 0.3);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: ${({ theme }) => theme.borderRadius.sm};
+  border: 1px solid rgba(117, 29, 12, 0.2);
 `;
 
 const LabelContainer = styled.div`
   display: flex;
-  justify-content: space-between;
-  margin-top: ${({ theme }) => theme.spacing.xxs};
+  justify-content: center;
+  width: 100%;
 `;
 
 const LegendLabel = styled.span`
-  font-size: 10px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 9px;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  color: ${({ theme }) => theme.colors.olympicParkObsidian};
   font-family: ${({ theme }) => theme.typography.fontFamily};
-  font-weight: ${({ theme }) => theme.typography.weights.regular};
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
 `;
 
 export default DustLegend; 

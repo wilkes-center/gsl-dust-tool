@@ -61,7 +61,7 @@ const HelpButton = styled.button`
   }
 `;
 
-const MinimizedControls = styled.button<{ $expanded: boolean }>`
+const MinimizedControls = styled.button<{ $expanded: boolean; $sidebarOpen: boolean }>`
   position: absolute;
   top: 70px;
   right: ${({ theme }) => theme.spacing.md};
@@ -90,6 +90,16 @@ const MinimizedControls = styled.button<{ $expanded: boolean }>`
     transition: transform 0.2s ease;
     transform: ${props => props.$expanded ? 'rotate(180deg)' : 'rotate(0)'};
   }
+  
+  ${({ $sidebarOpen, theme }) => $sidebarOpen && `
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: ${theme.borderRadius.round};
+    justify-content: center;
+    gap: 0;
+    font-size: 0;
+  `}
 `;
 
 const ExpandedControls = styled.div`
@@ -122,6 +132,7 @@ const ExpandedControls = styled.div`
 const LayerToggle = styled.label`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: ${({ theme }) => theme.spacing.xs};
   cursor: pointer;
   font-size: 12px;
@@ -139,6 +150,115 @@ const LayerToggle = styled.label`
     cursor: pointer;
     accent-color: ${({ theme }) => theme.colors.moabMahogany};
   }
+`;
+
+const LayerToggleLeft = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const LayerToggleRight = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const HelpIcon = styled.button`
+  background: rgba(117, 29, 12, 0.1);
+  border: 1px solid rgba(117, 29, 12, 0.2);
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  margin-left: 8px;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(117, 29, 12, 0.2);
+    border-color: rgba(117, 29, 12, 0.4);
+    transform: scale(1.05);
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+`;
+
+const StoryMapModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const StoryMapContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+`;
+
+const StoryMapHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f9f9f9;
+`;
+
+const StoryMapTitle = styled.h2`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+const StoryMapCloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const StoryMapIframe = styled.iframe`
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
 `;
 
 const CloseButton = styled.button`
@@ -177,6 +297,12 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
   const [controlsExpanded, setControlsExpanded] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarInfo, setSidebarInfo] = useState<PopupInfo | null>(null);
+  
+  // Story map modal states
+  const [showCensusTractsStoryMap, setShowCensusTractsStoryMap] = useState(false);
+  const [showBathymetryStoryMap, setShowBathymetryStoryMap] = useState(false);
+  const [showErodibilityStoryMap, setShowErodibilityStoryMap] = useState(false);
+  const [showPM25StoryMap, setShowPM25StoryMap] = useState(false);
   
   const [layers, setLayers] = useState<MapLayersType>({
     satellite: false,
@@ -448,163 +574,297 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
   };
 
   return (
-    <MapWrapper>
-      <MapArea $sidebarOpen={sidebarOpen}>
-        <Map
-          ref={mapRef}
-          {...viewState}
-          onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
-          mapStyle={layers.satellite ? "mapbox://styles/mapbox/satellite-v9" : MAPBOX_CONFIG.styleUrl}
-          mapboxAccessToken={MAPBOX_TOKEN}
-          minZoom={5}
-          onLoad={onMapLoadHandler}
-          onClick={handleMapClick}
-          interactiveLayerIds={[
-            layers.pm25Data ? 'pm25-point-layer' : null,
-            layers.bathymetry ? 'bathymetry-point-layer' : null,
-            layers.censusTracts ? 'census-tracts-all-fill' : null,
-            layers.censusTracts ? 'census-tracts-outline' : null,
-            layers.erodibility ? 'erodibility-fill' : null,
-            layers.erodibility ? 'erodibility-shadow' : null,
-            layers.erodibility ? 'erodibility-feather' : null,
-          ].filter(Boolean) as string[]}
-        >
-          <NavigationControl position="bottom-left" />
-          
-          {/* Search Bar */}
-          <SearchBar onLocationSelect={handleLocationSelect} />
-          
-          {/* Search Marker */}
-          {searchMarker && (
-            <SearchMarker
-              longitude={searchMarker.longitude}
-              latitude={searchMarker.latitude}
-              placeName={searchMarker.placeName}
-              onClose={handleSearchMarkerClose}
-            />
-          )}
-          
-          {/* Lake Level Control (bottom left) */}
-          <LakeLevelControl
-            selectedLevel={selectedLakeLevel}
-            onLevelChange={handleLakeLevelChange}
-          />
-
-          {/* Time Slider Control */}
-          <HorizontalTimeSlider
-            pm25Data={pm25Data || []}
-            selectedTimestampIndex={selectedTimestampIndex}
-            onTimestampIndexChange={handleTimestampIndexChange}
-            loading={loading}
-            onModeChange={handleTimelineModeChange}
-          />
-          
-          {/* Minimized/Expanded controls (top right) */}
-          <MinimizedControls 
-            onClick={() => setControlsExpanded(!controlsExpanded)}
-            $expanded={controlsExpanded}
+    <>
+      <MapWrapper>
+        <MapArea $sidebarOpen={sidebarOpen}>
+          <Map
+            ref={mapRef}
+            {...viewState}
+            onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
+            mapStyle={layers.satellite ? "mapbox://styles/mapbox/satellite-v9" : MAPBOX_CONFIG.styleUrl}
+            mapboxAccessToken={MAPBOX_TOKEN}
+            minZoom={5}
+            onLoad={onMapLoadHandler}
+            onClick={handleMapClick}
+            interactiveLayerIds={[
+              layers.pm25Data ? 'pm25-point-layer' : null,
+              layers.bathymetry ? 'bathymetry-point-layer' : null,
+              layers.censusTracts ? 'census-tracts-all-fill' : null,
+              layers.censusTracts ? 'census-tracts-outline' : null,
+              layers.erodibility ? 'erodibility-fill' : null,
+              layers.erodibility ? 'erodibility-shadow' : null,
+              layers.erodibility ? 'erodibility-feather' : null,
+            ].filter(Boolean) as string[]}
           >
-            <Layers size={18} />
-            Map Layers
-            <ChevronRight size={16} />
-          </MinimizedControls>
-          
-          {controlsExpanded && (
-            <ExpandedControls>
-              <CloseButton onClick={() => setControlsExpanded(false)}>
-                <X size={16} />
-              </CloseButton>
-              <h3>DATA LAYERS</h3>
-              
-              <LayerToggle>
-                <input
-                  type="checkbox"
-                  checked={layers.censusTracts}
-                  onChange={() => toggleLayer('censusTracts')}
-                />
-                Census Tracts
-              </LayerToggle>
-              
-              <LayerToggle>
-                <input
-                  type="checkbox"
-                  checked={layers.bathymetry}
-                  onChange={() => toggleLayer('bathymetry')}
-                />
-                Lake Bathymetry
-              </LayerToggle>
-              
-              <LayerToggle>
-                <input
-                  type="checkbox"
-                  checked={layers.erodibility}
-                  onChange={() => toggleLayer('erodibility')}
-                />
-                Soil Erodibility
-              </LayerToggle>
-              
-              <LayerToggle>
-                <input
-                  type="checkbox"
-                  checked={layers.pm25Data}
-                  onChange={() => toggleLayer('pm25Data')}
-                />
-                <PMValue type="2.5" /> Concentrations
-              </LayerToggle>
-              
-              <LayerToggle>
-                <input
-                  type="checkbox"
-                  checked={layers.satellite}
-                  onChange={() => toggleLayer('satellite')}
-                />
-                Satellite Imagery
-              </LayerToggle>
-            </ExpandedControls>
-          )}
-          
-          {/* Map layers */}
-          {mapStyleLoaded && (
-            <MapLayers
-              layers={layers}
-              selectedElevation={selectedElevation}
-              averagedPM25Data={getCurrentTimestampPM25Data()}
-              centroidLocations={centroidLocations}
-              loading={loading}
-              getPM25Points={getPM25Points}
-              selectedCensusTractId={selectedCensusTractId}
+            <NavigationControl position="bottom-left" />
+            
+            {/* Search Bar */}
+            <SearchBar onLocationSelect={handleLocationSelect} sidebarOpen={sidebarOpen} />
+            
+            {/* Search Marker */}
+            {searchMarker && (
+              <SearchMarker
+                longitude={searchMarker.longitude}
+                latitude={searchMarker.latitude}
+                placeName={searchMarker.placeName}
+                onClose={handleSearchMarkerClose}
+              />
+            )}
+            
+            {/* Lake Level Control (bottom left) */}
+            <LakeLevelControl
+              selectedLevel={selectedLakeLevel}
+              onLevelChange={handleLakeLevelChange}
             />
-          )}
-          
-          {/* Dust Legend - show when PM₂.₅ points OR census tracts are visible */}
-          <DustLegend visible={layers.pm25Data || layers.censusTracts} />
-          
-          {/* Erodibility Legend */}
-          <ErodibilityLegend visible={layers.erodibility} />
-          
-          {/* Help button */}
-          <HelpButton onClick={onBackToIntro}>
-            <HelpCircle size={24} />
-          </HelpButton>
-        </Map>
-      </MapArea>
-      
-      {/* Info sidebar (right side) */}
-      <InfoSidebar
-        isOpen={sidebarOpen}
-        onClose={() => {
-          setSidebarOpen(false);
-          setSelectedCensusTractId(null);
-        }}
-        popupInfo={sidebarInfo}
-        centroidLocations={centroidLocations}
-        averagedPM25Data={getCurrentTimestampPM25Data()}
-        dustContributions={dustContributions}
-        lakeLevel={selectedLakeLevel}
-        pm25Data={pm25Data}
-        selectedTimestampIndex={selectedTimestampIndex}
-      />
-    </MapWrapper>
+
+            {/* Time Slider Control */}
+            <HorizontalTimeSlider
+              pm25Data={pm25Data || []}
+              selectedTimestampIndex={selectedTimestampIndex}
+              onTimestampIndexChange={handleTimestampIndexChange}
+              loading={loading}
+              onModeChange={handleTimelineModeChange}
+            />
+            
+            {/* Minimized/Expanded controls (top right) */}
+            <MinimizedControls 
+              onClick={() => setControlsExpanded(!controlsExpanded)}
+              $expanded={controlsExpanded}
+              $sidebarOpen={sidebarOpen}
+            >
+              <Layers size={18} />
+              {!sidebarOpen && "Map Layers"}
+              {!sidebarOpen && <ChevronRight size={16} />}
+            </MinimizedControls>
+            
+            {controlsExpanded && (
+              <ExpandedControls>
+                <CloseButton onClick={() => setControlsExpanded(false)}>
+                  <X size={16} />
+                </CloseButton>
+                <h3>DATA LAYERS</h3>
+                
+                <LayerToggle>
+                  <LayerToggleLeft>
+                    <input
+                      type="checkbox"
+                      checked={layers.censusTracts}
+                      onChange={() => toggleLayer('censusTracts')}
+                    />
+                    Census Tracts
+                  </LayerToggleLeft>
+                  <LayerToggleRight>
+                    <HelpIcon
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowCensusTractsStoryMap(true);
+                      }}
+                      title="Learn more about census tracts"
+                    >
+                      <HelpCircle />
+                    </HelpIcon>
+                  </LayerToggleRight>
+                </LayerToggle>
+                
+                <LayerToggle>
+                  <LayerToggleLeft>
+                    <input
+                      type="checkbox"
+                      checked={layers.bathymetry}
+                      onChange={() => toggleLayer('bathymetry')}
+                    />
+                    Lake Bathymetry
+                  </LayerToggleLeft>
+                  <LayerToggleRight>
+                    <HelpIcon
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowBathymetryStoryMap(true);
+                      }}
+                      title="Learn more about lake bathymetry"
+                    >
+                      <HelpCircle />
+                    </HelpIcon>
+                  </LayerToggleRight>
+                </LayerToggle>
+                
+                <LayerToggle>
+                  <LayerToggleLeft>
+                    <input
+                      type="checkbox"
+                      checked={layers.erodibility}
+                      onChange={() => toggleLayer('erodibility')}
+                    />
+                    Soil Erodibility
+                  </LayerToggleLeft>
+                  <LayerToggleRight>
+                    <HelpIcon
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowErodibilityStoryMap(true);
+                      }}
+                      title="Learn more about soil erodibility"
+                    >
+                      <HelpCircle />
+                    </HelpIcon>
+                  </LayerToggleRight>
+                </LayerToggle>
+                
+                <LayerToggle>
+                  <LayerToggleLeft>
+                    <input
+                      type="checkbox"
+                      checked={layers.pm25Data}
+                      onChange={() => toggleLayer('pm25Data')}
+                    />
+                    <PMValue type="2.5" /> Concentrations
+                  </LayerToggleLeft>
+                  <LayerToggleRight>
+                    <HelpIcon
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowPM25StoryMap(true);
+                      }}
+                      title="Learn more about PM2.5 concentrations"
+                    >
+                      <HelpCircle />
+                    </HelpIcon>
+                  </LayerToggleRight>
+                </LayerToggle>
+                
+                <LayerToggle>
+                  <LayerToggleLeft>
+                    <input
+                      type="checkbox"
+                      checked={layers.satellite}
+                      onChange={() => toggleLayer('satellite')}
+                    />
+                    Satellite Imagery
+                  </LayerToggleLeft>
+                </LayerToggle>
+              </ExpandedControls>
+            )}
+            
+            {/* Map layers */}
+            {mapStyleLoaded && (
+              <MapLayers
+                layers={layers}
+                selectedElevation={selectedElevation}
+                averagedPM25Data={getCurrentTimestampPM25Data()}
+                centroidLocations={centroidLocations}
+                loading={loading}
+                getPM25Points={getPM25Points}
+                selectedCensusTractId={selectedCensusTractId}
+              />
+            )}
+            
+            {/* Dust Legend - show when PM₂.₅ points OR census tracts are visible */}
+            <DustLegend visible={layers.pm25Data || layers.censusTracts} sidebarOpen={sidebarOpen} />
+            
+            {/* Erodibility Legend */}
+            <ErodibilityLegend visible={layers.erodibility} sidebarOpen={sidebarOpen} />
+            
+            {/* Help button */}
+            <HelpButton onClick={onBackToIntro}>
+              <HelpCircle size={24} />
+            </HelpButton>
+          </Map>
+        </MapArea>
+        
+        {/* Info sidebar (right side) */}
+        <InfoSidebar
+          isOpen={sidebarOpen}
+          onClose={() => {
+            setSidebarOpen(false);
+            setSelectedCensusTractId(null);
+          }}
+          popupInfo={sidebarInfo}
+          centroidLocations={centroidLocations}
+          averagedPM25Data={getCurrentTimestampPM25Data()}
+          dustContributions={dustContributions}
+          lakeLevel={selectedLakeLevel}
+          pm25Data={pm25Data}
+          selectedTimestampIndex={selectedTimestampIndex}
+        />
+      </MapWrapper>
+
+      {/* Story Map Modals */}
+      {showCensusTractsStoryMap && (
+        <StoryMapModal onClick={() => setShowCensusTractsStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Census Tracts - Interactive Story</StoryMapTitle>
+              <StoryMapCloseButton onClick={() => setShowCensusTractsStoryMap(false)}>
+                <X />
+              </StoryMapCloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-4RMbQ3"
+              allowFullScreen
+              allow="geolocation"
+              title="Census Tracts Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+
+      {showBathymetryStoryMap && (
+        <StoryMapModal onClick={() => setShowBathymetryStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Lake Bathymetry - Interactive Story</StoryMapTitle>
+              <StoryMapCloseButton onClick={() => setShowBathymetryStoryMap(false)}>
+                <X />
+              </StoryMapCloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-GxMtqA"
+              allowFullScreen
+              allow="geolocation"
+              title="Lake Bathymetry Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+
+      {showErodibilityStoryMap && (
+        <StoryMapModal onClick={() => setShowErodibilityStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Soil Erodibility - Interactive Story</StoryMapTitle>
+              <StoryMapCloseButton onClick={() => setShowErodibilityStoryMap(false)}>
+                <X />
+              </StoryMapCloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-kSOT5i"
+              allowFullScreen
+              allow="geolocation"
+              title="Soil Erodibility Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+
+      {showPM25StoryMap && (
+        <StoryMapModal onClick={() => setShowPM25StoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>PM2.5 Concentrations - Interactive Story</StoryMapTitle>
+              <StoryMapCloseButton onClick={() => setShowPM25StoryMap(false)}>
+                <X />
+              </StoryMapCloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-qixyg5"
+              allowFullScreen
+              allow="geolocation"
+              title="PM2.5 Concentrations Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+    </>
   );
 }
 

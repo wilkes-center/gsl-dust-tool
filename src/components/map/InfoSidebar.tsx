@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown, HelpCircle } from 'lucide-react';
 import { PopupInfo } from './types';
 import { getAggregatedPM25Color, DustContribution } from '../../utils/dataUtils';
 import { getErodibilityColor } from './constants';
@@ -44,6 +44,9 @@ const SidebarTitle = styled.h2`
   color: ${({ theme }) => theme.colors.moabMahogany};
   margin: 0;
   letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
 `;
 
 const CloseButton = styled.button`
@@ -61,6 +64,105 @@ const CloseButton = styled.button`
     color: ${({ theme }) => theme.colors.moabMahogany};
     transform: scale(1.1);
   }
+`;
+
+const HelpIcon = styled.button`
+  background: rgba(117, 29, 12, 0.1);
+  border: 1px solid rgba(117, 29, 12, 0.2);
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  margin-left: 4px;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(117, 29, 12, 0.2);
+    border-color: rgba(117, 29, 12, 0.4);
+    transform: scale(1.05);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const StoryMapModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const StoryMapContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+`;
+
+const StoryMapHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f9f9f9;
+`;
+
+const StoryMapTitle = styled.h2`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+const StoryMapCloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const StoryMapIframe = styled.iframe`
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
 `;
 
 const SidebarContent = styled.div`
@@ -346,6 +448,7 @@ export function InfoSidebar({
 }: InfoSidebarProps) {
   const sidebarContentRef = React.useRef<HTMLDivElement>(null);
   const chartsContainerRef = React.useRef<HTMLDivElement>(null);
+  const [showStoryMap, setShowStoryMap] = useState(false);
 
   const scrollToBottom = () => {
     // Try multiple approaches to ensure scrolling works
@@ -429,203 +532,235 @@ export function InfoSidebar({
   const dustContribution = centroid ? dustContributions[centroid.centroid_name] : null;
 
   return (
-    <SidebarContainer $isOpen={isOpen}>
-      <SidebarHeader>
-        <SidebarTitle>{getTitle()}</SidebarTitle>
-        <CloseButton onClick={onClose}>
-          <X size={20} />
-        </CloseButton>
-      </SidebarHeader>
-      
-      <SidebarContent ref={sidebarContentRef}>
-        {!popupInfo ? (
-          <NoDataMessage>
-            Click on the map to view location information
-          </NoDataMessage>
-        ) : (
-          <>
-            {/* Compact info section */}
-            <CompactInfoSection>
-              {popupInfo.type === 'bathymetry' && (
-                <InfoGrid>
-                  <InfoItem>
-                    <InfoLabel>Elevation (meters)</InfoLabel>
-                    <HighlightValue>{popupInfo.depth.toFixed(2)}m</HighlightValue>
-                  </InfoItem>
-                  <InfoItem>
-                    <InfoLabel>Elevation (feet)</InfoLabel>
-                    <InfoValue>{(popupInfo.depth * 3.28084).toFixed(1)}ft</InfoValue>
-                  </InfoItem>
-                </InfoGrid>
-              )}
-              
-              {popupInfo.type === 'censusTract' && (
-                <>
-                  <FullWidthItem>
-                    <InfoLabel>Census Tract</InfoLabel>
-                    <HighlightValue>{popupInfo.GEOID20}</HighlightValue>
-                  </FullWidthItem>
-                  
-                  {centroid && (
-                    <>
-                      <FullWidthItem>
-                        <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
-                        <PM25Container>
-                          <PM25ValueRow>
-                            <HighlightValue>{pm25Value.toFixed(1)} µg/m³</HighlightValue>
-                            <PM25Markers>
-                              {[1, 2, 3, 4, 5].map((marker) => (
-                                <PM25Marker 
-                                  key={marker}
-                                  filled={marker <= getPM25FilledMarkers(pm25Value)}
-                                  quality={getAirQuality(pm25Value)}
-                                />
-                              ))}
-                            </PM25Markers>
-                            <QualityBadge quality={getAirQuality(pm25Value)}>
-                              {getAirQuality(pm25Value)}
-                            </QualityBadge>
-                          </PM25ValueRow>
-                        </PM25Container>
-                      </FullWidthItem>
-                      
+    <>
+      <SidebarContainer $isOpen={isOpen}>
+        <SidebarHeader>
+          <SidebarTitle>
+            {getTitle()}
+            {getTitle() === 'Census Tract Data' && (
+              <HelpIcon
+                onClick={() => setShowStoryMap(true)}
+                title="Learn more about census tract data"
+              >
+                <HelpCircle />
+              </HelpIcon>
+            )}
+          </SidebarTitle>
+          <CloseButton onClick={onClose}>
+            <X size={20} />
+          </CloseButton>
+        </SidebarHeader>
+        
+        <SidebarContent ref={sidebarContentRef}>
+          {!popupInfo ? (
+            <NoDataMessage>
+              Click on the map to view location information
+            </NoDataMessage>
+          ) : (
+            <>
+              {/* Compact info section */}
+              <CompactInfoSection>
+                {popupInfo.type === 'bathymetry' && (
+                  <InfoGrid>
+                    <InfoItem>
+                      <InfoLabel>Elevation (meters)</InfoLabel>
+                      <HighlightValue>{popupInfo.depth.toFixed(2)}m</HighlightValue>
+                    </InfoItem>
+                    <InfoItem>
+                      <InfoLabel>Elevation (feet)</InfoLabel>
+                      <InfoValue>{(popupInfo.depth * 3.28084).toFixed(1)}ft</InfoValue>
+                    </InfoItem>
+                  </InfoGrid>
+                )}
+                
+                {popupInfo.type === 'censusTract' && (
+                  <>
+                    <FullWidthItem>
+                      <InfoLabel>Census Tract</InfoLabel>
+                      <HighlightValue>{popupInfo.GEOID20}</HighlightValue>
+                    </FullWidthItem>
+                    
+                    {centroid && (
+                      <>
+                        <FullWidthItem>
+                          <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
+                          <PM25Container>
+                            <PM25ValueRow>
+                              <HighlightValue>{pm25Value.toFixed(1)} µg/m³</HighlightValue>
+                              <PM25Markers>
+                                {[1, 2, 3, 4, 5].map((marker) => (
+                                  <PM25Marker 
+                                    key={marker}
+                                    filled={marker <= getPM25FilledMarkers(pm25Value)}
+                                    quality={getAirQuality(pm25Value)}
+                                  />
+                                ))}
+                              </PM25Markers>
+                              <QualityBadge quality={getAirQuality(pm25Value)}>
+                                {getAirQuality(pm25Value)}
+                              </QualityBadge>
+                            </PM25ValueRow>
+                          </PM25Container>
+                        </FullWidthItem>
+                        
+                        <InfoGrid>
+                          <InfoItem>
+                            <InfoLabel>Latitude</InfoLabel>
+                            <InfoValue>{centroid.lat.toFixed(6)}°</InfoValue>
+                          </InfoItem>
+                          <InfoItem>
+                            <InfoLabel>Longitude</InfoLabel>
+                            <InfoValue>{centroid.lon.toFixed(6)}°</InfoValue>
+                          </InfoItem>
+                        </InfoGrid>
+                      </>
+                    )}
+                    
+                    {!centroid && (
                       <InfoGrid>
                         <InfoItem>
                           <InfoLabel>Latitude</InfoLabel>
-                          <InfoValue>{centroid.lat.toFixed(6)}°</InfoValue>
+                          <InfoValue>{popupInfo.INTPTLAT20}</InfoValue>
                         </InfoItem>
                         <InfoItem>
                           <InfoLabel>Longitude</InfoLabel>
-                          <InfoValue>{centroid.lon.toFixed(6)}°</InfoValue>
+                          <InfoValue>{popupInfo.INTPTLON20}</InfoValue>
                         </InfoItem>
                       </InfoGrid>
-                    </>
-                  )}
-                  
-                  {!centroid && (
-                    <InfoGrid>
-                      <InfoItem>
-                        <InfoLabel>Coordinates</InfoLabel>
-                        <InfoValue>{popupInfo.INTPTLAT20}, {popupInfo.INTPTLON20}</InfoValue>
-                      </InfoItem>
-                      <InfoItem>
-                        <InfoLabel><PMValue type="2.5" /> Status</InfoLabel>
-                        <InfoValue>No monitoring data</InfoValue>
-                      </InfoItem>
-                    </InfoGrid>
-                  )}
-                </>
-              )}
-              
-              {popupInfo.type === 'pm25' && (
-                <>
-                  <FullWidthItem>
-                    <InfoLabel>Monitor Location</InfoLabel>
-                    <MonitorName>{popupInfo.centroidName}</MonitorName>
-                  </FullWidthItem>
-                  
-                  <FullWidthItem>
-                    <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
-                    <PM25Container>
-                      <PM25ValueRow>
-                        <HighlightValue>{popupInfo.pm25Value.toFixed(1)} µg/m³</HighlightValue>
-                        <PM25Markers>
-                          {[1, 2, 3, 4, 5].map((marker) => (
-                            <PM25Marker 
-                              key={marker}
-                              filled={marker <= getPM25FilledMarkers(popupInfo.pm25Value)}
-                              quality={getAirQuality(popupInfo.pm25Value)}
-                            />
-                          ))}
-                        </PM25Markers>
-                        <QualityBadge quality={getAirQuality(popupInfo.pm25Value)}>
-                          {getAirQuality(popupInfo.pm25Value)}
-                        </QualityBadge>
-                      </PM25ValueRow>
-                    </PM25Container>
-                  </FullWidthItem>
-                  
-                  <InfoGrid>
-                    <InfoItem>
-                      <InfoLabel>Latitude</InfoLabel>
-                      <InfoValue>{popupInfo.latitude.toFixed(6)}°</InfoValue>
-                    </InfoItem>
-                    <InfoItem>
-                      <InfoLabel>Longitude</InfoLabel>
-                      <InfoValue>{popupInfo.longitude.toFixed(6)}°</InfoValue>
-                    </InfoItem>
-                  </InfoGrid>
-                  
-                  {popupInfo.geoid && (
-                    <FullWidthItem style={{ marginTop: '8px' }}>
-                      <InfoLabel>Census Tract</InfoLabel>
-                      <InfoValue>{popupInfo.geoid}</InfoValue>
-                    </FullWidthItem>
-                  )}
-                </>
-              )}
-              
-              {popupInfo.type === 'erodibility' && (
-                <>
-                  <InfoGrid>
-                    <InfoItem>
-                      <InfoLabel>Erodibility Index</InfoLabel>
-                      <HighlightValue>{popupInfo.erodibilityValue.toFixed(2)}</HighlightValue>
-                    </InfoItem>
-                    <InfoItem>
-                      <InfoLabel>Risk Classification</InfoLabel>
-                      <InfoValue>{getErodibilityClass(popupInfo.erodibilityValue)}</InfoValue>
-                    </InfoItem>
-                  </InfoGrid>
-                  <QualityBadge quality={getErodibilityClass(popupInfo.erodibilityValue)}>
-                    Risk Level: {getErodibilityClass(popupInfo.erodibilityValue)}
-                  </QualityBadge>
-                </>
-              )}
-            </CompactInfoSection>
-            
-            {/* Charts section - highlighted */}
-            {popupInfo.type === 'censusTract' && centroid ? (
-              <ChartsContainer ref={chartsContainerRef}>
-                {/* Dust Contribution Pie Chart - Featured First */}
-                {dustContribution && (
-                  <ChartSectionWithArrow>
-                    <DustContributionChart 
-                      contribution={dustContribution} 
-                      lakeLevel={lakeLevel}
-                    />
-                    <DownArrowButton 
-                      onClick={scrollToBottom}
-                      title="Scroll to bottom"
-                    >
-                      <ChevronDown size={28} />
-                    </DownArrowButton>
-                  </ChartSectionWithArrow>
+                    )}
+                  </>
                 )}
                 
-                {/* PM₂.₅ Time Series Line Chart */}
-                <ChartSection>
-                  <PM25Chart centroidName={centroid.centroid_name} />
-                </ChartSection>
-              </ChartsContainer>
-            ) : popupInfo.type === 'censusTract' && !centroid ? (
-              <NoChartsMessage>
-                No air quality monitoring data available for this census tract.
-                <br />
-                <br />
-                Select a tract with monitoring stations to view <PMValue type="2.5" /> trends and dust source contributions.
-              </NoChartsMessage>
-            ) : popupInfo.type === 'bathymetry' || popupInfo.type === 'erodibility' ? (
-              <NoChartsMessage>
-                Charts are available for census tracts with air quality monitoring data.
-                <br />
-                <br />
-                Click on a census tract to view <PMValue type="2.5" /> trends and dust source analysis.
-              </NoChartsMessage>
-            ) : null}
-          </>
-        )}
-      </SidebarContent>
-    </SidebarContainer>
+                {popupInfo.type === 'pm25' && (
+                  <>
+                    <FullWidthItem>
+                      <InfoLabel>Monitor Location</InfoLabel>
+                      <HighlightValue>{popupInfo.centroidName}</HighlightValue>
+                    </FullWidthItem>
+                    
+                    <FullWidthItem>
+                      <InfoLabel><PMValue type="2.5" /> Average</InfoLabel>
+                      <PM25Container>
+                        <PM25ValueRow>
+                          <HighlightValue>{popupInfo.pm25Value.toFixed(1)} µg/m³</HighlightValue>
+                          <PM25Markers>
+                            {[1, 2, 3, 4, 5].map((marker) => (
+                              <PM25Marker 
+                                key={marker}
+                                filled={marker <= getPM25FilledMarkers(popupInfo.pm25Value)}
+                                quality={getAirQuality(popupInfo.pm25Value)}
+                              />
+                            ))}
+                          </PM25Markers>
+                          <QualityBadge quality={getAirQuality(popupInfo.pm25Value)}>
+                            {getAirQuality(popupInfo.pm25Value)}
+                          </QualityBadge>
+                        </PM25ValueRow>
+                      </PM25Container>
+                    </FullWidthItem>
+                    
+                    <InfoGrid>
+                      <InfoItem>
+                        <InfoLabel>Latitude</InfoLabel>
+                        <InfoValue>{popupInfo.latitude.toFixed(6)}°</InfoValue>
+                      </InfoItem>
+                      <InfoItem>
+                        <InfoLabel>Longitude</InfoLabel>
+                        <InfoValue>{popupInfo.longitude.toFixed(6)}°</InfoValue>
+                      </InfoItem>
+                    </InfoGrid>
+                    
+                    {popupInfo.geoid && (
+                      <FullWidthItem style={{ marginTop: '8px' }}>
+                        <InfoLabel>Census Tract</InfoLabel>
+                        <InfoValue>{popupInfo.geoid}</InfoValue>
+                      </FullWidthItem>
+                    )}
+                  </>
+                )}
+                
+                {popupInfo.type === 'erodibility' && (
+                  <>
+                    <InfoGrid>
+                      <InfoItem>
+                        <InfoLabel>Erodibility Index</InfoLabel>
+                        <HighlightValue>{popupInfo.erodibilityValue.toFixed(2)}</HighlightValue>
+                      </InfoItem>
+                      <InfoItem>
+                        <InfoLabel>Risk Classification</InfoLabel>
+                        <InfoValue>{getErodibilityClass(popupInfo.erodibilityValue)}</InfoValue>
+                      </InfoItem>
+                    </InfoGrid>
+                    <QualityBadge quality={getErodibilityClass(popupInfo.erodibilityValue)}>
+                      Risk Level: {getErodibilityClass(popupInfo.erodibilityValue)}
+                    </QualityBadge>
+                  </>
+                )}
+              </CompactInfoSection>
+              
+              {/* Charts section - highlighted */}
+              {popupInfo.type === 'censusTract' && centroid ? (
+                <ChartsContainer ref={chartsContainerRef}>
+                  {/* Dust Contribution Pie Chart - Featured First */}
+                  {dustContribution && (
+                    <ChartSectionWithArrow>
+                      <DustContributionChart 
+                        contribution={dustContribution} 
+                        lakeLevel={lakeLevel}
+                      />
+                      <DownArrowButton 
+                        onClick={scrollToBottom}
+                        title="Scroll to bottom"
+                      >
+                        <ChevronDown size={28} />
+                      </DownArrowButton>
+                    </ChartSectionWithArrow>
+                  )}
+                  
+                  {/* PM₂.₅ Time Series Line Chart */}
+                  <ChartSection>
+                    <PM25Chart centroidName={centroid.centroid_name} />
+                  </ChartSection>
+                </ChartsContainer>
+              ) : popupInfo.type === 'censusTract' && !centroid ? (
+                <NoChartsMessage>
+                  No air quality monitoring data available for this census tract.
+                  <br />
+                  <br />
+                  Select a tract with monitoring stations to view <PMValue type="2.5" /> trends and dust source contributions.
+                </NoChartsMessage>
+              ) : popupInfo.type === 'bathymetry' || popupInfo.type === 'erodibility' ? (
+                <NoChartsMessage>
+                  Charts are available for census tracts with air quality monitoring data.
+                  <br />
+                  <br />
+                  Click on a census tract to view <PMValue type="2.5" /> trends and dust source analysis.
+                </NoChartsMessage>
+              ) : null}
+            </>
+          )}
+        </SidebarContent>
+      </SidebarContainer>
+
+      {/* Story Map Modal */}
+      {showStoryMap && (
+        <StoryMapModal onClick={() => setShowStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Census Tract Data - Interactive Story</StoryMapTitle>
+              <StoryMapCloseButton onClick={() => setShowStoryMap(false)}>
+                <X />
+              </StoryMapCloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd#ref-n-VMM9PH"
+              allowFullScreen
+              allow="geolocation"
+              title="Census Tract Data Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+    </>
   );
 }

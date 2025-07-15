@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { HelpCircle, X } from 'lucide-react';
 import { AVAILABLE_LAKE_LEVELS } from './constants';
-import { metersToFeet } from '../../utils/dataUtils';
 import { LakeLevelSliderContainer } from '../MapStyled';
+import { metersToFeet } from '../../utils/dataUtils';
 
 /**
  * MapSidebar Component with Lake Health Level Indicators
@@ -113,6 +114,9 @@ const TimeSliderHeader = styled.div`
     letter-spacing: 0.5px;
     text-transform: uppercase;
     margin-bottom: ${({ theme }) => theme.spacing.xs};
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.xs};
   }
 
   .level-display {
@@ -140,6 +144,105 @@ const TimeSliderHeader = styled.div`
       opacity: 0.8;
     }
   }
+`;
+
+const HelpIcon = styled.button`
+  background: rgba(117, 29, 12, 0.1);
+  border: 1px solid rgba(117, 29, 12, 0.2);
+  color: ${({ theme }) => theme.colors.moabMahogany};
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  margin-left: 4px;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(117, 29, 12, 0.2);
+    border-color: rgba(117, 29, 12, 0.4);
+    transform: scale(1.05);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const StoryMapModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+`;
+
+const StoryMapContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+`;
+
+const StoryMapHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f9f9f9;
+`;
+
+const StoryMapTitle = styled.h2`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const StoryMapIframe = styled.iframe`
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
 `;
 
 const LevelControlButton = styled.button`
@@ -505,6 +608,9 @@ export function MapSidebarComponent({
   // State to track the current level index for increment/decrement
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   
+  // State for story map modal
+  const [showStoryMap, setShowStoryMap] = useState(false);
+  
   // Ref for measuring container height
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -554,101 +660,131 @@ export function MapSidebarComponent({
   if (!showBathymetry) return null;
 
   return (
-    <LakeLevelSliderContainer ref={containerRef}>
-      <TimeSliderHeader>
-        <h3>LAKE LEVEL</h3>
-        <div className="level-display">
-          <span>{metersToFeet(selectedLakeLevel).toFixed(1)} ft</span>
-          <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>({selectedLakeLevel.toFixed(1)}m)</span>
-        </div>
-      </TimeSliderHeader>
-      
-      {/* Health Level Indicator */}
-      {currentHealthLevel && (
-        <HealthLevelContainer>
-          <HealthLevelIndicator $color={currentHealthLevel.color}>
-            <HealthLevelTitle $color={currentHealthLevel.color}>{currentHealthLevel.name}</HealthLevelTitle>
-            <HealthLevelDescription $color={currentHealthLevel.color}>{currentHealthLevel.description}</HealthLevelDescription>
-          </HealthLevelIndicator>
-        </HealthLevelContainer>
-      )}
-      
-      <SliderContainer>
-        {/* Top button only */}
-        <LevelControls>
-          <LevelControlButton 
-            onClick={handleIncrement}
-            disabled={currentLevelIndex >= AVAILABLE_LAKE_LEVELS.length - 1}
-            title="Increase lake level"
-          >
-            +
-          </LevelControlButton>
-        </LevelControls>
+    <>
+      <LakeLevelSliderContainer ref={containerRef}>
+        <TimeSliderHeader>
+          <h3>
+            LAKE LEVEL
+            <HelpIcon
+              onClick={() => setShowStoryMap(true)}
+              title="Learn more about lake levels"
+            >
+              <HelpCircle />
+            </HelpIcon>
+          </h3>
+          <div className="level-display">
+            <span>{metersToFeet(selectedLakeLevel).toFixed(1)} ft</span>
+            <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>({selectedLakeLevel.toFixed(1)}m)</span>
+          </div>
+        </TimeSliderHeader>
         
-        <LakeLevelSlider
-          $value={selectedLakeLevel}
-          $min={MIN_LAKE_LEVEL}
-          $max={MAX_LAKE_LEVEL}
-        >
-          {/* Health level zone backgrounds */}
-          <HealthLevelZones
+        {/* Health Level Indicator */}
+        {currentHealthLevel && (
+          <HealthLevelContainer>
+            <HealthLevelIndicator $color={currentHealthLevel.color}>
+              <HealthLevelTitle $color={currentHealthLevel.color}>{currentHealthLevel.name}</HealthLevelTitle>
+              <HealthLevelDescription $color={currentHealthLevel.color}>{currentHealthLevel.description}</HealthLevelDescription>
+            </HealthLevelIndicator>
+          </HealthLevelContainer>
+        )}
+        
+        <SliderContainer>
+          {/* Top button only */}
+          <LevelControls>
+            <LevelControlButton 
+              onClick={handleIncrement}
+              disabled={currentLevelIndex >= AVAILABLE_LAKE_LEVELS.length - 1}
+              title="Increase lake level"
+            >
+              +
+            </LevelControlButton>
+          </LevelControls>
+          
+          <LakeLevelSlider
             $value={selectedLakeLevel}
             $min={MIN_LAKE_LEVEL}
             $max={MAX_LAKE_LEVEL}
-          />
-          
-          <input
-            type="range"
-            min={MIN_LAKE_LEVEL}
-            max={MAX_LAKE_LEVEL}
-            step={(MAX_LAKE_LEVEL - MIN_LAKE_LEVEL) / (AVAILABLE_LAKE_LEVELS.length - 1)}
-            value={selectedLakeLevel}
-            onChange={handleElevationChange}
-            className="vertical-slider"
-            style={{ zIndex: 5 }}
-          />
-          
-          {/* Add tick marks for each available level */}
-          <LakeLevelTicks>
-            {AVAILABLE_LAKE_LEVELS.map((level: number) => {
-              const positionPercent = ((level - MIN_LAKE_LEVEL) / (MAX_LAKE_LEVEL - MIN_LAKE_LEVEL)) * 100;
-              
-              let adjustedPosition = positionPercent;
-              if (level === MIN_LAKE_LEVEL) adjustedPosition = 0;
-              if (level === MAX_LAKE_LEVEL) adjustedPosition = 100;
-              
-              const isSelected = Math.abs(level - selectedLakeLevel) < 0.1;
-              
-              return (
-                <LakeLevelTick 
-                  key={level} 
-                  $bottom={`${adjustedPosition}%`}
-                  $isSelected={isSelected}
-                >
-                  <LakeLevelTickLabel $isSelected={isSelected} $side="left">
-                    {metersToFeet(level).toFixed(1)} ft
-                  </LakeLevelTickLabel>
-                  <LakeLevelTickLabel $isSelected={isSelected} $side="right">
-                    {level.toFixed(1)} mASL
-                  </LakeLevelTickLabel>
-                </LakeLevelTick>
-              );
-            })}
-          </LakeLevelTicks>
-        </LakeLevelSlider>
-        
-        {/* Bottom button only */}
-        <LevelControls>
-          <LevelControlButton 
-            onClick={handleDecrement}
-            disabled={currentLevelIndex <= 0}
-            title="Decrease lake level"
           >
-            -
-          </LevelControlButton>
-        </LevelControls>
-      </SliderContainer>
-    </LakeLevelSliderContainer>
+            {/* Health level zone backgrounds */}
+            <HealthLevelZones
+              $value={selectedLakeLevel}
+              $min={MIN_LAKE_LEVEL}
+              $max={MAX_LAKE_LEVEL}
+            />
+            
+            <input
+              type="range"
+              min={MIN_LAKE_LEVEL}
+              max={MAX_LAKE_LEVEL}
+              step={(MAX_LAKE_LEVEL - MIN_LAKE_LEVEL) / (AVAILABLE_LAKE_LEVELS.length - 1)}
+              value={selectedLakeLevel}
+              onChange={handleElevationChange}
+              className="vertical-slider"
+              style={{ zIndex: 5 }}
+            />
+            
+            {/* Add tick marks for each available level */}
+            <LakeLevelTicks>
+              {AVAILABLE_LAKE_LEVELS.map((level: number) => {
+                const positionPercent = ((level - MIN_LAKE_LEVEL) / (MAX_LAKE_LEVEL - MIN_LAKE_LEVEL)) * 100;
+                
+                let adjustedPosition = positionPercent;
+                if (level === MIN_LAKE_LEVEL) adjustedPosition = 0;
+                if (level === MAX_LAKE_LEVEL) adjustedPosition = 100;
+                
+                const isSelected = Math.abs(level - selectedLakeLevel) < 0.1;
+                
+                return (
+                  <LakeLevelTick 
+                    key={level} 
+                    $bottom={`${adjustedPosition}%`}
+                    $isSelected={isSelected}
+                  >
+                    <LakeLevelTickLabel $isSelected={isSelected} $side="left">
+                      {metersToFeet(level).toFixed(1)} ft
+                    </LakeLevelTickLabel>
+                    <LakeLevelTickLabel $isSelected={isSelected} $side="right">
+                      {level.toFixed(1)} mASL
+                    </LakeLevelTickLabel>
+                  </LakeLevelTick>
+                );
+              })}
+            </LakeLevelTicks>
+          </LakeLevelSlider>
+          
+          {/* Bottom button only */}
+          <LevelControls>
+            <LevelControlButton 
+              onClick={handleDecrement}
+              disabled={currentLevelIndex <= 0}
+              title="Decrease lake level"
+            >
+              -
+            </LevelControlButton>
+          </LevelControls>
+        </SliderContainer>
+      </LakeLevelSliderContainer>
+
+      {/* Story Map Modal */}
+      {showStoryMap && (
+        <StoryMapModal onClick={() => setShowStoryMap(false)}>
+          <StoryMapContent onClick={(e) => e.stopPropagation()}>
+            <StoryMapHeader>
+              <StoryMapTitle>Great Salt Lake Crisis - Interactive Story</StoryMapTitle>
+              <CloseButton onClick={() => setShowStoryMap(false)}>
+                <X />
+              </CloseButton>
+            </StoryMapHeader>
+            <StoryMapIframe
+              src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd"
+              allowFullScreen
+              allow="geolocation"
+              title="Great Salt Lake Crisis Interactive Story"
+            />
+          </StoryMapContent>
+        </StoryMapModal>
+      )}
+    </>
   );
 }
 
