@@ -32,7 +32,7 @@ export function MapLayers({
         <Source
           id="census-tracts-source"
           type="vector"
-          url="mapbox://pkulandh.6457iv91"
+          url="mapbox://pkulandh.utah_census_tracts"
         >
           {/* PM₂.₅ colored census tracts */}
           <Layer

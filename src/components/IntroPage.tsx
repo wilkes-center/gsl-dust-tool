@@ -162,13 +162,10 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
         <DemoModal>
           <DemoOverlay onClick={() => setShowDemo(false)} />
           <DemoContent>
-            <DemoHeader>
-              <DemoTitle>Interactive Demo</DemoTitle>
-              <CloseButton onClick={() => setShowDemo(false)}>
-                <X size={24} />
-              </CloseButton>
-            </DemoHeader>
             <DemoIframeContainer>
+              <FloatingCloseButton onClick={() => setShowDemo(false)}>
+                <X size={32} />
+              </FloatingCloseButton>
               <iframe 
                 src="https://storymaps.arcgis.com/stories/8e1c5b2194184d54b89662719439dddd" 
                 width="100%" 
@@ -544,46 +541,34 @@ const DemoContent = styled.div`
   overflow: hidden;
 `;
 
-const DemoHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #2d5954;
-  color: #f9f6ef;
-`;
-
-const DemoTitle = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-  color: #f9f6ef;
-`;
-
-const CloseButton = styled.button`
-  background-color: transparent;
-  border: none;
-  color: #f9f6ef;
-  font-size: 2rem;
-  cursor: pointer;
-  transition: color 0.2s;
-  padding: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    color: #cccccc;
-  }
-`;
-
 const DemoIframeContainer = styled.div`
   flex: 1;
   background-color: #ffffff;
   overflow: hidden;
+  position: relative;
+`;
+
+const FloatingCloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #751d0c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1003;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #8b2113;
+  }
 `;
 
 const Footer = styled.footer`
