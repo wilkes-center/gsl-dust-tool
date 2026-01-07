@@ -570,7 +570,11 @@ function DustMap({ onElevationChange, onTimestampChange, onBackToIntro, onMapLoa
         <MapArea $sidebarOpen={sidebarOpen}>
           <Map
             ref={mapRef}
-            {...viewState}
+            initialViewState={{
+              longitude: -112.3297,
+              latitude: 40.9121,
+              zoom: 8
+            }}
             onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
             mapStyle={layers.satellite ? "mapbox://styles/mapbox/satellite-v9" : MAPBOX_CONFIG.styleUrl}
             mapboxAccessToken={MAPBOX_TOKEN}
