@@ -96,9 +96,12 @@ const IntroPage: React.FC<IntroPageProps> = ({ onComplete }) => {
 
 
                 <Paragraph style={{ fontSize: '1.25rem', marginTop: '2rem' }}>
-                  This tool synthesizes output from the following data sources: the HYSPLIT-STILT atmospheric transport model (Lin et al. 2003; Loughner et al. 2021), a modified version of the FENGSHA dust emission model (Mallia et al. 2017), and Great Salt Lake (GSL) field measurements collected by Kevin Perry. GSL bathymetry data is used to estimate exposed lakebed areas for lake level scenarios. Using this information, this tool estimates dust exposure for different census tracts across northern Utah corresponding to different Great Salt Lake water levels. We gratefully acknowledge funding from the Utah Department of Air Quality and Division of Natural Resources, and the Wilkes Center for Climate Science and Policy for supporting the development of the GSL dust exposure tool. DISCLAIMER: Output from computer models are subject to uncertainties.  The Wilkes Center and the University of Utah provide this output "as is", and the user is solely responsible for its use.
+                  This tool synthesizes output from the following data sources: the HYSPLIT-STILT atmospheric transport model (Lin et al. 2003; Loughner et al. 2021), a modified version of the FENGSHA dust emission model (Mallia et al. 2017), and Great Salt Lake (GSL) field measurements collected by Kevin Perry. GSL bathymetry data is used to estimate exposed lakebed areas for lake level scenarios. Using this information, this tool estimates dust exposure for different census tracts across northern Utah corresponding to different Great Salt Lake water levels. We gratefully acknowledge funding from the Utah Department of Air Quality and Division of Natural Resources, and the Wilkes Center for Climate Science and Policy for supporting the development of the GSL dust exposure tool. 
                 </Paragraph>
 
+                <Paragraph style={{ fontSize: '1.25rem', marginTop: '2rem' }}>
+                  DISCLAIMER: Output from computer models are subject to uncertainties.  The Wilkes Center and the University of Utah provide this output "as is", and the user is solely responsible for its use.
+                </Paragraph>
                 
                 <SectionSubtitle>References:</SectionSubtitle>
 
